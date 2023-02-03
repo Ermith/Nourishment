@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public class TileComponent : MonoBehaviour
+{
+    public Tile Tile;
+}
+
 public abstract class Tile
 {
     public int X;
@@ -14,7 +19,7 @@ public abstract class Tile
 
     private GameObject CreateCorner(string type, string corner, string cornerType)
     {
-        if (cornerType.Length == 0) cornerType += "-";
+        if (cornerType.Length != 0) corner += "-";
 
         GameObject spriteObject = new GameObject();
 
@@ -69,7 +74,7 @@ public class GroundTile : Tile
 
         // TODO: CHECK NEIGHBORS
 
-        return CreateSpriteObject("ground", _00: "-corner");
+        return CreateSpriteObject("ground");
     }
 }
 
