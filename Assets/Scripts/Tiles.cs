@@ -45,9 +45,10 @@ public abstract class Tile
         GameObject sprite10 = CreateCorner(type, "10", _10);
         GameObject sprite11 = CreateCorner(type, "11", _11);
 
-        sprite01.transform.position += Vector3.up * 0.5f;
-        sprite10.transform.position += Vector3.right * 0.5f;
-        sprite11.transform.position += Vector3.right * 0.5f + Vector3.up * 0.5f;
+        sprite00.transform.position += Vector3.left * 0.25f + Vector3.down * 0.25f;
+        sprite01.transform.position += Vector3.left * 0.25f + Vector3.up * 0.25f;
+        sprite10.transform.position += Vector3.right * 0.25f + Vector3.down * 0.25f;
+        sprite11.transform.position += Vector3.right * 0.25f + Vector3.up * 0.25f;
 
         GameObject fatherObject = new GameObject();
 
