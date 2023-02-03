@@ -29,7 +29,7 @@ public static class DirectionExtensions
 
     public static Vector3 ToVector(this Direction direction)
     {
-        return Util.CARDINAL_DIRECTIONS[(int)direction];
+        return Util.CARDINAL_VECTORS[(int)direction];
     }
     
     public static int X(this Direction direction)
@@ -45,12 +45,20 @@ public static class DirectionExtensions
 
 public class Util
 {
-    public static readonly Vector3[] CARDINAL_DIRECTIONS = new Vector3[]
+    public static readonly Vector3[] CARDINAL_VECTORS = new Vector3[]
     {
         Vector3.right,
         Vector3.up,
         Vector3.left,
         Vector3.down
+    };
+
+    public static readonly Direction[] CARDINAL_DIRECTIONS = new Direction[]
+    {
+        Direction.Right,
+        Direction.Up,
+        Direction.Left,
+        Direction.Down
     };
 
     public static World GetWorld()

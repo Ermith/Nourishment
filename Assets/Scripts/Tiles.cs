@@ -61,7 +61,7 @@ public abstract class Tile
 
     public abstract GameObject UpdateSprite();
 
-    public void OnDestroy()
+    public virtual void OnDestroy()
     {
     }
 }
@@ -98,16 +98,20 @@ public class RootTile : Tile
     {
         World world = Util.GetWorld();
         Tile neighTile = world.GetTile(X + direction.X(), Y + direction.Y());
-        if (neighTile is not RootTile)
+        if (neighTile is not RootTile neighRoot)
         {
             throw new System.Exception("Cannot connect with non-root tile");
         }
 
         ConnectedDirections[(int)direction] = true;
-        RootTile neighRoot = (RootTile)neighTile;
         neighRoot.ConnectedDirections[(int)direction.Opposite()] = true;
 
         UpdateSprite();
+    }
+
+    public override void OnDestroy()
+    {
+
     }
 
     public override GameObject UpdateSprite()
