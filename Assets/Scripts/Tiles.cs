@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine.U2D;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class TileComponent : MonoBehaviour
 {
@@ -10,11 +13,11 @@ public abstract class Tile
 {
     public int X;
     public int Y;
-    protected Dictionary<string, Sprite> _sprites;
 
-    protected Tile(Dictionary<string, Sprite> sprites)
+    protected Tile(int x, int y)
     {
-        _sprites = sprites;
+        X = x;
+        Y = y;
     }
 
     private GameObject CreateCorner(string type, string corner, string cornerType)
@@ -24,7 +27,7 @@ public abstract class Tile
         GameObject spriteObject = new GameObject();
 
         string spriteName = $"{type}{corner}{cornerType}";
-        spriteObject.AddComponent<SpriteRenderer>().sprite = _sprites[spriteName];
+        spriteObject.AddComponent<SpriteRenderer>().sprite = Util.GetWorld().Sprites[spriteName];
         spriteObject.name = spriteName;
 
         return spriteObject;
@@ -56,16 +59,20 @@ public abstract class Tile
         return fatherObject;
     }
 
-    public abstract GameObject UpdateSprite(World world);
+    public abstract GameObject UpdateSprite();
+
+    public void OnDestroy()
+    {
+    }
 }
 
 public class GroundTile : Tile
 {
-    public GroundTile(Dictionary<string, Sprite> sprites) : base(sprites)
+    public GroundTile(int x, int y) : base(x, y)
     {
     }
 
-    public override GameObject UpdateSprite(World world)
+    public override GameObject UpdateSprite()
     {
         int left = X - 1;
         int top = Y - 1;
@@ -78,3 +85,38 @@ public class GroundTile : Tile
     }
 }
 
+public class RootTile : Tile
+{
+    private bool[] ConnectedDirections;
+
+    public RootTile(int x, int y) : base(x, y)
+    {
+        ConnectedDirections = new bool[4];
+    }
+
+    public void ConnectWithNeigh(Direction direction)
+    {
+        World world = Util.GetWorld();
+        Tile neighTile = world.GetTile(X + direction.X(), Y + direction.Y());
+        if (neighTile is not RootTile)
+        {
+            throw new System.Exception("Cannot connect with non-root tile");
+        }
+
+        ConnectedDirections[(int)direction] = true;
+        RootTile neighRoot = (RootTile)neighTile;
+        neighRoot.ConnectedDirections[(int)direction.Opposite()] = true;
+
+        UpdateSprite();
+    }
+
+    public override GameObject UpdateSprite()
+    {
+        World world = Util.GetWorld();
+        GameObject spriteObject = new GameObject();
+        spriteObject.name = "root";
+        spriteObject.AddComponent<SpriteRenderer>().sprite = world.Sprites[$"root{ConnectedDirections[0]}{ConnectedDirections[1]}{ConnectedDirections[2]}{ConnectedDirections[3]}"];
+
+        return spriteObject;
+    }
+}

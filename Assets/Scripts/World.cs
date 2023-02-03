@@ -7,6 +7,7 @@ public class World : MonoBehaviour
     public const int TILE_SIZE = 32;
     public const int MAP_WIDTH = 21;
     public Camera _camera;
+    public Dictionary<string, Sprite> Sprites;
 
     private List<Tile[]> _tiles;
     private float _offsetX; // based on camera witdth
@@ -23,7 +24,7 @@ public class World : MonoBehaviour
         _offsetX = - (MAP_WIDTH / 2f);
         _offsetY = 0;
 
-        var sprites = LoadSprites();
+        Sprites = LoadSprites();
 
         // Generation of world
         _tiles = new List<Tile[]>();
@@ -32,7 +33,7 @@ public class World : MonoBehaviour
             _tiles.Add(new Tile[TILE_SIZE]);
             for (int j = 0; j < MAP_WIDTH; j++)
             {
-                _tiles[i][j] = new GroundTile(sprites);
+                _tiles[i][j] = new GroundTile(j, i);
             }
         }
 
@@ -54,7 +55,7 @@ public class World : MonoBehaviour
                 int yIndex = yStart + y;
 
                 var tile = _tiles[yIndex][xIndex];
-                var spriteObject = tile.UpdateSprite(this);
+                var spriteObject = tile.UpdateSprite();
                 spriteObject.transform.position =
                     new Vector2(
                         x: _offsetX + xIndex,
@@ -75,10 +76,13 @@ public class World : MonoBehaviour
     private Dictionary<string, Sprite> LoadSprites()
     {
         var sprites = new Dictionary<string, Sprite>();
-        var groundSprites = Resources.LoadAll<Sprite>("Sprites/Ground");
-        foreach (var sprite in groundSprites)
+        foreach (var subdir in new string[] { "Ground", "Wall" })
         {
-            sprites.Add(sprite.name, sprite);
+            var groundSprites = Resources.LoadAll<Sprite>($"Sprites/{subdir}");
+            foreach (var sprite in groundSprites)
+            {
+                sprites.Add(sprite.name, sprite);
+            }
         }
 
         return sprites;
