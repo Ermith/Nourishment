@@ -4,23 +4,37 @@ using UnityEngine;
 
 public class World : MonoBehaviour
 {
-    private const int TILE_SIZE = 32;
+    public const int TILE_SIZE = 32;
+    public const int MAP_WIDTH = 21;
     public Camera _camera;
-    private List<Tile> _tiles;
+
+    private List<Tile[]> _tiles;
     private float _offsetX; // based on camera witdth
     private float _offsetY; // camera position
+
+    public Tile GetTile(int x, int y)
+    {
+        return _tiles[-y][x];
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        _offsetX =  Mathf.Floor(_camera.orthographicSize * _camera.aspect) - _camera.orthographicSize * _camera.aspect;
+        _offsetX = - (MAP_WIDTH / 2f);
         _offsetY = 0;
 
         var sprites = LoadSprites();
 
         // Generation of world
-        _tiles = new List<Tile>();
-        for (int i = 0; i < 500; i++) _tiles.Add(new GroundTile(sprites));
+        _tiles = new List<Tile[]>();
+        for (int i = 0; i < 30; i++)
+        {
+            _tiles.Add(new Tile[TILE_SIZE]);
+            for (int j = 0; j < MAP_WIDTH; j++)
+            {
+                _tiles[i][j] = new GroundTile(sprites);
+            }
+        }
 
         //var groundTile = new GroundTile(sprites);
         //var groundObject = groundTile.UpdateSprite(_tiles);
@@ -28,7 +42,7 @@ public class World : MonoBehaviour
 
         int xStart = 0;
         int yStart = (int)(_offsetY / TILE_SIZE);
-        int xCount = (int)Mathf.Ceil(_camera.aspect * _camera.orthographicSize * 2) + 1;
+        int xCount = MAP_WIDTH;
         int yCount = (int)Mathf.Ceil(_camera.orthographicSize * 2);
 
         for (int y = 0; y < yCount; y++)
@@ -37,15 +51,12 @@ public class World : MonoBehaviour
             {
                 int xIndex = xStart + x;
                 int yIndex = yStart + y;
-                int index = yIndex * yCount + xIndex;
 
-                if (index > _tiles.Count) return;
-
-                var tile = _tiles[index];
-                var spriteObject = tile.UpdateSprite(_tiles);
+                var tile = _tiles[yIndex][xIndex];
+                var spriteObject = tile.UpdateSprite(this);
                 spriteObject.transform.position =
                     new Vector2(
-                        x: _offsetX + xIndex - _camera.orthographicSize * _camera.aspect + 1,
+                        x: _offsetX + xIndex,
                         y: _offsetY + yIndex - _camera.orthographicSize
                         );
 

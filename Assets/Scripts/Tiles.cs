@@ -56,7 +56,7 @@ public abstract class Tile
         return fatherObject;
     }
 
-    public abstract GameObject UpdateSprite(List<Tile> tiles);
+    public abstract GameObject UpdateSprite(World world);
 }
 
 public class GroundTile : Tile
@@ -65,7 +65,7 @@ public class GroundTile : Tile
     {
     }
 
-    public override GameObject UpdateSprite(List<Tile> tiles)
+    public override GameObject UpdateSprite(World world)
     {
         int left = X - 1;
         int top = Y - 1;
