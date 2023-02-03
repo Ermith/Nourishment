@@ -40,16 +40,11 @@ public class World : MonoBehaviour
             }
         }
 
-        //var groundTile = new GroundTile(sprites);
-        //var groundObject = groundTile.UpdateSprite(_tiles);
-        //groundObject.transform.parent = this.transform;
-
         int xStart = 0;
         int yStart = (int)(_offsetY / TILE_SIZE);
         int xCount = MAP_WIDTH;
         int yCount = (int)Mathf.Ceil(_camera.orthographicSize * 2);
-        //float cameraHeight = _camera.orthographicSize;
-
+        
         for (int y = 0; y < yCount; y++)
         {
             for (int x = 0; x < xCount; x++)
