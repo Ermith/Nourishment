@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public enum Direction
 {
@@ -12,19 +13,24 @@ public static class DirectionExtensions
 {
     public static Direction Opposite(this Direction direction)
     {
-        switch (direction)
+        return direction switch
         {
-            case Direction.Right:
-                return Direction.Left;
-            case Direction.Up:
-                return Direction.Down;
-            case Direction.Left:
-                return Direction.Right;
-            case Direction.Down:
-                return Direction.Up;
-            default:
-                return Direction.Right;
-        }
+            Direction.Right => Direction.Left,
+            Direction.Up => Direction.Down,
+            Direction.Left => Direction.Right,
+            Direction.Down => Direction.Up,
+            _ => Direction.Right
+        };
+    }
+
+    public static bool IsHorizontal(this Direction direction)
+    {
+        return direction is Direction.Right or Direction.Left;
+    }
+
+    public static bool IsVertical(this Direction direction)
+    {
+        return direction is Direction.Up or Direction.Down;
     }
 
     public static Vector3 ToVector(this Direction direction)
