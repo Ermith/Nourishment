@@ -34,9 +34,9 @@ public class World : MonoBehaviour
             for (int j = 0; j < MAP_WIDTH; j++)
             {
                 if (Random.Range(0, 100) < 50)
-                    _tiles[i][j] = TileFactory.RootTile(j, i);
+                    _tiles[i][j] = TileFactory.RootTile(j, -i);
                 else
-                    _tiles[i][j] = TileFactory.GroundTile(j, i);   
+                    _tiles[i][j] = TileFactory.GroundTile(j, -i);   
             }
         }
 

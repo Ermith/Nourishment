@@ -121,6 +121,7 @@ public class RootTile : Tile
         neighRoot.ConnectedDirections[(int)direction.Opposite()] = true;
 
         UpdateSprite();
+        neighRoot.UpdateSprite();
     }
 
     public override void OnDestroy()
