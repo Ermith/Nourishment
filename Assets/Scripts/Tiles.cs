@@ -112,7 +112,21 @@ public class RootTile : Tile
 
     public override void OnDestroy()
     {
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        {
+            if (ConnectedDirections[(int)dir])
+            {
+                World world = Util.GetWorld();
+                Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
+                if (neighTile is not RootTile neighRoot)
+                {
+                    throw new System.Exception("How did we end up connected to a non-root tile?");
+                }
 
+                neighRoot.ConnectedDirections[(int)dir.Opposite()] = false;
+                neighRoot.UpdateSprite();
+            }
+        }
     }
 
     public override GameObject UpdateSprite()
@@ -120,7 +134,12 @@ public class RootTile : Tile
         World world = Util.GetWorld();
         GameObject spriteObject = new GameObject();
         spriteObject.name = "root";
-        spriteObject.AddComponent<SpriteRenderer>().sprite = world.Sprites[$"root{ConnectedDirections[0]}{ConnectedDirections[1]}{ConnectedDirections[2]}{ConnectedDirections[3]}"];
+        var spriteName = "root";
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        {
+            spriteName += ConnectedDirections[(int)dir] ? "1" : "0";
+        }
+        spriteObject.AddComponent<SpriteRenderer>().sprite = world.Sprites[spriteName];
 
         return spriteObject;
     }

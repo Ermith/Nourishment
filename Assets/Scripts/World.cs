@@ -33,7 +33,10 @@ public class World : MonoBehaviour
             _tiles.Add(new Tile[TILE_SIZE]);
             for (int j = 0; j < MAP_WIDTH; j++)
             {
-                _tiles[i][j] = new GroundTile(j, i);
+                if (Random.Range(0, 100) < 50)
+                    _tiles[i][j] = new GroundTile(j, i);
+                else
+                    _tiles[i][j] = new RootTile(j, i);
             }
         }
 
@@ -70,13 +73,27 @@ public class World : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (Random.Range(0, 100) >= 0)
+        {
+            try
+            {
+                var randomTile = _tiles[Random.Range(0, _tiles.Count)][Random.Range(0, MAP_WIDTH)];
+                if (randomTile is RootTile rootTile)
+                {
+                    rootTile.ConnectWithNeigh((Direction)Random.Range(0, 4));
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.Log(e);
+            }
+        }
     }
 
     private Dictionary<string, Sprite> LoadSprites()
     {
         var sprites = new Dictionary<string, Sprite>();
-        foreach (var subdir in new string[] { "Ground", "Wall" })
+        foreach (var subdir in new string[] { "Ground", "Root" })
         {
             var groundSprites = Resources.LoadAll<Sprite>($"Sprites/{subdir}");
             foreach (var sprite in groundSprites)
