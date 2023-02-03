@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using Unity.VisualScripting;
+using UnityEngine;
 
 public class TileFactory
 {
@@ -47,16 +50,15 @@ public abstract class Tile : MonoBehaviour
 
     protected void CreateSpriteObject(
         string type,
-        string _00 = "",
-        string _01 = "",
-        string _10 = "",
-        string _11 = ""
-        )
+        string[] labels = null
+    )
     {
-        GameObject sprite00 = CreateCorner(type, "00", _00);
-        GameObject sprite01 = CreateCorner(type, "01", _01);
-        GameObject sprite10 = CreateCorner(type, "10", _10);
-        GameObject sprite11 = CreateCorner(type, "11", _11);
+        if (labels is null)
+            labels = Array.Empty<string>();
+        GameObject sprite00 = CreateCorner(type, "00", labels.ElementAtOrDefault(0) ?? "");
+        GameObject sprite01 = CreateCorner(type, "01", labels.ElementAtOrDefault(1) ?? "");
+        GameObject sprite10 = CreateCorner(type, "10", labels.ElementAtOrDefault(2) ?? "");
+        GameObject sprite11 = CreateCorner(type, "11", labels.ElementAtOrDefault(3) ?? "");
 
         sprite00.transform.position += Vector3.left * 0.25f + Vector3.down * 0.25f;
         sprite01.transform.position += Vector3.left * 0.25f + Vector3.up * 0.25f;
@@ -75,6 +77,12 @@ public abstract class Tile : MonoBehaviour
 
     public virtual void OnDestroy()
     {
+        World world = Util.GetWorld();
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        {
+            Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
+            neighTile.UpdateSprite();
+        }
     }
 }
 
@@ -93,10 +101,40 @@ public class GroundTile : Tile
 
     public override void UpdateSprite()
     {
-        CreateSpriteObject("ground");
+        World world = Util.GetWorld();
+        bool[,] cornerGroundCounts = new bool[4,2];
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        {
+            Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
+            if (neighTile is GroundTile)
+            {
+                int horiz = dir.IsHorizontal() ? 1 : 0;
+                cornerGroundCounts[(int)(dir + 1) % 4, horiz] = true;
+                cornerGroundCounts[(int)(dir + 2) % 4, horiz] = true;
+            }
+        }
+
+        string[] subSpriteLabels = new string[4];
+        for (int i = 0; i < 4; i++)
+        {
+            subSpriteLabels[i] = (cornerGroundCounts[i, 0], cornerGroundCounts[i, 1]) switch
+            {
+                (false, false) => "corner",
+                (true, false) => "hedge",
+                (false, true) => "vedge",
+                (true, true) => "",
+            };
+        }
+
+        (subSpriteLabels[0], subSpriteLabels[1], subSpriteLabels[2], subSpriteLabels[3]) = (subSpriteLabels[0], subSpriteLabels[3], subSpriteLabels[1], subSpriteLabels[2]);
+        CreateSpriteObject("ground", subSpriteLabels);
     }
 }
 
+public class RootNotFoundException : Exception
+{
+
+}
 
 public class RootTile : Tile
 {
@@ -129,7 +167,7 @@ public class RootTile : Tile
         Tile neighTile = world.GetTile(X + direction.X(), Y + direction.Y());
         if (neighTile is not RootTile neighRoot)
         {
-            throw new System.Exception("Cannot connect with non-root tile");
+            throw new RootNotFoundException();
         }
 
         ConnectedDirections[(int)direction] = true;
@@ -141,11 +179,11 @@ public class RootTile : Tile
 
     public override void OnDestroy()
     {
+        World world = Util.GetWorld();
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
             if (ConnectedDirections[(int)dir])
             {
-                World world = Util.GetWorld();
                 Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
                 if (neighTile is not RootTile neighRoot)
                 {
@@ -153,9 +191,9 @@ public class RootTile : Tile
                 }
 
                 neighRoot.ConnectedDirections[(int)dir.Opposite()] = false;
-                neighRoot.UpdateSprite();
             }
         }
+        base.OnDestroy();
     }
 
     public override void UpdateSprite()

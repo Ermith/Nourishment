@@ -15,6 +15,9 @@ public class World : MonoBehaviour
 
     public Tile GetTile(int x, int y)
     {
+        // TODO if y below current row count generate more rows
+        if (x < 0 || x >= MAP_WIDTH || y > 0 || y <= -_tiles.Count)
+            return null;
         return _tiles[-y][x];
     }
 
@@ -87,9 +90,9 @@ public class World : MonoBehaviour
                 {
                     rootTile.ConnectWithNeigh((Direction)Random.Range(0, 4));
                 }
-            } catch (System.Exception e)
+            }
+            catch (RootNotFoundException)
             {
-                Debug.Log(e);
             }
         }
     }
