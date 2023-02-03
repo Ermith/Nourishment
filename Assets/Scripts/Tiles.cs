@@ -1,24 +1,34 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine.U2D;
-using static UnityEngine.UI.GridLayoutGroup;
 
-public class TileComponent : MonoBehaviour
+public class TileFactory
 {
-    public Tile Tile;
+    private static Tile CreateTile<T>(int x, int y) where T : Tile
+    {
+        var go = new GameObject();
+        go.SetActive(false);
+        var tile = go.AddComponent<T>();
+        tile.X = x;
+        tile.Y = y;
+        return tile;
+    }
+
+    public static Tile GroundTile(int x, int y)
+    {
+        return CreateTile<GroundTile>(x, y);
+    }
+
+    public static Tile RootTile(int x, int y)
+    {
+        var tile = CreateTile<RootTile>(x, y);
+        tile.gameObject.AddComponent<SpriteRenderer>();
+        return tile;
+    }
 }
 
-public abstract class Tile
+public abstract class Tile : MonoBehaviour
 {
     public int X;
     public int Y;
-
-    protected Tile(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
 
     private GameObject CreateCorner(string type, string corner, string cornerType)
     {
@@ -33,12 +43,13 @@ public abstract class Tile
         return spriteObject;
     }
 
-    protected GameObject CreateSpriteObject(
+    protected void CreateSpriteObject(
         string type,
         string _00 = "",
         string _01 = "",
         string _10 = "",
-        string _11 = "")
+        string _11 = ""
+        )
     {
         GameObject sprite00 = CreateCorner(type, "00", _00);
         GameObject sprite01 = CreateCorner(type, "01", _01);
@@ -50,17 +61,13 @@ public abstract class Tile
         sprite10.transform.position += Vector3.right * 0.25f + Vector3.down * 0.25f;
         sprite11.transform.position += Vector3.right * 0.25f + Vector3.up * 0.25f;
 
-        GameObject fatherObject = new GameObject();
-
-        sprite00.transform.parent = fatherObject.transform;
-        sprite01.transform.parent = fatherObject.transform;
-        sprite10.transform.parent = fatherObject.transform;
-        sprite11.transform.parent = fatherObject.transform;
-
-        return fatherObject;
+        sprite00.transform.parent = transform;
+        sprite01.transform.parent = transform;
+        sprite10.transform.parent = transform;
+        sprite11.transform.parent = transform;
     }
 
-    public abstract GameObject UpdateSprite();
+    public abstract void UpdateSprite();
 
     public virtual void OnDestroy()
     {
@@ -69,30 +76,36 @@ public abstract class Tile
 
 public class GroundTile : Tile
 {
-    public GroundTile(int x, int y) : base(x, y)
+    public override void UpdateSprite()
     {
-    }
-
-    public override GameObject UpdateSprite()
-    {
-        int left = X - 1;
-        int top = Y - 1;
-        int right = X + 1;
-        int bottom = Y + 1;
-
-        // TODO: CHECK NEIGHBORS
-
-        return CreateSpriteObject("ground");
+        CreateSpriteObject("ground");
     }
 }
+
 
 public class RootTile : Tile
 {
     private bool[] ConnectedDirections;
 
-    public RootTile(int x, int y) : base(x, y)
+    private SpriteRenderer _spriteRenderer;
+    private SpriteRenderer SpriteRenderer
+    {
+        get
+        {
+            if (_spriteRenderer == null)
+                _spriteRenderer = GetComponent<SpriteRenderer>();
+            return _spriteRenderer;
+        }
+        set { _spriteRenderer = value; }
+    }
+
+    public RootTile()
     {
         ConnectedDirections = new bool[4];
+    }
+
+    public void Start()
+    {
     }
 
     public void ConnectWithNeigh(Direction direction)
@@ -129,18 +142,15 @@ public class RootTile : Tile
         }
     }
 
-    public override GameObject UpdateSprite()
+    public override void UpdateSprite()
     {
         World world = Util.GetWorld();
-        GameObject spriteObject = new GameObject();
-        spriteObject.name = "root";
+        name = "root";
         var spriteName = "root";
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
             spriteName += ConnectedDirections[(int)dir] ? "1" : "0";
         }
-        spriteObject.AddComponent<SpriteRenderer>().sprite = world.Sprites[spriteName];
-
-        return spriteObject;
+        SpriteRenderer.sprite = world.Sprites[spriteName];
     }
 }

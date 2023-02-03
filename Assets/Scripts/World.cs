@@ -30,13 +30,13 @@ public class World : MonoBehaviour
         _tiles = new List<Tile[]>();
         for (int i = 0; i < 30; i++)
         {
-            _tiles.Add(new Tile[TILE_SIZE]);
+            _tiles.Add(new Tile[MAP_WIDTH]);
             for (int j = 0; j < MAP_WIDTH; j++)
             {
                 if (Random.Range(0, 100) < 50)
-                    _tiles[i][j] = new GroundTile(j, i);
+                    _tiles[i][j] = TileFactory.RootTile(j, i);
                 else
-                    _tiles[i][j] = new RootTile(j, i);
+                    _tiles[i][j] = TileFactory.GroundTile(j, i);   
             }
         }
 
@@ -58,14 +58,15 @@ public class World : MonoBehaviour
                 int yIndex = yStart + y;
 
                 var tile = _tiles[yIndex][xIndex];
-                var spriteObject = tile.UpdateSprite();
-                spriteObject.transform.position =
+                tile.UpdateSprite();
+                tile.transform.position =
                     new Vector2(
                         x: _offsetX + xIndex,
                         y: _camera.orthographicSize -yIndex - 0.5f
                         );
 
-                spriteObject.transform.parent = this.transform;
+                tile.transform.parent = this.transform;
+                tile.gameObject.SetActive(true);
             }
         }
     }
