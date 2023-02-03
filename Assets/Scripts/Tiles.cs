@@ -2,24 +2,26 @@
 
 public class TileFactory
 {
-    private static Tile CreateTile<T>(int x, int y) where T : Tile
+    private static Tile CreateTile<T>(GameObject parent, int x, int y) where T : Tile
     {
         var go = new GameObject();
-        go.SetActive(false);
+        go.SetActive(true);
+        go.transform.parent = parent.transform;
         var tile = go.AddComponent<T>();
         tile.X = x;
         tile.Y = y;
+        tile.name = typeof(T).Name;
         return tile;
     }
 
-    public static Tile GroundTile(int x, int y)
+    public static Tile GroundTile(GameObject parent, int x, int y)
     {
-        return CreateTile<GroundTile>(x, y);
+        return CreateTile<GroundTile>(parent, x, y);
     }
 
-    public static Tile RootTile(int x, int y)
+    public static Tile RootTile(GameObject parent, int x, int y)
     {
-        var tile = CreateTile<RootTile>(x, y);
+        var tile = CreateTile<RootTile>(parent, x, y);
         tile.gameObject.AddComponent<SpriteRenderer>();
         return tile;
     }
@@ -69,6 +71,8 @@ public abstract class Tile : MonoBehaviour
 
     public abstract void UpdateSprite();
 
+    public abstract bool IsVisible();
+
     public virtual void OnDestroy()
     {
     }
@@ -76,6 +80,17 @@ public abstract class Tile : MonoBehaviour
 
 public class GroundTile : Tile
 {
+    public override bool IsVisible()
+    {
+        bool isVisible = false;
+
+        var renderers = gameObject.GetComponentsInChildren<SpriteRenderer>();
+        foreach (var renderer in renderers)
+            isVisible |= renderer.isVisible;
+
+        return isVisible;
+    }
+
     public override void UpdateSprite()
     {
         CreateSpriteObject("ground");
@@ -154,4 +169,6 @@ public class RootTile : Tile
         }
         SpriteRenderer.sprite = world.Sprites[spriteName];
     }
+
+    public override bool IsVisible() => SpriteRenderer.isVisible;
 }

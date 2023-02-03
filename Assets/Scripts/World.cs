@@ -21,7 +21,7 @@ public class World : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _offsetX = - (MAP_WIDTH / 2f);
+        _offsetX = -(MAP_WIDTH / 2f);
         _offsetY = 0;
 
         Sprites = LoadSprites();
@@ -34,17 +34,17 @@ public class World : MonoBehaviour
             for (int j = 0; j < MAP_WIDTH; j++)
             {
                 if (Random.Range(0, 100) < 50)
-                    _tiles[i][j] = TileFactory.RootTile(j, -i);
+                    _tiles[i][j] = TileFactory.RootTile(this.gameObject, j, -i);
                 else
-                    _tiles[i][j] = TileFactory.GroundTile(j, -i);   
+                    _tiles[i][j] = TileFactory.GroundTile(this.gameObject, j, -i);
             }
         }
 
         int xStart = 0;
         int yStart = (int)(_offsetY / TILE_SIZE);
         int xCount = MAP_WIDTH;
-        int yCount = (int)Mathf.Ceil(_camera.orthographicSize * 2);
-        
+        int yCount = _tiles.Count;
+
         for (int y = 0; y < yCount; y++)
         {
             for (int x = 0; x < xCount; x++)
@@ -57,10 +57,9 @@ public class World : MonoBehaviour
                 tile.transform.position =
                     new Vector2(
                         x: _offsetX + xIndex,
-                        y: _camera.orthographicSize -yIndex - 0.5f
+                        y: _camera.orthographicSize - yIndex - 0.5f
                         );
 
-                tile.transform.parent = this.transform;
                 tile.gameObject.SetActive(true);
             }
         }
@@ -69,6 +68,16 @@ public class World : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        foreach (Tile[] row in _tiles)
+            foreach (Tile tile in row)
+            {
+                tile.gameObject.SetActive(
+                    Mathf.Abs(tile.transform.position.x - _camera.transform.position.x) < _camera.orthographicSize * _camera.aspect + TILE_SIZE / 2f
+                    && Mathf.Abs(tile.transform.position.y - _camera.transform.position.y) < _camera.orthographicSize + 0.5f
+                    );
+            }
+
+
         if (Random.Range(0, 100) >= 0)
         {
             try
@@ -78,8 +87,7 @@ public class World : MonoBehaviour
                 {
                     rootTile.ConnectWithNeigh((Direction)Random.Range(0, 4));
                 }
-            }
-            catch (System.Exception e)
+            } catch (System.Exception e)
             {
                 Debug.Log(e);
             }
