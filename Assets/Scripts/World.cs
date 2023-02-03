@@ -44,6 +44,7 @@ public class World : MonoBehaviour
         int yStart = (int)(_offsetY / TILE_SIZE);
         int xCount = MAP_WIDTH;
         int yCount = (int)Mathf.Ceil(_camera.orthographicSize * 2);
+        //float cameraHeight = _camera.orthographicSize;
 
         for (int y = 0; y < yCount; y++)
         {
@@ -57,7 +58,7 @@ public class World : MonoBehaviour
                 spriteObject.transform.position =
                     new Vector2(
                         x: _offsetX + xIndex,
-                        y: _offsetY + yIndex - _camera.orthographicSize
+                        y: _camera.orthographicSize -yIndex - 0.5f
                         );
 
                 spriteObject.transform.parent = this.transform;
