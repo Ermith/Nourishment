@@ -156,10 +156,14 @@ public class World : MonoBehaviour
                     RootTile rootTile = (RootTile)TileFactory.RootTile(this.gameObject, x, y);
                     rootTile.ForceConnect(Direction.Up);
                     square.Tile = rootTile;
+                } else if (Random.Range(0, 100) < 5) {
+                    square.Tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
+                    EntityFactory.PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
                 } else if (Random.Range(0, 100) < 5)
                     square.Tile = TileFactory.RootTile(this.gameObject, x, y);
                 else
                     square.Tile = TileFactory.GroundTile(this.gameObject, x, y);
+                
 
                 square.Tile.gameObject.SetActive(IsTileOnCamera(square.Tile));
             }
