@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public enum TileType
 {
@@ -147,7 +148,27 @@ public class GrassTile : Tile
     {
         World world = Util.GetWorld();
         name = "Grass";
-        var spriteName = "world_grass";
+        var subTypes = new string[] { "world_grass_01", "world_grass_03", "world_grass_02", "world_grass_04" };
+        string spriteName;
+        switch (Random.value)
+        {
+            case <= 0.40f:
+                spriteName = subTypes[0];
+                break;
+            case <= 0.70f:
+                spriteName = subTypes[1];
+                break;
+            case <= 0.90f:
+                spriteName = subTypes[2];
+                break;
+            case <= 1.00f:
+                spriteName = subTypes[3];
+                break;
+            default:
+                spriteName = subTypes[0];
+                break;
+        }
+
         SpriteRenderer.sprite = world.Sprites[spriteName];
     }
 }

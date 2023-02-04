@@ -246,17 +246,23 @@ public class World : MonoBehaviour
         {
             int tries = 10;
             int x, y;
+            Entity rock;
             do
             {
                 x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
-                y = -UnityEngine.Random.Range(yStart, _tiles.Count);
-                break;
+                y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
+                rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
+                if(rock.IsPlacementValid())
+                    break;
+                Destroy(rock.gameObject);
+                rock = null;
             } while (tries-- > 0);
-            var rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
-            foreach (var location in rock.GetLocations())
-            {
-                ReplaceTile(location.Item1, location.Item2, TileType.Air);
-            }
+            
+            if(rock)
+                foreach (var location in rock.GetLocations())
+                {
+                    ReplaceTile(location.Item1, location.Item2, TileType.Air);
+                }
         }
 
         for (int i = 0; i < CHUNK_SIZE; i++)
@@ -310,8 +316,9 @@ public class World : MonoBehaviour
                 square.SimulationStep();
             }
         }
-        
-        foreach(var entity in simulatedEntities)
+
+        simulatedEntities.Reverse(); // it'll look better if falling is simulated bottom to top
+        foreach (var entity in simulatedEntities)
             entity.SimulationStep();
     }
 

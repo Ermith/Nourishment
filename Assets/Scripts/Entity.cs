@@ -74,6 +74,31 @@ public abstract class Entity : MonoBehaviour
         return Locations;
     }
 
+    public virtual bool IsPlacementValid()
+    {
+        foreach (var location in Locations)
+        {
+            var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
+            if (square == null || square.Entities.Count > 1 || square.Entities.Count == 1 && square.Entities[0] != this)
+                return false;
+        }
+
+        return true;
+    }
+
+    public virtual void OnDestroy()
+    {
+        World world = Util.GetWorld();
+        if (world is null)
+            return;
+        foreach (var location in Locations)
+        {
+            var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
+            if (square != null)
+                square.Entities.Remove(this);
+        }
+    }
+
     public virtual void SimulationStep()
     {
         if (AffectedByGravity)
@@ -258,10 +283,6 @@ public abstract class Rock : Entity
                 }
             }
         }
-
-        SpriteRenderer spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = Util.GetWorld().Sprites["stone-00-corner"];
-        spriteRenderer.sortingLayerName = "Entity";
     }
 }
 
