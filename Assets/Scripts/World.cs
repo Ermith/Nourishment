@@ -12,7 +12,7 @@ public class GridSquare
     public List<Entity> Entities = new List<Entity>();
     public Water Water = new Water();
     public bool active = true;
-
+    
     public GridSquare(int x, int y, Tile tile = null)
     {
         X = x;
@@ -119,7 +119,45 @@ public class World : MonoBehaviour
     public Player player;
     public int ExtraSimulatedRows = 10;
 
+    public SpriteRenderer Background1;
+    public SpriteRenderer Background2;
+    public SpriteRenderer Background3;
+    public SpriteRenderer Background4;
+    private float start1;
+    private float start2;
+    private float start3;
+    private float start4;
+    //private SpriteRenderer CurrentBackground;
+
+
     private List<GridSquare[]> _tiles = new List<GridSquare[]>();
+
+    private Vector3 ComputeParallax(ref float start)
+    {
+        float length = Background1.size.y / 2f;
+        float parallax = 0.5f;
+
+        float temp = _camera.transform.position.y * (1 - parallax);
+        float dist = _camera.transform.position.y * parallax;
+
+        float oldStart = start;
+
+        if (temp > start1 + length)
+            start += length;
+
+        if (temp < start1 - length)
+            start -= length;
+
+        return Vector3.up * (oldStart + dist) + Vector3.forward * 100;
+    }
+
+    public void MoveBackground()
+    {
+        Background1.transform.position = ComputeParallax(ref start1);
+        Background2.transform.position = ComputeParallax(ref start2);
+        Background3.transform.position = ComputeParallax(ref start3);
+        Background4.transform.position = ComputeParallax(ref start4);
+    }
 
     public static bool InBounds((int, int) coords)
     {
@@ -155,6 +193,10 @@ public class World : MonoBehaviour
 
         // Generation of world
         GenerateMoreMap();
+        start1 = Background1.transform.position.y;
+        start2 = Background2.transform.position.y;
+        start3 = Background3.transform.position.y;
+        start4 = Background3.transform.position.y;
     }
 
     public Tile ReplaceTile(int x, int y, TileType type)
@@ -339,6 +381,8 @@ public class World : MonoBehaviour
         foreach (GridSquare[] row in _tiles)
             foreach (GridSquare square in row)
                 square.SetActive(IsTileOnCamera(square.Tile));
+
+        MoveBackground();
     }
 
     public void ApplyToSimulatedTiles(Action<GridSquare> action)
