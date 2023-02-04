@@ -95,8 +95,10 @@ public class GridSquare
 
 public class World : MonoBehaviour
 {
+    public static int MIN_TILE_ENTITY_Y = -3;
+    public static int MIN_ENTITY_Y = -5;
     public const int TILE_SIZE = 32;
-    public const int MAP_WIDTH = 21;
+    public static int MAP_WIDTH = 21;
     public const int CHUNK_SIZE = 14;
     public const int FLUID_SUBSTEPS = 5;
     public Camera _camera;
@@ -169,15 +171,20 @@ public class World : MonoBehaviour
     {
         int prob = UnityEngine.Random.Range(0, 100);
 
-        if (prob < rootTreshold)
-            return TileFactory.RootTile(this.gameObject, x, y);
-
-        if (prob < rockTreshold)
+        // prevent non dirt tiles from appearing in first 3 layers
+        if (y >= MIN_TILE_ENTITY_Y)
         {
-            var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
-            EntityFactory.PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
-            return tile;
+            if (prob < rootTreshold)
+                return TileFactory.RootTile(this.gameObject, x, y);
+
+            if (prob < rockTreshold)
+            {
+                var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
+                Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
+                return tile;
+            }
         }
+
 
         return TileFactory.GroundTile(this.gameObject, x, y);
     }
@@ -276,7 +283,7 @@ public class World : MonoBehaviour
             {
                 x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
                 y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
-                rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
+                rock = Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
                 if(rock.IsPlacementValid())
                     break;
                 Destroy(rock.gameObject);
