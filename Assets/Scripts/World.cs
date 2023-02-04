@@ -10,7 +10,7 @@ public class GridSquare
     public int Y;
     public Tile Tile;
     public List<Entity> Entities = new List<Entity>();
-    public float WaterLevel = 0; // TODO maybe generalize to multiple fluids?
+    public Water Water = new Water();
     public bool active = true;
 
     public GridSquare(int x, int y, Tile tile = null)
@@ -78,6 +78,19 @@ public class GridSquare
         foreach (var entity in Entities)
             entity.ActivityChange(active);
     }
+
+    public void SimulationStepFluid()
+    {
+    }
+
+    public void SimulationSubStepFluid()
+    {
+        Water.Flow(this.X, this.Y);
+    }
+    public void SimulationSubStepFluidFinish()
+    {
+        Water.SimSwap();
+    }
 }
 
 public class World : MonoBehaviour
@@ -85,6 +98,7 @@ public class World : MonoBehaviour
     public const int TILE_SIZE = 32;
     public const int MAP_WIDTH = 21;
     public const int CHUNK_SIZE = 14;
+    public const int FLUID_SUBSTEPS = 5;
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
     public Player player;
@@ -307,27 +321,56 @@ public class World : MonoBehaviour
                 square.SetActive(IsTileOnCamera(square.Tile));
     }
 
-    public void SimulationStep()
+    public void ApplyToSimulatedTiles(Action<GridSquare> action)
     {
-        // TODO maybe optimize (hashtable)
-        List<Entity> simulatedEntities = new List<Entity>();
         for (int rowId = SimulatedRowsStart; rowId < SimulatedRowsEnd; rowId++)
         {
             var row = _tiles[rowId];
             foreach (var square in row)
             {
-                foreach (var entity in square.Entities)
-                {
-                    if(!simulatedEntities.Contains(entity))
-                        simulatedEntities.Add(entity);
-                }
-                square.SimulationStep();
+                action(square);
             }
         }
+    }
+
+    public void SimulationStep()
+    {
+        // TODO maybe optimize (hashtable)
+        List<Entity> simulatedEntities = new List<Entity>();
+        ApplyToSimulatedTiles(square =>
+        {
+            foreach (var entity in square.Entities)
+            {
+                if (!simulatedEntities.Contains(entity))
+                    simulatedEntities.Add(entity);
+            }
+
+            square.SimulationStep();
+        });
 
         simulatedEntities.Reverse(); // it'll look better if falling is simulated bottom to top
         foreach (var entity in simulatedEntities)
             entity.SimulationStep();
+
+        ApplyToSimulatedTiles(square => square.SimulationStepFluid());
+        for (int i = 0; i < FLUID_SUBSTEPS; i++)
+        {
+            ApplyToSimulatedTiles(square => square.SimulationSubStepFluid());
+            ApplyToSimulatedTiles(square => square.SimulationSubStepFluidFinish());
+        }
+        ApplyToSimulatedTiles(square =>
+        {
+            var obj = square.Tile.gameObject;
+            if (square.Water.Amount > 0.0f && obj.GetComponentInChildren<FluidIndicator>() == null)
+            {
+                var indicatorObj = new GameObject();
+                indicatorObj.transform.parent = obj.transform;
+                indicatorObj.transform.position = obj.transform.position;
+                indicatorObj.AddComponent<SpriteRenderer>();
+                var indicatorComponent = indicatorObj.AddComponent<FluidIndicator>();
+                indicatorComponent.Square = square;
+            }
+        });
     }
 
     public bool IsTileOnCamera(Tile tile)
