@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Fluid
@@ -22,13 +23,48 @@ public abstract class Fluid
         fluid.NextAmount += amount;
     }
 
+    public void FixDisplacement(GridSquare square)
+    {
+        List<GridSquare> availTargets = new List<GridSquare>();
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        {
+            var neighSquare = Util.GetWorld().GetSquare(square.X + dir.X(), square.Y + dir.Y());
+            if (neighSquare?.CanFluidPass(this, dir) ?? false)
+                availTargets.Add(neighSquare);
+        }
+
+        if (availTargets.Count == 0)
+        {
+            var aboveSquare = square;
+            while (aboveSquare is not null && !aboveSquare.CanFluidPass(this, Direction.Up))
+            {
+                aboveSquare = Util.GetWorld().GetSquare(aboveSquare.X, aboveSquare.Y + 1);
+            }
+
+            if (aboveSquare is null)
+            {
+                Amount = 0.0f; // rip
+                return;
+            }
+            else
+                availTargets.Add(aboveSquare);
+        }
+
+        float amountPerTarget = Amount / availTargets.Count;
+        foreach (var target in availTargets)
+        {
+            AddFluid(target.X, target.Y, amountPerTarget);
+        }
+        Amount = 0.0f;
+    }
+
     public void Flow(int x, int y)
     {
         if (Amount <= 0.0f) return;
         float amountLeft = Amount;
         
         (Fluid below, GridSquare belowSquare) = GetFluid(x, y - 1);
-        bool belowPass = belowSquare != null && belowSquare.CanPass(null, Direction.Down);
+        bool belowPass = belowSquare != null && belowSquare.CanFluidPass(this, Direction.Down);
         if (belowPass && below.Amount < 1.0f && below.NextAmount < 1.0f)
         {
             float flowRate = FlowRate();
@@ -38,10 +74,10 @@ public abstract class Fluid
         }
 
         (Fluid left, GridSquare leftSquare) = GetFluid(x - 1, y);
-        bool leftPass = leftSquare != null && leftSquare.CanPass(null, Direction.Left);
+        bool leftPass = leftSquare != null && leftSquare.CanFluidPass(this, Direction.Left);
         
         (Fluid leftBelow, GridSquare leftBelowSquare) = GetFluid(x - 1, y - 1);
-        bool leftBelowPass = leftBelowSquare != null && leftBelowSquare.CanPass(null, Direction.Down);
+        bool leftBelowPass = leftBelowSquare != null && leftBelowSquare.CanFluidPass(this, Direction.Down);
         if (leftPass && leftBelowPass && leftBelow.Amount < 1.0f && left.NextAmount < 1.0f)
         {
             float flowRate = FlowRate();
@@ -51,10 +87,10 @@ public abstract class Fluid
         }
 
         (Fluid right, GridSquare rightSquare) = GetFluid(x + 1, y);
-        bool rightPass = rightSquare != null && rightSquare.CanPass(null, Direction.Right);
+        bool rightPass = rightSquare != null && rightSquare.CanFluidPass(this, Direction.Right);
         
         (Fluid rightBelow, GridSquare rightBelowSquare) = GetFluid(x + 1, y - 1);
-        bool rightBelowPass = rightBelowSquare != null && rightBelowSquare.CanPass(null, Direction.Down);
+        bool rightBelowPass = rightBelowSquare != null && rightBelowSquare.CanFluidPass(this, Direction.Down);
         if (rightPass && rightBelowPass && rightBelow.Amount < 1.0f && rightBelow.NextAmount < 1.0f)
         {
             float flowRate = FlowRate();
