@@ -22,8 +22,8 @@ public abstract class Entity : MonoBehaviour
     protected List<(int, int)> Locations;
     public int X;
     public int Y;
-    private Tween moveTween;
-    private Tween fallTween;
+    protected Tween moveTween;
+    protected Tween fallTween;
     public int Activity = 0;
     public virtual float Heaviness => -1;
 
@@ -149,7 +149,7 @@ public abstract class Entity : MonoBehaviour
         return true;
     }
 
-    public bool Move(Direction direction, bool tween = true)
+    public virtual bool Move(Direction direction, bool tween = true)
     {
         if (!CanMove(direction))
             return false;

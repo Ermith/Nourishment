@@ -26,6 +26,42 @@ public static class DirectionExtensions
         };
     }
 
+    public static Direction Clockwise(this Direction direction)
+    {
+        return direction switch
+        {
+            Direction.Right => Direction.Down,
+            Direction.Up => Direction.Right,
+            Direction.Left => Direction.Up,
+            Direction.Down => Direction.Left,
+            _ => Direction.Right
+        };
+    }
+
+    public static float Angle(this Direction direction)
+    {
+        return direction switch
+        {
+            Direction.Right => 0.0f,
+            Direction.Up => 90.0f,
+            Direction.Left => 180.0f,
+            Direction.Down => 270.0f,
+            _ => 0.0f
+        };
+    }
+
+    public static Direction CounterClockwise(this Direction direction)
+    {
+        return direction switch
+        {
+            Direction.Right => Direction.Up,
+            Direction.Up => Direction.Left,
+            Direction.Left => Direction.Down,
+            Direction.Down => Direction.Right,
+            _ => Direction.Right
+        };
+    }
+
     public static bool IsHorizontal(this Direction direction)
     {
         return direction is Direction.Right or Direction.Left;
