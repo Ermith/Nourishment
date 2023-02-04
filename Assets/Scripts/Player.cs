@@ -43,8 +43,9 @@ public class Player : MonoBehaviour
         var square = Util.GetWorld().GetSquare(X + direction.X(), Y + direction.Y());
         if (square == null)
             return false;
-        if (!square.CanSpread(this))
+        if (!square.CanSpread(this, direction))
             return false;
+        square.OnSpread(this, direction);
         Tile oldTile = Util.GetWorld().GetTile(X, Y);
         X += direction.X();
         Y += direction.Y();

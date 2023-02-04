@@ -18,18 +18,57 @@ public class GridSquare
         Tile = tile;
     }
 
-    public bool CanSpread(Player player)
+    public bool CanSpread(Player player, Direction spreadDirection)
     {
-        if(Tile != null && !Tile.CanSpread(player))
+        if(Tile != null && !Tile.CanSpread(player, spreadDirection))
             return false;
         
         foreach (var entity in Entities)
         {
-            if (!entity.CanSpread(player))
+            if (!entity.CanSpread(player, spreadDirection))
                 return false;
         }
 
         return true;
+    }
+
+    public void SimulationStep()
+    {
+        Tile.SimulationStep();
+        foreach (var entity in Entities)
+        {
+            entity.SimulationStep();
+        }
+    }
+
+    public void OnSpread(Player player, Direction spreadDirection)
+    {
+        foreach (var entity in Entities)
+        {
+            entity.OnSpread(player, spreadDirection);
+        }
+    }
+
+    public bool CanPass(Entity entity, Direction moveDirection)
+    {
+        if (Tile != null && !Tile.CanPass(entity, moveDirection))
+            return false;
+        foreach (var e in Entities)
+        {
+            if (e != entity && !e.CanPass(entity, moveDirection))
+                return false;
+        }
+
+        return true;
+    }
+
+    public void OnPass(Entity entity, Direction moveDirection)
+    {
+        foreach (var e in Entities)
+        {
+            if(e != entity)
+                e.OnPass(entity, moveDirection);
+        }
     }
 }
 
@@ -176,7 +215,14 @@ public class World : MonoBehaviour
 
     public void SimulationStep()
     {
-
+        for (int rowId = SimulatedRowsStart; rowId < SimulatedRowsEnd; rowId++)
+        {
+            var row = _tiles[rowId];
+            foreach (var square in row)
+            {
+                square.SimulationStep();
+            }
+        }
     }
 
     private Dictionary<string, Sprite> LoadSprites()
