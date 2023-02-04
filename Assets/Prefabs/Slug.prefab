@@ -50,6 +50,7 @@ MonoBehaviour:
   Y: 0
   Activity: 0
   Alive: 1
+  NourishmentFromCorpse: 10
   DownDir: 3
   ForwardDir: 0
 --- !u!212 &-7822912802318271947
@@ -90,8 +91,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -977939931
-  m_SortingLayer: 1
+  m_SortingLayerID: 877330257
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 1385759348, guid: 8baa09d25019a8744b99b910df1d7940, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
