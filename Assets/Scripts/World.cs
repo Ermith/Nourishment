@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GridSquare
@@ -75,8 +76,10 @@ public class GridSquare
             return;
         this.active = active;
         Tile?.gameObject.SetActive(active);
+        /*
         foreach (var entity in Entities)
             entity.ActivityChange(active);
+        */
     }
 
     public void SimulationStepFluid()
@@ -378,9 +381,17 @@ public class World : MonoBehaviour
             GenerateMoreMap();
 
         // TODO don't iterate over all rows probably
+        int i = 0;
         foreach (GridSquare[] row in _tiles)
+        {
             foreach (GridSquare square in row)
+            {
                 square.SetActive(IsTileOnCamera(square.Tile));
+                foreach (var entity in square.Entities)
+                    entity.gameObject.SetActive(i >= SimulatedRowsStart && i < SimulatedRowsEnd);
+            }
+            i++;
+        }
 
         MoveBackground();
     }
