@@ -306,8 +306,9 @@ public class World : MonoBehaviour
                 square.SimulationStep();
             }
         }
-        
-        foreach(var entity in simulatedEntities)
+
+        simulatedEntities.Reverse(); // it'll look better if falling is simulated bottom to top
+        foreach (var entity in simulatedEntities)
             entity.SimulationStep();
     }
 
