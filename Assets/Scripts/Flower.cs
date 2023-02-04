@@ -8,11 +8,31 @@ public class Flower : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
 
     private int _level;
-    public int Level {
+    public int Level
+    {
         get { return _level; }
         set
         {
             _level = Mathf.Clamp(value, 0, GrowthSprites.Count - 1);
+        }
+    }
+
+    [SerializeField]
+    private float StartingNourishment = 200;
+
+    private float _nourishment;
+
+    public float Nourishment
+    {
+        get
+        {
+            return _nourishment;
+        }
+
+        set
+        {
+            _nourishment = value;
+            Level = (int)(_nourishment / 100);
         }
     }
 
@@ -21,6 +41,7 @@ public class Flower : MonoBehaviour
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _spriteRenderer.sprite = GrowthSprites[Level];
+        Nourishment = StartingNourishment;
     }
 
     // Update is called once per frame
@@ -31,9 +52,11 @@ public class Flower : MonoBehaviour
 
     private void OnGUI()
     {
-        if (GUILayout.Button("Increase Level"))
-            Level++;
-        if (GUILayout.Button("Decrease Level"))
-            Level--;
+        if (GUILayout.Button("+ 100"))
+            Nourishment += 100;
+        if (GUILayout.Button("- 100"))
+            Nourishment -= 100;
+
+        GUILayout.Label($"Nourishment: {Nourishment}");
     }
 }
