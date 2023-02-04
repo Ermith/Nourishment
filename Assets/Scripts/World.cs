@@ -245,8 +245,8 @@ public class World : MonoBehaviour
             int x, y;
             do
             {
-                x = Random.Range(0, MAP_WIDTH - 1);
-                y = -Random.Range(yStart + 1, _tiles.Count);
+                x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
+                y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
                 break;
             } while (tries-- > 0);
             var rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
