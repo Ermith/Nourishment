@@ -163,6 +163,11 @@ public class World : MonoBehaviour
         return TileFactory.GroundTile(this.gameObject, x, y);
     }
 
+    private void CellularAutomata(int yStart)
+    {
+
+    }
+
     void GenerateMoreMap()
     {
         // Genrate more map
@@ -192,7 +197,11 @@ public class World : MonoBehaviour
 
         for (int i = 0; i < CHUNK_SIZE; i++)
             for (int j = 0; j < MAP_WIDTH; j++)
-                GetTile(j, -yStart - i).UpdateSprite();
+            {
+                var tile = GetTile(j, -yStart - i);
+                (tile as RootTile)?.ConnectWithAllNeigh();
+                tile.UpdateSprite();
+            }
 
         // fix sprites on the border row
         if (yStart - 1 >= 0)
