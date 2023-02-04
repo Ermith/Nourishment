@@ -107,6 +107,11 @@ public abstract class Tile : MonoBehaviour
     public virtual void SimulationStep()
     {
     }
+    
+    public virtual bool CanFluidPass(Fluid fluid, Direction moveDirection)
+    {
+        return false;
+    }
 }
 
 public class GroundTile : Tile
@@ -189,6 +194,10 @@ public class AirTile : Tile
 
     public override void UpdateSprite()
     {
+    }
+    public override bool CanFluidPass(Fluid fluid, Direction moveDirection)
+    {
+        return true;
     }
 }
 

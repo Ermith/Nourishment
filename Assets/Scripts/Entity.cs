@@ -107,6 +107,11 @@ public abstract class Entity : MonoBehaviour
         }
     }
 
+    public virtual bool CanFluidPass(Fluid fluid, Direction moveDirection)
+    {
+        return false;
+    }
+
     public virtual bool CanSpread(Player player, Direction spreadDirection)
     {
         return CanPass(null, spreadDirection)

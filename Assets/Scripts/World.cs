@@ -91,6 +91,19 @@ public class GridSquare
     {
         Water.SimSwap();
     }
+    
+    public bool CanFluidPass(Fluid fluid, Direction moveDirection)
+    {
+        if (Tile != null && !Tile.CanFluidPass(fluid, moveDirection))
+            return false;
+        foreach (var entity in Entities)
+        {
+            if (!entity.CanFluidPass(fluid, moveDirection))
+                return false;
+        }
+
+        return true;
+    }
 }
 
 public class World : MonoBehaviour
@@ -360,6 +373,11 @@ public class World : MonoBehaviour
             entity.SimulationStep();
 
         ApplyToSimulatedTiles(square => square.SimulationStepFluid());
+        ApplyToSimulatedTiles(square =>
+        {
+            if (square.Water.Amount > 0.0f && !square.CanPass(null, Direction.Down))
+                square.Water.FixDisplacement(square);
+        });
         for (int i = 0; i < FLUID_SUBSTEPS; i++)
         {
             ApplyToSimulatedTiles(square => square.SimulationSubStepFluid());
