@@ -1,13 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 
 public class Player : MonoBehaviour
 {
     public int X = World.MAP_WIDTH / 2;
     public int Y = 0;
     public Camera Camera;
-    
+
+    private Tween playerTween;
+    private Tween cameraTween;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -17,9 +23,6 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gameObject.transform.position = new Vector3(X - World.MAP_WIDTH / 2 - 0.5f, Y - 0.5f, 0);
-        Camera.transform.position = new Vector3(0, Y - 0.5f, -10);
-
         Direction? movementDir = null;
         if (Input.GetKeyDown(KeyCode.W))
             movementDir = Direction.Up;
@@ -36,6 +39,12 @@ public class Player : MonoBehaviour
             if(success)
                 Util.GetWorld().SimulationStep();
         }
+
+        playerTween?.Kill();
+        cameraTween?.Kill();
+
+        playerTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2 - 0.5f, Y - 0.5f, 0), 0.2f);
+        cameraTween = Camera.transform.DOMoveY(Y - 0.5f, 0.4f);
     }
 
     bool TryMove(Direction direction)
