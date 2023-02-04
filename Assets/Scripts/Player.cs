@@ -23,14 +23,17 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Direction? movementDir = null;
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.Space))
+            Util.GetWorld().SimulationStep();
+
+        Direction ? movementDir = null;
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             movementDir = Direction.Up;
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
             movementDir = Direction.Down;
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
             movementDir = Direction.Left;
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
             movementDir = Direction.Right;
 
         bool retreat = Input.GetKey(KeyCode.LeftShift);
