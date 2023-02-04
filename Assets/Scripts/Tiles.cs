@@ -226,13 +226,13 @@ public class RootTile : Tile
         UpdateSprite();
     }
 
-    public void ConnectWithNeigh(Direction direction)
+    public bool ConnectWithNeigh(Direction direction)
     {
         World world = Util.GetWorld();
         Tile neighTile = world.GetTile(X + direction.X(), Y + direction.Y());
         if (neighTile is not RootTile neighRoot)
         {
-            throw new RootNotFoundException();
+            return false;
         }
 
         ConnectedDirections[(int)direction] = true;
@@ -240,6 +240,7 @@ public class RootTile : Tile
 
         UpdateSprite();
         neighRoot.UpdateSprite();
+        return true;
     }
 
     public override void OnDestroy()
@@ -273,5 +274,11 @@ public class RootTile : Tile
             spriteName += ConnectedDirections[(int)dir] ? "1" : "0";
         }
         SpriteRenderer.sprite = world.Sprites[spriteName];
+    }
+
+    public void ConnectWithAllNeigh()
+    {
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+            ConnectWithNeigh(dir);
     }
 }
