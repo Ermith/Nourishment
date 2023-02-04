@@ -176,9 +176,9 @@ public class GrassTile : Tile
                 break;
         }
         if (X == 0)
-            spriteName = subTypes[4];
+            spriteName = subTypes[0];//4
         if (X == World.MAP_WIDTH - 1)
-            spriteName = subTypes[5];
+            spriteName = subTypes[0];//5
 
         SpriteRenderer.sprite = world.Sprites[spriteName];
     }
