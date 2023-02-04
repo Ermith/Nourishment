@@ -42,6 +42,8 @@ public class Slug : Enemy
     public override void SetDeathSprite()
     {
         base.SetDeathSprite();
+        if (_animator == null)
+            _animator = GetComponent<Animator>();
         _animator.SetTrigger("StopMoving");
     }
 
