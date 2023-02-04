@@ -8,7 +8,7 @@ using DG.Tweening.Plugins.Options;
 public class Player : MonoBehaviour
 {
     public int X = World.MAP_WIDTH / 2;
-    public int Y = 0;
+    public int Y = -1;
     public Camera Camera;
 
     private Tween playerTween;

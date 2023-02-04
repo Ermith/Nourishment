@@ -232,12 +232,22 @@ public class World : MonoBehaviour
 
         CellularAutomaton(yStart);
 
+        // First row is grass
+        for (int i = 0; i < MAP_WIDTH; i++)
+        {
+            ReplaceTile(i, 0, TileType.Grass);
+        }
+
+        // That will be tree
+        ReplaceTile(MAP_WIDTH / 2, 0, TileType.Air);
+
         // Player starts on root
         int xSpawn = MAP_WIDTH / 2;
-        int ySpawn = 0;
+        int ySpawn = -1;
         RootTile spawnTile = ReplaceTile(xSpawn, ySpawn, TileType.Root) as RootTile;
         spawnTile.ForceConnect(Direction.Up);
         spawnTile.Protected = true;
+
 
         for (int i = 0; i < 3; i++)
         {
@@ -246,7 +256,7 @@ public class World : MonoBehaviour
             do
             {
                 x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
-                y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
+                y = -UnityEngine.Random.Range(yStart, _tiles.Count);
                 break;
             } while (tries-- > 0);
             var rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);

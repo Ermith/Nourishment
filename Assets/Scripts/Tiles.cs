@@ -9,6 +9,7 @@ public enum TileType
     Air,
     Ground,
     Root,
+    Grass
 }
 
 public class TileFactory
@@ -45,6 +46,13 @@ public class TileFactory
         return tile;
     }
 
+    public static Tile GrassTile(GameObject parent, int x, int y)
+    {
+        var tile = CreateTile<GrassTile>(parent, x, y);
+        tile.gameObject.AddComponent<SpriteRenderer>();
+        return tile;
+    }
+
     public static Tile CreateTile(GameObject parent, int x, int y, TileType type)
     {
         switch (type)
@@ -55,6 +63,8 @@ public class TileFactory
                 return CreateTile<GroundTile>(parent, x, y);
             case TileType.Root:
                 return RootTile(parent, x, y);
+            case TileType.Grass:
+                return GrassTile(parent, x, y);
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -110,8 +120,31 @@ public class GroundTile : Tile
         _subSpriteObjects = Util.GroundLikeSprite(gameObject, "ground", dir =>
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
-            return neighTile is GroundTile;
+            return neighTile is GroundTile || neighTile is GrassTile;
         });
+    }
+}
+
+public class GrassTile : Tile
+{
+    private SpriteRenderer _spriteRenderer;
+    private SpriteRenderer SpriteRenderer
+    {
+        get
+        {
+            if (_spriteRenderer == null)
+                _spriteRenderer = GetComponent<SpriteRenderer>();
+            return _spriteRenderer;
+        }
+        set { _spriteRenderer = value; }
+    }
+
+    public override void UpdateSprite()
+    {
+        World world = Util.GetWorld();
+        name = "Grass";
+        var spriteName = "world_grass";
+        SpriteRenderer.sprite = world.Sprites[spriteName];
     }
 }
 
