@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -148,7 +149,7 @@ public class World : MonoBehaviour
     /// <returns></returns>
     private Tile RandomTile(int x, int y, int rockTreshold, int rootTreshold)
     {
-        int prob = Random.Range(0, 100);
+        int prob = UnityEngine.Random.Range(0, 100);
 
         if (prob < rootTreshold)
             return TileFactory.RootTile(this.gameObject, x, y);
@@ -163,10 +164,50 @@ public class World : MonoBehaviour
         return TileFactory.GroundTile(this.gameObject, x, y);
     }
 
-    private void CellularAutomata(int yStart)
+    private void CellularAutomaton(int yStart)
     {
+        int[,] niehgbours = new int[MAP_WIDTH, CHUNK_SIZE];
+        int neighborhood = 1;
 
+        Func<Func<GridSquare, bool>, int, int, int> countNeighbors = (Func<GridSquare, bool> check, int x, int y) =>
+        {
+            int count = 0;
+            for (int i = -neighborhood; i <= neighborhood; i++)
+                for (int j = -neighborhood; j <= neighborhood; j++)
+                {
+                    var square = GetSquare(x + i, y + j);
+                    if (square != null && check(square))
+                        count++;
+                }
+
+            return count;
+        };
+
+
+        var toChange = new Dictionary<(int, int), Action<GridSquare>>();
+
+        // Transform roots
+        int rootTreshold = 2;
+        Func<GridSquare, bool> isRoot = (GridSquare square) => square.Tile is RootTile;
+        for (int i = 0; i < CHUNK_SIZE; i++)
+            for (int j = 0; j < MAP_WIDTH; j++)
+            {
+                if (countNeighbors(isRoot, j, -yStart - i) > rootTreshold)
+                    toChange.Add((j, -yStart - i), (GridSquare square) =>
+                        ReplaceTile(square.X, square.Y, TileType.Root));
+                else
+                    toChange.Add((j, -yStart - i), (GridSquare square) =>
+                    {
+                        if (square.Tile is RootTile)
+                            ReplaceTile(square.X, square.Y, TileType.Ground);
+                    });
+            }
+
+
+        foreach (((int x, int y), Action<GridSquare> change) in toChange)
+            change(GetSquare(x, y));
     }
+
 
     void GenerateMoreMap()
     {
@@ -188,6 +229,8 @@ public class World : MonoBehaviour
                 square.Tile.gameObject.SetActive(IsTileOnCamera(square.Tile));
             }
         }
+
+        CellularAutomaton(yStart);
 
         // Player starts on root
         int xSpawn = MAP_WIDTH / 2;
