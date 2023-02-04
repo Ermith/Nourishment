@@ -43,8 +43,8 @@ public class Player : MonoBehaviour
         playerTween?.Kill();
         cameraTween?.Kill();
 
-        playerTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2 - 0.5f, Y - 0.5f, 0), 0.2f);
-        cameraTween = Camera.transform.DOMoveY(Y - 0.5f, 0.4f);
+        playerTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+        cameraTween = Camera.transform.DOMoveY(Y, 0.4f);
     }
 
     bool TryMove(Direction direction)

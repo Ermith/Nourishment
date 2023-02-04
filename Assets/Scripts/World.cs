@@ -20,9 +20,9 @@ public class GridSquare
 
     public bool CanSpread(Player player, Direction spreadDirection)
     {
-        if(Tile != null && !Tile.CanSpread(player, spreadDirection))
+        if (Tile != null && !Tile.CanSpread(player, spreadDirection))
             return false;
-        
+
         foreach (var entity in Entities)
         {
             if (!entity.CanSpread(player, spreadDirection))
@@ -66,7 +66,7 @@ public class GridSquare
     {
         foreach (var e in Entities)
         {
-            if(e != entity)
+            if (e != entity)
                 e.OnPass(entity, moveDirection);
         }
     }
@@ -76,6 +76,7 @@ public class World : MonoBehaviour
 {
     public const int TILE_SIZE = 32;
     public const int MAP_WIDTH = 21;
+    public const int CHUNK_SIZE = 20;
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
     public Player player;
@@ -89,20 +90,26 @@ public class World : MonoBehaviour
         return coords.Item1 >= 0 && coords.Item1 < MAP_WIDTH && coords.Item2 <= 0;
     }
 
-    public GridSquare GetSquare(int x, int y)
+    public GridSquare GetSquare(int x, int y, bool allowGeneration = false)
     {
         if (!InBounds((x, y)))
             return null;
-        while (-y >= _tiles.Count && -y < SimulatedRowsEnd)
+        while (-y >= _tiles.Count && -y < SimulatedRowsEnd && allowGeneration)
             GenerateMoreMap();
         if (-y >= _tiles.Count)
             return null;
         return _tiles[-y][x];
     }
 
-    public Tile GetTile(int x, int y)
+    public GridSquare AddSquare(int x, int y)
     {
-        return GetSquare(x, y)?.Tile;
+        _tiles[-y][x] = new GridSquare(x, y);
+        return _tiles[-y][x];
+    }
+
+    public Tile GetTile(int x, int y, bool allowGeneration = false)
+    {
+        return GetSquare(x, y, allowGeneration)?.Tile;
     }
 
     // Start is called before the first frame update
@@ -119,73 +126,51 @@ public class World : MonoBehaviour
     public Tile ReplaceTile(int x, int y, TileType type)
     {
         var square = GetSquare(x, y);
+
         var oldTile = square.Tile;
         if (oldTile != null)
             Destroy(oldTile.gameObject);
+
         var newTile = TileFactory.CreateTile(gameObject, x, y, type);
         newTile.UpdateSprite();
-        newTile.transform.position =
-            new Vector2(
-                x: _offsetX + x,
-                y: y - 0.5f
-            );
         square.Tile = newTile;
+
         return newTile;
     }
 
-    void GenerateMoreMap(int rowsToGenerate = 10)
+    void GenerateMoreMap()
     {
-        // rowsToGenerate might need to be fixed in the end idk
-
+        // Genrate more map
         int yStart = _tiles.Count;
-        for (int i = 0; i < rowsToGenerate; i++)
+        for (int i = 0; i < CHUNK_SIZE; i++)
         {
             _tiles.Add(new GridSquare[MAP_WIDTH]);
             for (int j = 0; j < MAP_WIDTH; j++)
             {
                 int x = j;
                 int y = -yStart - i;
-                _tiles[yStart + i][j] = new GridSquare(x, y);
+                GridSquare square = AddSquare(x, y);
+
                 if (x == player.X && y == player.Y)
                 {
                     RootTile rootTile = (RootTile)TileFactory.RootTile(this.gameObject, x, y);
                     rootTile.ForceConnect(Direction.Up);
-                    _tiles[yStart + i][j].Tile = rootTile;
-                }
-                else if (Random.Range(0, 100) < 5)
-                    _tiles[yStart + i][j].Tile = TileFactory.RootTile(this.gameObject, x, y);
+                    square.Tile = rootTile;
+                } else if (Random.Range(0, 100) < 5)
+                    square.Tile = TileFactory.RootTile(this.gameObject, x, y);
                 else
-                    _tiles[yStart + i][j].Tile = TileFactory.GroundTile(this.gameObject, x, y);
+                    square.Tile = TileFactory.GroundTile(this.gameObject, x, y);
+
+                square.Tile.gameObject.SetActive(IsTileOnCamera(square.Tile));
             }
         }
 
-        int xStart = 0;
-        // int yStart = (int)(_offsetY / TILE_SIZE);
-        int xCount = MAP_WIDTH;
-        int yCount = _tiles.Count - yStart;
-
-        for (int y = 0; y < yCount; y++)
-        {
-            for (int x = 0; x < xCount; x++)
-            {
-                int xIndex = xStart + x;
-                int yIndex = yStart + y;
-
-                var tile = _tiles[yIndex][xIndex].Tile;
-                tile.UpdateSprite();
-                tile.transform.position =
-                    new Vector2(
-                        x: _offsetX + xIndex,
-                        y: -yIndex - 0.5f
-                    );
-
-                // TODO check if in camera bounds before setting active
-                tile.gameObject.SetActive(true);
-            }
-        }
+        for (int i = 0; i < CHUNK_SIZE; i++)
+            for (int j = 0; j < MAP_WIDTH; j++)
+                GetTile(j, -yStart - i).UpdateSprite();
 
         // fix sprites on the border row
-        if(yStart - 1 >= 0)
+        if (yStart - 1 >= 0)
             foreach (GridSquare square in _tiles[yStart - 1])
             {
                 square.Tile?.UpdateSprite();
@@ -206,10 +191,7 @@ public class World : MonoBehaviour
             foreach (GridSquare square in row)
             {
                 var tile = square.Tile;
-                tile.gameObject.SetActive(
-                    Mathf.Abs(tile.transform.position.x - _camera.transform.position.x) < _camera.orthographicSize * _camera.aspect + TILE_SIZE / 2f
-                    && Mathf.Abs(tile.transform.position.y - _camera.transform.position.y) < _camera.orthographicSize + 0.5f
-                    );
+                tile.gameObject.SetActive(IsTileOnCamera(tile));
             }
     }
 
@@ -223,6 +205,12 @@ public class World : MonoBehaviour
                 square.SimulationStep();
             }
         }
+    }
+
+    public bool IsTileOnCamera(Tile tile)
+    {
+        return Mathf.Abs(tile.transform.position.x - _camera.transform.position.x) < _camera.orthographicSize * _camera.aspect + 0.5f
+               && Mathf.Abs(tile.transform.position.y - _camera.transform.position.y) < _camera.orthographicSize + 0.5f;
     }
 
     private Dictionary<string, Sprite> LoadSprites()

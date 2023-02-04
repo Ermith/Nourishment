@@ -16,13 +16,20 @@ public class TileFactory
 
     private static Tile CreateTile<T>(GameObject parent, int x, int y) where T : Tile
     {
+        // Setup game object
         var go = new GameObject();
-        go.SetActive(true);
         go.transform.parent = parent.transform;
+
         var tile = go.AddComponent<T>();
-        tile.X = x;
-        tile.Y = y;
+        tile.X = x; tile.Y = y; // World coordinates
         tile.name = typeof(T).Name;
+
+        // Position in game
+        float xOffset = -World.MAP_WIDTH / 2f + 0.5f;
+        tile.transform.position = new Vector3(
+            x + xOffset,
+            y);
+
         return tile;
     }
 
@@ -103,8 +110,6 @@ public abstract class Tile : MonoBehaviour
 
     public abstract void UpdateSprite();
 
-    public abstract bool IsVisible();
-
     public virtual void OnDestroy()
     {
         World world = Util.GetWorld();
@@ -136,17 +141,6 @@ public abstract class Tile : MonoBehaviour
 public class GroundTile : Tile
 {
     private List<GameObject> _subSpriteObjects = new List<GameObject>();
-
-    public override bool IsVisible()
-    {
-        bool isVisible = false;
-
-        var renderers = gameObject.GetComponentsInChildren<SpriteRenderer>();
-        foreach (var renderer in renderers)
-            isVisible |= renderer.isVisible;
-
-        return isVisible;
-    }
 
     public override void UpdateSprite()
     {
@@ -186,11 +180,6 @@ public class GroundTile : Tile
 
 public class AirTile : Tile
 {
-    public override bool IsVisible()
-    {
-        return false;
-    }
-
     public override bool CanPass(Entity entity, Direction moveDirection)
     {
         return true;
@@ -285,6 +274,4 @@ public class RootTile : Tile
         }
         SpriteRenderer.sprite = world.Sprites[spriteName];
     }
-
-    public override bool IsVisible() => SpriteRenderer.isVisible;
 }
