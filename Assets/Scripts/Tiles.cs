@@ -118,9 +118,18 @@ public abstract class Tile : MonoBehaviour
         }
     }
 
-    public virtual bool CanSpread(Player player)
+    public virtual bool CanSpread(Player player, Direction spreadDirection)
     {
         return true;
+    }
+
+    public virtual bool CanPass(Entity entity, Direction moveDirection)
+    {
+        return false;
+    }
+
+    public virtual void SimulationStep()
+    {
     }
 }
 
@@ -180,6 +189,11 @@ public class AirTile : Tile
     public override bool IsVisible()
     {
         return false;
+    }
+
+    public override bool CanPass(Entity entity, Direction moveDirection)
+    {
+        return true;
     }
 
     public override void UpdateSprite()
