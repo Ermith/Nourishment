@@ -80,6 +80,11 @@ public class Util
         return GameObject.Find("Flower")?.GetComponent<Flower>();
     }
 
+    public static EntityFactory GetEntityFactory()
+    {
+        return GameObject.Find("EntityFactory")?.GetComponent<EntityFactory>();
+    }
+
     public static List<GameObject> CreateSpriteObject(
         GameObject parent,
         string type,

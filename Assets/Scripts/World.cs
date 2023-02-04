@@ -160,6 +160,7 @@ public class World : MonoBehaviour
         // prevent non dirt tiles from appearing in first 3 layers
         if (y >= MIN_TILE_ENTITY_Y)
         {
+<<<<<<< HEAD
             if (prob < rootTreshold)
                 return TileFactory.RootTile(this.gameObject, x, y);
 
@@ -169,6 +170,11 @@ public class World : MonoBehaviour
                 EntityFactory.PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
                 return tile;
             }
+=======
+            var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
+            Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
+            return tile;
+>>>>>>> 8ee5e06a3e8bc565e988e51afde6e1f0e82ec49e
         }
 
 
@@ -269,8 +275,7 @@ public class World : MonoBehaviour
             {
                 x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
                 y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
-
-                rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
+                rock = Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
                 if(rock.IsPlacementValid())
                     break;
                 Destroy(rock.gameObject);
