@@ -94,7 +94,7 @@ public class World : MonoBehaviour
     {
         if (!InBounds((x, y)))
             return null;
-        while (-y >= _tiles.Count && -y < SimulatedRowsEnd && allowGeneration)
+        while (-y >= _tiles.Count && allowGeneration)
             GenerateMoreMap();
         if (-y >= _tiles.Count)
             return null;
@@ -194,6 +194,23 @@ public class World : MonoBehaviour
         int ySpawn = 0;
         RootTile spawnTile = ReplaceTile(xSpawn, ySpawn, TileType.Root) as RootTile;
         spawnTile.ForceConnect(Direction.Up);
+
+        for (int i = 0; i < 3; i++)
+        {
+            int tries = 10;
+            int x, y;
+            do
+            {
+                x = Random.Range(0, MAP_WIDTH - 1);
+                y = -Random.Range(yStart + 1, _tiles.Count);
+                break;
+            } while (tries-- > 0);
+            var rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
+            foreach (var location in rock.GetLocations())
+            {
+                ReplaceTile(location.Item1, location.Item2, TileType.Air);
+            }
+        }
 
         for (int i = 0; i < CHUNK_SIZE; i++)
             for (int j = 0; j < MAP_WIDTH; j++)
