@@ -281,10 +281,6 @@ public abstract class Rock : Entity
                 }
             }
         }
-
-        SpriteRenderer spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = Util.GetWorld().Sprites["stone-00-corner"];
-        spriteRenderer.sortingLayerName = "Entity";
     }
 }
 
