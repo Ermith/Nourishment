@@ -81,7 +81,6 @@ public class Slug : Enemy
             if (_animator == null)
                 _animator = GetComponent<Animator>();
             _animator.SetTrigger("Move");
-            moveTween.OnComplete(() => _animator.SetTrigger("StopMoving"));
             moveTween.OnKill(() => _animator.SetTrigger("StopMoving"));
         }
         return success;
