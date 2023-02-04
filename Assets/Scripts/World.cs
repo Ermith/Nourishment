@@ -60,7 +60,7 @@ public class World : MonoBehaviour
                 tile.transform.position =
                     new Vector2(
                         x: _offsetX + xIndex,
-                        y: _camera.orthographicSize - yIndex - 0.5f
+                        y: - yIndex - 0.5f
                         );
 
                 tile.gameObject.SetActive(true);
