@@ -24,13 +24,13 @@ public class Player : MonoBehaviour
     void Update()
     {
         Direction? movementDir = null;
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.W))
             movementDir = Direction.Up;
-        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.S))
             movementDir = Direction.Down;
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.A))
             movementDir = Direction.Left;
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKeyDown(KeyCode.D))
             movementDir = Direction.Right;
 
         bool retreat = Input.GetKey(KeyCode.LeftShift);
@@ -63,9 +63,14 @@ public class Player : MonoBehaviour
         Tile newTile = world.GetTile(newX, newY);
         if (retreat && newTile is not RootTile)
             return false;
-        square.OnSpread(this, direction);
-        if (oldTile is RootTile && retreat)
+        if (oldTile is RootTile oldRoot && retreat)
+        {
+            if (oldRoot.Protected)
+                return false;
             world.ReplaceTile(X, Y, TileType.Air);
+        }
+
+        square.OnSpread(this, direction);
         X = newX;
         Y = newY;
         if(newTile is not RootTile)

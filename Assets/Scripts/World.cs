@@ -194,6 +194,7 @@ public class World : MonoBehaviour
         int ySpawn = 0;
         RootTile spawnTile = ReplaceTile(xSpawn, ySpawn, TileType.Root) as RootTile;
         spawnTile.ForceConnect(Direction.Up);
+        spawnTile.Protected = true;
 
         for (int i = 0; i < 3; i++)
         {

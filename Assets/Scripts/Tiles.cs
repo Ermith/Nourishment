@@ -134,6 +134,8 @@ public class RootNotFoundException : Exception
 
 public class RootTile : Tile
 {
+    public bool Protected;
+    
     private bool[] ConnectedDirections;
 
     private SpriteRenderer _spriteRenderer;
@@ -192,7 +194,10 @@ public class RootTile : Tile
                 Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
                 if (neighTile is not RootTile neighRoot)
                 {
-                    throw new System.Exception("How did we end up connected to a non-root tile?");
+                    if (Protected)
+                        continue;
+                    else
+                        throw new System.Exception("How did we end up connected to a non-root tile?");
                 }
 
                 neighRoot.ConnectedDirections[(int)dir.Opposite()] = false;
