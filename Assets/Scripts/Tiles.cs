@@ -4,8 +4,16 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public enum TileType
+{
+    Air,
+    Ground,
+    Root,
+}
+
 public class TileFactory
 {
+
     private static Tile CreateTile<T>(GameObject parent, int x, int y) where T : Tile
     {
         var go = new GameObject();
@@ -28,6 +36,21 @@ public class TileFactory
         var tile = CreateTile<RootTile>(parent, x, y);
         tile.gameObject.AddComponent<SpriteRenderer>();
         return tile;
+    }
+
+    public static Tile CreateTile(GameObject parent, int x, int y, TileType type)
+    {
+        switch (type)
+        {
+            case TileType.Air:
+                return CreateTile<AirTile>(parent, x, y);
+            case TileType.Ground:
+                return CreateTile<GroundTile>(parent, x, y);
+            case TileType.Root:
+                return RootTile(parent, x, y);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
     }
 }
 
@@ -90,7 +113,8 @@ public abstract class Tile : MonoBehaviour
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
-            neighTile.UpdateSprite();
+            if(neighTile)
+                neighTile.UpdateSprite();
         }
     }
 
@@ -151,6 +175,18 @@ public class GroundTile : Tile
     }
 }
 
+public class AirTile : Tile
+{
+    public override bool IsVisible()
+    {
+        return false;
+    }
+
+    public override void UpdateSprite()
+    {
+    }
+}
+
 public class RootNotFoundException : Exception
 {
 
@@ -179,6 +215,12 @@ public class RootTile : Tile
 
     public void Start()
     {
+    }
+
+    public void ForceConnect(Direction direction)
+    {
+        ConnectedDirections[(int)direction] = true;
+        UpdateSprite();
     }
 
     public void ConnectWithNeigh(Direction direction)

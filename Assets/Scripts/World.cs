@@ -77,6 +77,23 @@ public class World : MonoBehaviour
         GenerateMoreMap();
     }
 
+    public Tile ReplaceTile(int x, int y, TileType type)
+    {
+        var square = GetSquare(x, y);
+        var oldTile = square.Tile;
+        if (oldTile != null)
+            Destroy(oldTile.gameObject);
+        var newTile = TileFactory.CreateTile(gameObject, x, y, type);
+        newTile.UpdateSprite();
+        newTile.transform.position =
+            new Vector2(
+                x: _offsetX + x,
+                y: y - 0.5f
+            );
+        square.Tile = newTile;
+        return newTile;
+    }
+
     void GenerateMoreMap(int rowsToGenerate = 10)
     {
         // rowsToGenerate might need to be fixed in the end idk
@@ -87,11 +104,19 @@ public class World : MonoBehaviour
             _tiles.Add(new GridSquare[MAP_WIDTH]);
             for (int j = 0; j < MAP_WIDTH; j++)
             {
-                _tiles[yStart + i][j] = new GridSquare(j, -yStart - i);
-                if (Random.Range(0, 100) < 50)
-                    _tiles[yStart + i][j].Tile = TileFactory.RootTile(this.gameObject, j, -yStart - i);
+                int x = j;
+                int y = -yStart - i;
+                _tiles[yStart + i][j] = new GridSquare(x, y);
+                if (x == player.X && y == player.Y)
+                {
+                    RootTile rootTile = (RootTile)TileFactory.RootTile(this.gameObject, x, y);
+                    rootTile.ForceConnect(Direction.Up);
+                    _tiles[yStart + i][j].Tile = rootTile;
+                }
+                else if (Random.Range(0, 100) < 5)
+                    _tiles[yStart + i][j].Tile = TileFactory.RootTile(this.gameObject, x, y);
                 else
-                    _tiles[yStart + i][j].Tile = TileFactory.GroundTile(this.gameObject, j, -yStart - i);
+                    _tiles[yStart + i][j].Tile = TileFactory.GroundTile(this.gameObject, x, y);
             }
         }
 
@@ -147,22 +172,6 @@ public class World : MonoBehaviour
                     && Mathf.Abs(tile.transform.position.y - _camera.transform.position.y) < _camera.orthographicSize + 0.5f
                     );
             }
-
-
-        if (Random.Range(0, 100) >= 0)
-        {
-            try
-            {
-                var randomTile = _tiles[Random.Range(0, _tiles.Count)][Random.Range(0, MAP_WIDTH)].Tile;
-                if (randomTile is RootTile rootTile)
-                {
-                    rootTile.ConnectWithNeigh((Direction)Random.Range(0, 4));
-                }
-            }
-            catch (RootNotFoundException)
-            {
-            }
-        }
     }
 
     public void SimulationStep()

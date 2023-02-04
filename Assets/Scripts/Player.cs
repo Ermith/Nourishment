@@ -54,8 +54,14 @@ public class Player : MonoBehaviour
             return false;
         if (!square.CanSpread(this))
             return false;
+        Tile oldTile = Util.GetWorld().GetTile(X, Y);
         X += direction.X();
         Y += direction.Y();
+        Tile newTile = Util.GetWorld().GetTile(X, Y);
+        if(newTile is not RootTile)
+            Util.GetWorld().ReplaceTile(X, Y, TileType.Root);
+        if (oldTile is RootTile rootTile)
+            rootTile.ConnectWithNeigh(direction);
         return true;
     }
 }
