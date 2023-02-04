@@ -64,6 +64,7 @@ public abstract class Entity : MonoBehaviour
     public int X;
     public int Y;
     private Tween moveTween;
+    private Tween fallTween;
 
     public virtual bool AffectedByGravity => false;
 
@@ -88,9 +89,18 @@ public abstract class Entity : MonoBehaviour
 
         if (fallenHeight > 0)
         {
-            moveTween?.Kill();
-            moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f * fallenHeight);
-            moveTween.SetEase(Ease.OutBounce);
+            fallTween?.Kill();
+
+            void FallAnim()
+            {
+                moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f * fallenHeight);
+                moveTween.SetEase(Ease.OutBounce);
+            }
+
+            if ((moveTween?.IsActive() ?? false) && moveTween.IsPlaying())
+                moveTween.OnComplete(FallAnim);
+            else
+                FallAnim();
         }
     }
 
@@ -160,6 +170,7 @@ public abstract class Entity : MonoBehaviour
         if (tween)
         {
             moveTween?.Kill();
+            fallTween?.Kill();
             moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
             moveTween.SetEase(Ease.InOutCubic);
         }
