@@ -1,14 +1,18 @@
 ﻿
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.U2D;
 using static UnityEditor.FilePathAttribute;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public enum EntityType
 {
     SmallRock,
+    SquareRock,
 }
 
 public class EntityFactory
@@ -27,6 +31,9 @@ public class EntityFactory
             case EntityType.SmallRock:
                 entity = go.AddComponent<SmallRock>();
                 break;
+            case EntityType.SquareRock:
+                entity = go.AddComponent<SquareRock>();
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -34,16 +41,16 @@ public class EntityFactory
         entity.name = type.ToString();
         entity.Initialize(x, y);
         
-        // entity.UpdateSprite();
+        entity.UpdateSprite();
         go.transform.position =
         new Vector2(
-                x: -(World.MAP_WIDTH / 2f) + x,
-                y: y - 0.5f
+                x: -(World.MAP_WIDTH / 2) + x,
+                y: y
             );
 
         foreach (var location in entity.GetLocations())
         {
-            var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
+            var square = Util.GetWorld().GetSquare(location.Item1, location.Item2, true);
             square.Entities.Add(entity);
         }
 
@@ -56,6 +63,7 @@ public abstract class Entity : MonoBehaviour
     protected List<(int, int)> Locations;
     public int X;
     public int Y;
+    private Tween moveTween;
 
     public List<(int, int)> GetLocations()
     {
@@ -126,12 +134,9 @@ public abstract class Entity : MonoBehaviour
             var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
             square.Entities.Add(this);
         }
-
-        gameObject.transform.position =
-            new Vector2(
-                x: -(World.MAP_WIDTH / 2f) + X,
-                y: Y - 0.5f
-            );
+        
+        moveTween?.Kill();
+        moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
 
         return true;
     }
@@ -143,11 +148,17 @@ public abstract class Entity : MonoBehaviour
         Locations = new List<(int, int)>();
         Locations.Add((x, y));
     }
+
+    public virtual void UpdateSprite()
+    {
+    }
 }
 
 
-public class SmallRock : Entity
+public abstract class Rock : Entity
 {
+    protected abstract bool[,] GetShape();
+
     public override bool CanSpread(Player player, Direction spreadDirection)
     {
         return CanPass(null, spreadDirection);
@@ -173,11 +184,70 @@ public class SmallRock : Entity
         // TODO
     }
 
+    private GameObject AddSubRock(bool[,] shape, int x, int y)
+    {
+        GameObject subRock = new GameObject();
+        subRock.transform.parent = gameObject.transform;
+        subRock.transform.position = gameObject.transform.position + new Vector3(x, y, 0);
+
+        var subSprites = Util.GroundLikeSprite(subRock, "stone-", dir =>
+        {
+            int x1 = x + dir.X();
+            int y1 = y + dir.Y();
+            if (x1 < 0 || x1 >= shape.GetLength(0) || y1 < 0 || y1 >= shape.GetLength(1))
+                return false;
+            return shape[x1, y1];
+        });
+
+        foreach (var subSprite in subSprites)
+            subSprite.GetComponent<SpriteRenderer>().sortingLayerName = "Entity";
+
+        return subRock;
+    }
+
     public override void Initialize(int x, int y)
     {
         base.Initialize(x, y);
+
+        Locations.Clear();
+        var shape = GetShape();
+        for (int i = 0; i < shape.GetLength(0); i++)
+        {
+            for (int j = 0; j < shape.GetLength(1); j++)
+            {
+                if (shape[i, j])
+                {
+                    AddSubRock(shape, i, j);
+                    Locations.Add((x + i, y + j));
+                }
+            }
+        }
+
         SpriteRenderer spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = Util.GetWorld().Sprites["stone-00-corner"];
         spriteRenderer.sortingLayerName = "Entity";
+    }
+}
+
+public class SmallRock : Rock
+{
+    protected override bool[,] GetShape()
+    {
+        return new bool[,]
+        {
+            {true}
+        };
+    }
+}
+
+public class SquareRock : Rock
+{
+    protected override bool[,] GetShape()
+    {
+        return new bool[,]
+        {
+            {true, true},
+            {true, true}
+        };
     }
 }
