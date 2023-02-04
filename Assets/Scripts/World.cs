@@ -161,7 +161,7 @@ public class World : MonoBehaviour
         if (prob < rockTreshold)
         {
             var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
-            EntityFactory.PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
+            Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
             return tile;
         }
 
@@ -262,7 +262,7 @@ public class World : MonoBehaviour
             {
                 x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
                 y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
-                rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
+                rock = Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
                 if(rock.IsPlacementValid())
                     break;
                 Destroy(rock.gameObject);
