@@ -71,6 +71,7 @@ public class GridSquare
 
 public class World : MonoBehaviour
 {
+    public static int MIN_ENTITY_Y = -5;
     public const int TILE_SIZE = 32;
     public const int MAP_WIDTH = 21;
     public const int CHUNK_SIZE = 14;
@@ -143,7 +144,7 @@ public class World : MonoBehaviour
     private Tile RandomTile(int x, int y, int rockTreshold, int rootTreshold)
     {
         int prob = UnityEngine.Random.Range(0, 100);
-
+        
         if (prob < rootTreshold)
             return TileFactory.RootTile(this.gameObject, x, y);
 
@@ -251,6 +252,7 @@ public class World : MonoBehaviour
             {
                 x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
                 y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
+
                 rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
                 if(rock.IsPlacementValid())
                     break;
