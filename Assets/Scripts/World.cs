@@ -107,7 +107,13 @@ public class World : MonoBehaviour
                 int x = j;
                 int y = -yStart - i;
                 _tiles[yStart + i][j] = new GridSquare(x, y);
-                if (Random.Range(0, 100) < 5 || x == player.X && y == player.Y)
+                if (x == player.X && y == player.Y)
+                {
+                    RootTile rootTile = (RootTile)TileFactory.RootTile(this.gameObject, x, y);
+                    rootTile.ForceConnect(Direction.Up);
+                    _tiles[yStart + i][j].Tile = rootTile;
+                }
+                else if (Random.Range(0, 100) < 5)
                     _tiles[yStart + i][j].Tile = TileFactory.RootTile(this.gameObject, x, y);
                 else
                     _tiles[yStart + i][j].Tile = TileFactory.GroundTile(this.gameObject, x, y);

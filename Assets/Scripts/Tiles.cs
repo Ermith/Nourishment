@@ -113,7 +113,8 @@ public abstract class Tile : MonoBehaviour
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
-            neighTile.UpdateSprite();
+            if(neighTile)
+                neighTile.UpdateSprite();
         }
     }
 
@@ -214,6 +215,12 @@ public class RootTile : Tile
 
     public void Start()
     {
+    }
+
+    public void ForceConnect(Direction direction)
+    {
+        ConnectedDirections[(int)direction] = true;
+        UpdateSprite();
     }
 
     public void ConnectWithNeigh(Direction direction)
