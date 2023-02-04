@@ -84,6 +84,19 @@ public class GridSquare
 
     public void SimulationStepFluid()
     {
+        if (Water.Amount <= 0f)
+            return;
+        float absorbAmount = 0f;
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        {
+            if (Util.GetWorld().GetTile(X + dir.X(), Y + dir.Y()) is RootTile)
+                absorbAmount += World.WATER_CONVERSION_SPEED;
+        }
+
+        absorbAmount = Mathf.Min(Water.Amount, absorbAmount);
+        Water.Amount -= absorbAmount;
+        Util.GetFlower().Nourishment += absorbAmount * World.WATER_CONVERSION_RATIO;
+        // TODO visual / sound effect?
     }
 
     public void SimulationSubStepFluid()
@@ -117,6 +130,8 @@ public class World : MonoBehaviour
     public static int MAP_WIDTH = 21;
     public const int CHUNK_SIZE = 14;
     public const int FLUID_SUBSTEPS = 5;
+    public const float WATER_CONVERSION_RATIO = 15f; //! how much nourishment you get per 1 tile of water
+    public const float WATER_CONVERSION_SPEED = 0.03f; //! how much water do you absorb per 1 tick per water/root boundary
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
     public Player player;
