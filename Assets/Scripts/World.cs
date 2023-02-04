@@ -36,10 +36,6 @@ public class GridSquare
     public void SimulationStep()
     {
         Tile.SimulationStep();
-        foreach (var entity in Entities)
-        {
-            entity.SimulationStep();
-        }
     }
 
     public void OnSpread(Player player, Direction spreadDirection)
@@ -84,7 +80,6 @@ public class World : MonoBehaviour
     public int ExtraSimulatedRows = 10;
 
     private List<GridSquare[]> _tiles = new List<GridSquare[]>();
-    private float _offsetX; // based on camera witdth
 
     public static bool InBounds((int, int) coords)
     {
@@ -116,8 +111,6 @@ public class World : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _offsetX = -(MAP_WIDTH / 2f);
-
         Sprites = LoadSprites();
 
         // Generation of world
@@ -302,14 +295,24 @@ public class World : MonoBehaviour
 
     public void SimulationStep()
     {
+        // TODO maybe optimize (hashtable)
+        List<Entity> simulatedEntities = new List<Entity>();
         for (int rowId = SimulatedRowsStart; rowId < SimulatedRowsEnd; rowId++)
         {
             var row = _tiles[rowId];
             foreach (var square in row)
             {
+                foreach (var entity in square.Entities)
+                {
+                    if(!simulatedEntities.Contains(entity))
+                        simulatedEntities.Add(entity);
+                }
                 square.SimulationStep();
             }
         }
+        
+        foreach(var entity in simulatedEntities)
+            entity.SimulationStep();
     }
 
     public bool IsTileOnCamera(Tile tile)

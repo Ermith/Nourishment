@@ -64,13 +64,45 @@ public abstract class Entity : MonoBehaviour
     public int X;
     public int Y;
     private Tween moveTween;
+    private Tween fallTween;
+
+    public virtual bool AffectedByGravity => false;
 
     public List<(int, int)> GetLocations()
     {
         return Locations;
     }
 
-    public abstract void SimulationStep();
+    public virtual void SimulationStep()
+    {
+        if (AffectedByGravity)
+            Fall();
+    }
+
+    protected void Fall()
+    {
+        int fallenHeight = 0;
+        while (Move(Direction.Down, false))
+        {
+            fallenHeight++;
+        }
+
+        if (fallenHeight > 0)
+        {
+            fallTween?.Kill();
+
+            void FallAnim()
+            {
+                moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f * fallenHeight);
+                moveTween.SetEase(Ease.OutBounce);
+            }
+
+            if ((moveTween?.IsActive() ?? false) && moveTween.IsPlaying())
+                moveTween.OnComplete(FallAnim);
+            else
+                FallAnim();
+        }
+    }
 
     public virtual bool CanSpread(Player player, Direction spreadDirection)
     {
@@ -106,7 +138,7 @@ public abstract class Entity : MonoBehaviour
         return true;
     }
 
-    public bool Move(Direction direction)
+    public bool Move(Direction direction, bool tween = true)
     {
         if (!CanMove(direction))
             return false;
@@ -134,9 +166,14 @@ public abstract class Entity : MonoBehaviour
             var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
             square.Entities.Add(this);
         }
-        
-        moveTween?.Kill();
-        moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+
+        if (tween)
+        {
+            moveTween?.Kill();
+            fallTween?.Kill();
+            moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+            moveTween.SetEase(Ease.InOutCubic);
+        }
 
         return true;
     }
@@ -157,6 +194,8 @@ public abstract class Entity : MonoBehaviour
 
 public abstract class Rock : Entity
 {
+    public override bool AffectedByGravity => true;
+
     protected abstract bool[,] GetShape();
 
     public override bool CanSpread(Player player, Direction spreadDirection)
@@ -177,11 +216,6 @@ public abstract class Rock : Entity
     public override void OnSpread(Player player, Direction spreadDirection)
     {
         Move(spreadDirection);
-    }
-
-    public override void SimulationStep()
-    {
-        // TODO
     }
 
     private GameObject AddSubRock(bool[,] shape, int x, int y)
