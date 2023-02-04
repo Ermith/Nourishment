@@ -419,7 +419,7 @@ public class World : MonoBehaviour
         ApplyToSimulatedTiles(square => square.SimulationStepFluid());
         ApplyToSimulatedTiles(square =>
         {
-            if (square.Water.Amount > 0.0f && !square.CanPass(null, Direction.Down))
+            if (square.Water.Amount > 0.0f && !square.CanFluidPass(square.Water, Direction.Down))
                 square.Water.FixDisplacement(square);
         });
         for (int i = 0; i < FLUID_SUBSTEPS; i++)
