@@ -26,7 +26,10 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
             Util.GetWorld().SimulationStep();
 
-        Direction ? movementDir = null;
+        if (Input.GetKeyDown(KeyCode.F))
+            EntityFactory.PlaceEntity(Util.GetWorld().gameObject, EntityType.Slug, X, Y);
+
+        Direction? movementDir = null;
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             movementDir = Direction.Up;
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
@@ -68,13 +71,23 @@ public class Player : MonoBehaviour
 
         Tile oldTile = world.GetTile(X, Y);
         Tile newTile = world.GetTile(newX, newY);
+
+        if (!newTile.Diggable)
+            return false;
+
+        if (Util.GetFlower().Nourishment < newTile.Hardness)
+            return false;
+
         if (retreat && newTile is not RootTile)
             return false;
+
         if (oldTile is RootTile oldRoot && retreat)
         {
             if (oldRoot.Protected)
                 return false;
+
             world.ReplaceTile(X, Y, TileType.Air);
+            Util.GetFlower().Nourishment++;
         }
 
         square.OnSpread(this, direction);
@@ -84,6 +97,9 @@ public class Player : MonoBehaviour
             world.ReplaceTile(X, Y, TileType.Root);
         if (oldTile is RootTile rootTile)
             rootTile.ConnectWithNeigh(direction);
+
+        Util.GetFlower().Nourishment -= newTile.Hardness;
+
         return true;
     }
 }

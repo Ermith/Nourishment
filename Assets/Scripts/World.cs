@@ -11,6 +11,7 @@ public class GridSquare
     public Tile Tile;
     public List<Entity> Entities = new List<Entity>();
     public float WaterLevel = 0; // TODO maybe generalize to multiple fluids?
+    public bool active = true;
 
     public GridSquare(int x, int y, Tile tile = null)
     {
@@ -66,6 +67,16 @@ public class GridSquare
             if (e != entity)
                 e.OnPass(entity, moveDirection);
         }
+    }
+
+    public void SetActive(bool active)
+    {
+        if (active == this.active)
+            return;
+        this.active = active;
+        Tile?.gameObject.SetActive(active);
+        foreach (var entity in Entities)
+            entity.ActivityChange(active);
     }
 }
 
@@ -220,7 +231,7 @@ public class World : MonoBehaviour
 
                 GridSquare square = AddSquare(x, y);
                 square.Tile = RandomTile(x, y, rockTreshold, rootTreshold);
-                square.Tile.gameObject.SetActive(IsTileOnCamera(square.Tile));
+                square.SetActive(IsTileOnCamera(square.Tile));
             }
         }
 
@@ -295,10 +306,7 @@ public class World : MonoBehaviour
         // TODO don't iterate over all rows probably
         foreach (GridSquare[] row in _tiles)
             foreach (GridSquare square in row)
-            {
-                var tile = square.Tile;
-                tile.gameObject.SetActive(IsTileOnCamera(tile));
-            }
+                square.SetActive(IsTileOnCamera(square.Tile));
     }
 
     public void SimulationStep()

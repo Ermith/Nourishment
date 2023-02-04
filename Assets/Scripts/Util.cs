@@ -75,6 +75,11 @@ public class Util
         return GameObject.Find("World")?.GetComponent<World>();
     }
 
+    public static Flower GetFlower()
+    {
+        return GameObject.Find("Flower")?.GetComponent<Flower>();
+    }
+
     public static List<GameObject> CreateSpriteObject(
         GameObject parent,
         string type,

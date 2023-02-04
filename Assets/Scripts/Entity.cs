@@ -13,6 +13,7 @@ public enum EntityType
 {
     SmallRock,
     SquareRock,
+    Slug,
 }
 
 public class EntityFactory
@@ -34,13 +35,17 @@ public class EntityFactory
             case EntityType.SquareRock:
                 entity = go.AddComponent<SquareRock>();
                 break;
+            case EntityType.Slug:
+                entity = go.AddComponent<Slug>();
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
         
         entity.name = type.ToString();
         entity.Initialize(x, y);
-        
+        entity.Activity = 0;
+
         entity.UpdateSprite();
         go.transform.position =
         new Vector2(
@@ -65,12 +70,31 @@ public abstract class Entity : MonoBehaviour
     public int Y;
     private Tween moveTween;
     private Tween fallTween;
+    public int Activity = 0;
+    public virtual float Heaviness => -1;
 
     public virtual bool AffectedByGravity => false;
 
     public List<(int, int)> GetLocations()
     {
         return Locations;
+    }
+
+    public void ActivityChange(bool active)
+    {
+        if(active)
+            Activity++;
+        else
+            Activity--;
+        if (Activity <= 0)
+        {
+            gameObject.SetActive(false);
+            Activity = 0;
+        }
+        else
+        {
+            gameObject.SetActive(true);
+        }
     }
 
     public virtual bool IsPlacementValid()
@@ -131,17 +155,20 @@ public abstract class Entity : MonoBehaviour
 
     public virtual bool CanSpread(Player player, Direction spreadDirection)
     {
-        return CanPass(null, spreadDirection);
+        return CanPass(null, spreadDirection)
+            && Heaviness >= 0
+            && Heaviness < Util.GetFlower().Nourishment;
     }
 
     public virtual void OnSpread(Player player, Direction spreadDirection)
     {
+        Util.GetFlower().Nourishment -= Heaviness;
     }
 
     // entity can also be null for a general purpose check
     public virtual bool CanPass(Entity entity, Direction moveDirection)
     {
-        return true;
+        return false;
     }
 
     public virtual void OnPass(Entity entity, Direction moveDirection)
@@ -220,13 +247,9 @@ public abstract class Entity : MonoBehaviour
 public abstract class Rock : Entity
 {
     public override bool AffectedByGravity => true;
+    public override float Heaviness => 10;
 
     protected abstract bool[,] GetShape();
-
-    public override bool CanSpread(Player player, Direction spreadDirection)
-    {
-        return CanPass(null, spreadDirection);
-    }
 
     public override bool CanPass(Entity entity, Direction moveDirection)
     {
@@ -235,11 +258,13 @@ public abstract class Rock : Entity
 
     public override void OnPass(Entity entity, Direction moveDirection)
     {
+        base.OnPass(entity, moveDirection);
         Move(moveDirection);
     }
 
     public override void OnSpread(Player player, Direction spreadDirection)
     {
+        base.OnSpread(player, spreadDirection);
         Move(spreadDirection);
     }
 
