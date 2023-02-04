@@ -148,7 +148,9 @@ public class GrassTile : Tile
     {
         World world = Util.GetWorld();
         name = "Grass";
-        var subTypes = new string[] { "world_grass_01", "world_grass_03", "world_grass_02", "world_grass_04" };
+        if (!SpriteRenderer.sprite.IsUnityNull())
+            return;
+        var subTypes = new string[] { "world_grass_01", "world_grass_03", "world_grass_02", "world_grass_04", "world_grass_left", "world_grass_right" };
         string spriteName;
         switch (Random.value)
         {
@@ -168,6 +170,10 @@ public class GrassTile : Tile
                 spriteName = subTypes[0];
                 break;
         }
+        if (X == 0)
+            spriteName = subTypes[4];
+        if (X == World.MAP_WIDTH - 1)
+            spriteName = subTypes[5];
 
         SpriteRenderer.sprite = world.Sprites[spriteName];
     }
