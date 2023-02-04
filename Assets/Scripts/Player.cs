@@ -68,13 +68,23 @@ public class Player : MonoBehaviour
 
         Tile oldTile = world.GetTile(X, Y);
         Tile newTile = world.GetTile(newX, newY);
+
+        if (!newTile.Diggable)
+            return false;
+
+        if (Util.GetFlower().Nourishment < newTile.Hardness)
+            return false;
+
         if (retreat && newTile is not RootTile)
             return false;
+
         if (oldTile is RootTile oldRoot && retreat)
         {
             if (oldRoot.Protected)
                 return false;
+
             world.ReplaceTile(X, Y, TileType.Air);
+            Util.GetFlower().Nourishment++;
         }
 
         square.OnSpread(this, direction);
@@ -84,6 +94,9 @@ public class Player : MonoBehaviour
             world.ReplaceTile(X, Y, TileType.Root);
         if (oldTile is RootTile rootTile)
             rootTile.ConnectWithNeigh(direction);
+
+        Util.GetFlower().Nourishment -= newTile.Hardness;
+
         return true;
     }
 }

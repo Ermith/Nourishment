@@ -75,6 +75,8 @@ public abstract class Tile : MonoBehaviour
 {
     public int X;
     public int Y;
+    public virtual float Hardness => -1;
+    public bool Diggable => Hardness >= 0;
 
     public abstract void UpdateSprite();
 
@@ -108,6 +110,7 @@ public abstract class Tile : MonoBehaviour
 
 public class GroundTile : Tile
 {
+    public override float Hardness => 5;
     private List<GameObject> _subSpriteObjects = new List<GameObject>();
 
     public override void UpdateSprite()
@@ -127,6 +130,7 @@ public class GroundTile : Tile
 
 public class GrassTile : Tile
 {
+
     private SpriteRenderer _spriteRenderer;
     private SpriteRenderer SpriteRenderer
     {
@@ -150,6 +154,7 @@ public class GrassTile : Tile
 
 public class AirTile : Tile
 {
+    public override float Hardness => 1;
     public override bool CanPass(Entity entity, Direction moveDirection)
     {
         return true;
@@ -162,11 +167,11 @@ public class AirTile : Tile
 
 public class RootNotFoundException : Exception
 {
-
 }
 
 public class RootTile : Tile
 {
+    public override float Hardness => 0;
     public bool Protected;
     
     private bool[] ConnectedDirections;

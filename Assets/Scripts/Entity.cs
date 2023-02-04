@@ -65,6 +65,7 @@ public abstract class Entity : MonoBehaviour
     public int Y;
     private Tween moveTween;
     private Tween fallTween;
+    public virtual float Heavyness => -1;
 
     public virtual bool AffectedByGravity => false;
 
@@ -106,17 +107,20 @@ public abstract class Entity : MonoBehaviour
 
     public virtual bool CanSpread(Player player, Direction spreadDirection)
     {
-        return CanPass(null, spreadDirection);
+        return CanPass(null, spreadDirection)
+            && Heavyness >= 0
+            && Heavyness < Util.GetFlower().Nourishment;
     }
 
     public virtual void OnSpread(Player player, Direction spreadDirection)
     {
+        Util.GetFlower().Nourishment -= Heavyness;
     }
 
     // entity can also be null for a general purpose check
     public virtual bool CanPass(Entity entity, Direction moveDirection)
     {
-        return true;
+        return false;
     }
 
     public virtual void OnPass(Entity entity, Direction moveDirection)
@@ -195,13 +199,9 @@ public abstract class Entity : MonoBehaviour
 public abstract class Rock : Entity
 {
     public override bool AffectedByGravity => true;
+    public override float Heavyness => 10;
 
     protected abstract bool[,] GetShape();
-
-    public override bool CanSpread(Player player, Direction spreadDirection)
-    {
-        return CanPass(null, spreadDirection);
-    }
 
     public override bool CanPass(Entity entity, Direction moveDirection)
     {
@@ -210,11 +210,13 @@ public abstract class Rock : Entity
 
     public override void OnPass(Entity entity, Direction moveDirection)
     {
+        base.OnPass(entity, moveDirection);
         Move(moveDirection);
     }
 
     public override void OnSpread(Player player, Direction spreadDirection)
     {
+        base.OnSpread(player, spreadDirection);
         Move(spreadDirection);
     }
 
