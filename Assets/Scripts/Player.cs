@@ -36,7 +36,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
             movementDir = Direction.Right;
 
-        bool retreat = Input.GetKey(KeyCode.LeftShift);
+        bool retreat = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
         if (movementDir != null)
         {
