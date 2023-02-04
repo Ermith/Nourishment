@@ -236,17 +236,23 @@ public class World : MonoBehaviour
         {
             int tries = 10;
             int x, y;
+            Entity rock;
             do
             {
                 x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
                 y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
-                break;
+                rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
+                if(rock.IsPlacementValid())
+                    break;
+                Destroy(rock.gameObject);
+                rock = null;
             } while (tries-- > 0);
-            var rock = EntityFactory.PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
-            foreach (var location in rock.GetLocations())
-            {
-                ReplaceTile(location.Item1, location.Item2, TileType.Air);
-            }
+            
+            if(rock)
+                foreach (var location in rock.GetLocations())
+                {
+                    ReplaceTile(location.Item1, location.Item2, TileType.Air);
+                }
         }
 
         for (int i = 0; i < CHUNK_SIZE; i++)
