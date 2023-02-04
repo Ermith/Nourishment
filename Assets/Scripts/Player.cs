@@ -57,15 +57,19 @@ public class Player : MonoBehaviour
         if (!square.CanSpread(this, direction))
             return false;
         World world = Util.GetWorld();
+        int newX = X + direction.X();
+        int newY = Y + direction.Y();
+        Tile oldTile = world.GetTile(X, Y);
+        Tile newTile = world.GetTile(newX, newY);
+        if (retreat && newTile is not RootTile)
+            return false;
         square.OnSpread(this, direction);
-        Tile oldTile = Util.GetWorld().GetTile(X, Y);
         if (oldTile is RootTile && retreat)
             world.ReplaceTile(X, Y, TileType.Air);
-        X += direction.X();
-        Y += direction.Y();
-        Tile newTile = Util.GetWorld().GetTile(X, Y);
+        X = newX;
+        Y = newY;
         if(newTile is not RootTile)
-            Util.GetWorld().ReplaceTile(X, Y, TileType.Root);
+            world.ReplaceTile(X, Y, TileType.Root);
         if (oldTile is RootTile rootTile)
             rootTile.ConnectWithNeigh(direction);
         return true;
