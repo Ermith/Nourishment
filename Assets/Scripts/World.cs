@@ -43,7 +43,7 @@ public class GridSquare
 
     public void OnSpread(Player player, Direction spreadDirection)
     {
-        foreach (var entity in Entities)
+        foreach (var entity in new List<Entity>(Entities))
         {
             entity.OnSpread(player, spreadDirection);
         }
@@ -53,7 +53,7 @@ public class GridSquare
     {
         if (Tile != null && !Tile.CanPass(entity, moveDirection))
             return false;
-        foreach (var e in Entities)
+        foreach (var e in new List<Entity>(Entities))
         {
             if (e != entity && !e.CanPass(entity, moveDirection))
                 return false;
@@ -64,7 +64,7 @@ public class GridSquare
 
     public void OnPass(Entity entity, Direction moveDirection)
     {
-        foreach (var e in Entities)
+        foreach (var e in new List<Entity>(Entities))
         {
             if (e != entity)
                 e.OnPass(entity, moveDirection);
@@ -216,7 +216,7 @@ public class World : MonoBehaviour
     private Dictionary<string, Sprite> LoadSprites()
     {
         var sprites = new Dictionary<string, Sprite>();
-        foreach (var subdir in new string[] { "Ground", "Root" })
+        foreach (var subdir in new string[] { "Ground", "Root", "Stone" })
         {
             var groundSprites = Resources.LoadAll<Sprite>($"Sprites/{subdir}");
             foreach (var sprite in groundSprites)

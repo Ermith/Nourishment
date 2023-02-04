@@ -1,7 +1,10 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using static UnityEditor.FilePathAttribute;
 
 public enum EntityType
 {
@@ -10,19 +13,35 @@ public enum EntityType
 
 public class EntityFactory
 {
-    public static Entity PlaceEntity(EntityType type, int x, int y)
+    public static Entity PlaceEntity(GameObject parent, EntityType type, int x, int y)
     {
         Entity entity = null;
+        World world = Util.GetWorld();
+
+        var go = new GameObject();
+        go.SetActive(true);
+        go.transform.parent = parent.transform;
+        
         switch (type)
         {
             case EntityType.SmallRock:
-                entity = new SmallRock(x, y);
+                entity = go.AddComponent<SmallRock>();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
         
-        foreach (var location in entity.Locations)
+        entity.name = type.ToString();
+        entity.Initialize(x, y);
+        
+        // entity.UpdateSprite();
+        go.transform.position =
+        new Vector2(
+                x: -(World.MAP_WIDTH / 2f) + x,
+                y: y - 0.5f
+            );
+
+        foreach (var location in entity.GetLocations())
         {
             var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
             square.Entities.Add(entity);
@@ -34,9 +53,14 @@ public class EntityFactory
 
 public abstract class Entity : MonoBehaviour
 {
-    public List<(int, int)> Locations;
+    protected List<(int, int)> Locations;
     public int X;
     public int Y;
+
+    public List<(int, int)> GetLocations()
+    {
+        return Locations;
+    }
 
     public abstract void SimulationStep();
 
@@ -103,21 +127,27 @@ public abstract class Entity : MonoBehaviour
             square.Entities.Add(this);
         }
 
+        gameObject.transform.position =
+            new Vector2(
+                x: -(World.MAP_WIDTH / 2f) + X,
+                y: Y - 0.5f
+            );
+
         return true;
     }
-}
 
-
-public class SmallRock : Entity
-{
-    public SmallRock(int x, int y)
+    public virtual void Initialize(int x, int y)
     {
         X = x;
         Y = y;
         Locations = new List<(int, int)>();
         Locations.Add((x, y));
     }
+}
 
+
+public class SmallRock : Entity
+{
     public override bool CanSpread(Player player, Direction spreadDirection)
     {
         return CanPass(null, spreadDirection);
@@ -133,8 +163,21 @@ public class SmallRock : Entity
         Move(moveDirection);
     }
 
+    public override void OnSpread(Player player, Direction spreadDirection)
+    {
+        Move(spreadDirection);
+    }
+
     public override void SimulationStep()
     {
         // TODO
+    }
+
+    public override void Initialize(int x, int y)
+    {
+        base.Initialize(x, y);
+        SpriteRenderer spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = Util.GetWorld().Sprites["stone-00-corner"];
+        spriteRenderer.sortingLayerName = "Entity";
     }
 }

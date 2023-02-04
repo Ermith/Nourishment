@@ -33,9 +33,11 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D))
             movementDir = Direction.Right;
 
+        bool retreat = Input.GetKey(KeyCode.LeftShift);
+
         if (movementDir != null)
         {
-            bool success = TryMove(movementDir.Value);
+            bool success = TryMove(movementDir.Value, retreat);
             if(success)
                 Util.GetWorld().SimulationStep();
         }
@@ -47,15 +49,18 @@ public class Player : MonoBehaviour
         cameraTween = Camera.transform.DOMoveY(Y, 0.4f);
     }
 
-    bool TryMove(Direction direction)
+    bool TryMove(Direction direction, bool retreat)
     {
         var square = Util.GetWorld().GetSquare(X + direction.X(), Y + direction.Y());
         if (square == null)
             return false;
         if (!square.CanSpread(this, direction))
             return false;
+        World world = Util.GetWorld();
         square.OnSpread(this, direction);
         Tile oldTile = Util.GetWorld().GetTile(X, Y);
+        if (oldTile is RootTile && retreat)
+            world.ReplaceTile(X, Y, TileType.Air);
         X += direction.X();
         Y += direction.Y();
         Tile newTile = Util.GetWorld().GetTile(X, Y);
