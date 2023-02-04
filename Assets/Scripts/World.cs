@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GridSquare
@@ -75,12 +76,27 @@ public class GridSquare
             return;
         this.active = active;
         Tile?.gameObject.SetActive(active);
+        /*
         foreach (var entity in Entities)
             entity.ActivityChange(active);
+        */
     }
 
     public void SimulationStepFluid()
     {
+        if (Water.Amount <= 0f)
+            return;
+        float absorbAmount = 0f;
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        {
+            if (Util.GetWorld().GetTile(X + dir.X(), Y + dir.Y()) is RootTile)
+                absorbAmount += World.WATER_CONVERSION_SPEED;
+        }
+
+        absorbAmount = Mathf.Min(Water.Amount, absorbAmount);
+        Water.Amount -= absorbAmount;
+        Util.GetFlower().Nourishment += absorbAmount * World.WATER_CONVERSION_RATIO;
+        // TODO visual / sound effect?
     }
 
     public void SimulationSubStepFluid()
@@ -90,6 +106,19 @@ public class GridSquare
     public void SimulationSubStepFluidFinish()
     {
         Water.SimSwap();
+    }
+    
+    public bool CanFluidPass(Fluid fluid, Direction moveDirection)
+    {
+        if (Tile != null && !Tile.CanFluidPass(fluid, moveDirection))
+            return false;
+        foreach (var entity in Entities)
+        {
+            if (!entity.CanFluidPass(fluid, moveDirection))
+                return false;
+        }
+
+        return true;
     }
 }
 
@@ -101,6 +130,8 @@ public class World : MonoBehaviour
     public static int MAP_WIDTH = 21;
     public const int CHUNK_SIZE = 14;
     public const int FLUID_SUBSTEPS = 5;
+    public const float WATER_CONVERSION_RATIO = 15f; //! how much nourishment you get per 1 tile of water
+    public const float WATER_CONVERSION_SPEED = 0.03f; //! how much water do you absorb per 1 tick per water/root boundary
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
     public Player player;
@@ -365,9 +396,17 @@ public class World : MonoBehaviour
             GenerateMoreMap();
 
         // TODO don't iterate over all rows probably
+        int i = 0;
         foreach (GridSquare[] row in _tiles)
+        {
             foreach (GridSquare square in row)
+            {
                 square.SetActive(IsTileOnCamera(square.Tile));
+                foreach (var entity in square.Entities)
+                    entity.gameObject.SetActive(i >= SimulatedRowsStart && i < SimulatedRowsEnd);
+            }
+            i++;
+        }
 
         MoveBackground();
     }
@@ -404,6 +443,11 @@ public class World : MonoBehaviour
             entity.SimulationStep();
 
         ApplyToSimulatedTiles(square => square.SimulationStepFluid());
+        ApplyToSimulatedTiles(square =>
+        {
+            if (square.Water.Amount > 0.0f && !square.CanFluidPass(square.Water, Direction.Down))
+                square.Water.FixDisplacement(square);
+        });
         for (int i = 0; i < FLUID_SUBSTEPS; i++)
         {
             ApplyToSimulatedTiles(square => square.SimulationSubStepFluid());
