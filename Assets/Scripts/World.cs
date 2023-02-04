@@ -76,7 +76,7 @@ public class World : MonoBehaviour
 {
     public const int TILE_SIZE = 32;
     public const int MAP_WIDTH = 21;
-    public const int CHUNK_SIZE = 20;
+    public const int CHUNK_SIZE = 14;
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
     public Player player;
@@ -138,10 +138,38 @@ public class World : MonoBehaviour
         return newTile;
     }
 
+    /// <summary>
+    /// groundTreshold (default) < rockTrshold < rootTreshold
+    /// </summary>
+    /// <param name="x">Tile position</param>
+    /// <param name="y">Tile position</param>
+    /// <param name="rockTreshold">[0-99] number</param>
+    /// <param name="rootTreshold">[0-99] number</param>
+    /// <returns></returns>
+    private Tile RandomTile(int x, int y, int rockTreshold, int rootTreshold)
+    {
+        int prob = Random.Range(0, 100);
+
+        if (prob < rootTreshold)
+            return TileFactory.RootTile(this.gameObject, x, y);
+
+        if (prob < rockTreshold)
+        {
+            var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
+            EntityFactory.PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
+            return tile;
+        }
+
+        return TileFactory.GroundTile(this.gameObject, x, y);
+    }
+
     void GenerateMoreMap()
     {
         // Genrate more map
         int yStart = _tiles.Count;
+        int rockTreshold = 10;
+        int rootTreshold = 10 - yStart / CHUNK_SIZE * 4;
+
         for (int i = 0; i < CHUNK_SIZE; i++)
         {
             _tiles.Add(new GridSquare[MAP_WIDTH]);
@@ -149,25 +177,18 @@ public class World : MonoBehaviour
             {
                 int x = j;
                 int y = -yStart - i;
+
                 GridSquare square = AddSquare(x, y);
-
-                if (x == player.X && y == player.Y)
-                {
-                    RootTile rootTile = (RootTile)TileFactory.RootTile(this.gameObject, x, y);
-                    rootTile.ForceConnect(Direction.Up);
-                    square.Tile = rootTile;
-                } else if (Random.Range(0, 100) < 5) {
-                    square.Tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
-                    EntityFactory.PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
-                } else if (Random.Range(0, 100) < 5)
-                    square.Tile = TileFactory.RootTile(this.gameObject, x, y);
-                else
-                    square.Tile = TileFactory.GroundTile(this.gameObject, x, y);
-                
-
+                square.Tile = RandomTile(x, y, rockTreshold, rootTreshold);
                 square.Tile.gameObject.SetActive(IsTileOnCamera(square.Tile));
             }
         }
+
+        // Player starts on root
+        int xSpawn = MAP_WIDTH / 2;
+        int ySpawn = 0;
+        RootTile spawnTile = ReplaceTile(xSpawn, ySpawn, TileType.Root) as RootTile;
+        spawnTile.ForceConnect(Direction.Up);
 
         for (int i = 0; i < CHUNK_SIZE; i++)
             for (int j = 0; j < MAP_WIDTH; j++)
