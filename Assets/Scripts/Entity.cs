@@ -13,6 +13,7 @@ public enum EntityType
 {
     SmallRock,
     SquareRock,
+    Slug,
 }
 
 public class EntityFactory
@@ -34,13 +35,17 @@ public class EntityFactory
             case EntityType.SquareRock:
                 entity = go.AddComponent<SquareRock>();
                 break;
+            case EntityType.Slug:
+                entity = go.AddComponent<Slug>();
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
         
         entity.name = type.ToString();
         entity.Initialize(x, y);
-        
+        entity.Activity = 0;
+
         entity.UpdateSprite();
         go.transform.position =
         new Vector2(
@@ -65,12 +70,30 @@ public abstract class Entity : MonoBehaviour
     public int Y;
     private Tween moveTween;
     private Tween fallTween;
+    public int Activity = 0;
 
     public virtual bool AffectedByGravity => false;
 
     public List<(int, int)> GetLocations()
     {
         return Locations;
+    }
+
+    public void ActivityChange(bool active)
+    {
+        if(active)
+            Activity++;
+        else
+            Activity--;
+        if (Activity <= 0)
+        {
+            gameObject.SetActive(false);
+            Activity = 0;
+        }
+        else
+        {
+            gameObject.SetActive(true);
+        }
     }
 
     public virtual bool IsPlacementValid()

@@ -26,7 +26,10 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
             Util.GetWorld().SimulationStep();
 
-        Direction ? movementDir = null;
+        if (Input.GetKeyDown(KeyCode.F))
+            EntityFactory.PlaceEntity(Util.GetWorld().gameObject, EntityType.Slug, X, Y);
+
+        Direction? movementDir = null;
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             movementDir = Direction.Up;
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
