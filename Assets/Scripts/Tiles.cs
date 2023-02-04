@@ -4,8 +4,16 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public enum TileType
+{
+    Air,
+    Ground,
+    Root,
+}
+
 public class TileFactory
 {
+
     private static Tile CreateTile<T>(GameObject parent, int x, int y) where T : Tile
     {
         var go = new GameObject();
@@ -28,6 +36,21 @@ public class TileFactory
         var tile = CreateTile<RootTile>(parent, x, y);
         tile.gameObject.AddComponent<SpriteRenderer>();
         return tile;
+    }
+
+    public static Tile CreateTile(GameObject parent, int x, int y, TileType type)
+    {
+        switch (type)
+        {
+            case TileType.Air:
+                return CreateTile<AirTile>(parent, x, y);
+            case TileType.Ground:
+                return CreateTile<GroundTile>(parent, x, y);
+            case TileType.Root:
+                return RootTile(parent, x, y);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
     }
 }
 
@@ -148,6 +171,18 @@ public class GroundTile : Tile
             Destroy(child);
         
         _subSpriteObjects = CreateSpriteObject("ground", subSpriteLabels);
+    }
+}
+
+public class AirTile : Tile
+{
+    public override bool IsVisible()
+    {
+        return false;
+    }
+
+    public override void UpdateSprite()
+    {
     }
 }
 
