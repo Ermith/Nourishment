@@ -8,7 +8,7 @@ public class Slug : Enemy
     public Direction ForwardDir;
     private bool _rotatesClockwise;
     private Tween _rotateTween;
-    Animator _animator;
+    protected Animator _animator;
 
     public override void Initialize(int x, int y)
     {
@@ -20,11 +20,12 @@ public class Slug : Enemy
         }
         base.Initialize(x, y);
     }
+    
     public override bool AffectedByGravity {
         get
         {
             var squareBelow = Util.GetWorld().GetSquare(X + DownDir.X(), Y + DownDir.Y());
-            return squareBelow.CanPass(this, DownDir);
+            return !Alive || squareBelow.CanPass(this, DownDir);
         }
     }
 
@@ -38,10 +39,14 @@ public class Slug : Enemy
         var visAngle = DownDir.CounterClockwise().Angle();
         _rotateTween = transform.DORotate(new Vector3(0, 0, visAngle), 0.2f);
     }
-
-    public override void SimulationStep()
+    public override void SetDeathSprite()
     {
-        base.SimulationStep();
+        base.SetDeathSprite();
+        _animator.SetTrigger("StopMoving");
+    }
+
+    public override void AIStep()
+    {
         if (AffectedByGravity) // we fell but are still directed weirdly!
         {
             Rotate();
@@ -71,7 +76,7 @@ public class Slug : Enemy
     public override bool Move(Direction direction, bool tween = true)
     {
         bool success = base.Move(direction, tween);
-        if (success)
+        if (success && Alive)
         {
             if (_animator == null)
                 _animator = GetComponent<Animator>();

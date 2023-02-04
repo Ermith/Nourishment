@@ -27,6 +27,8 @@ public abstract class Entity : MonoBehaviour
     public int Activity = 0;
     public virtual float Heaviness => -1;
 
+    protected Vector3 _localShift = new Vector3(0, 0, 0);
+
     public virtual bool AffectedByGravity => false;
 
     public List<(int, int)> GetLocations()
@@ -96,7 +98,7 @@ public abstract class Entity : MonoBehaviour
 
             void FallAnim()
             {
-                moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f * fallenHeight);
+                moveTween = gameObject.transform.DOMove(_localShift + new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f * fallenHeight);
                 moveTween.SetEase(Ease.OutBounce);
             }
 
@@ -182,7 +184,7 @@ public abstract class Entity : MonoBehaviour
         {
             moveTween?.Kill();
             fallTween?.Kill();
-            moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+            moveTween = gameObject.transform.DOMove(_localShift + new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
             moveTween.SetEase(Ease.InOutCubic);
         }
 
