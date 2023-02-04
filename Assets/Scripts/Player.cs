@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     public int X = World.MAP_WIDTH / 2;
     public int Y = 0;
-    public Camera camera;
+    public Camera Camera;
     
     // Start is called before the first frame update
     void Start()
@@ -18,15 +18,35 @@ public class Player : MonoBehaviour
     void Update()
     {
         gameObject.transform.position = new Vector3(X - World.MAP_WIDTH / 2 - 0.5f, Y - 0.5f, 0);
-        camera.transform.position = new Vector3(0, Y - 0.5f, -10);
+        Camera.transform.position = new Vector3(0, Y - 0.5f, -10);
 
+        Direction? movementDir = null;
         if (Input.GetKeyDown(KeyCode.W))
-            Y++;
+            movementDir = Direction.Up;
         if (Input.GetKeyDown(KeyCode.S))
-            Y--;
+            movementDir = Direction.Down;
         if (Input.GetKeyDown(KeyCode.A))
-            X--;
+            movementDir = Direction.Left;
         if (Input.GetKeyDown(KeyCode.D))
-            X++;
+            movementDir = Direction.Right;
+
+        if (movementDir != null)
+        {
+            bool success = TryMove(movementDir.Value);
+            if(success)
+                Util.GetWorld().SimulationStep();
+        }
+    }
+
+    bool TryMove(Direction direction)
+    {
+        var square = Util.GetWorld().GetSquare(X + direction.X(), Y + direction.Y());
+        if (square == null)
+            return false;
+        if (!square.CanSpread(this))
+            return false;
+        X += direction.X();
+        Y += direction.Y();
+        return true;
     }
 }

@@ -69,6 +69,6 @@ public class Util
 
     public static World GetWorld()
     {
-        return GameObject.Find("World").GetComponent<World>();
+        return GameObject.Find("World")?.GetComponent<World>();
     }
 }

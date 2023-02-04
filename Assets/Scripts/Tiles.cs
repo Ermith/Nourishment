@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -48,27 +49,33 @@ public abstract class Tile : MonoBehaviour
         return spriteObject;
     }
 
-    protected void CreateSpriteObject(
+    protected List<GameObject> CreateSpriteObject(
         string type,
         string[] labels = null
     )
     {
         if (labels is null)
             labels = Array.Empty<string>();
+
         GameObject sprite00 = CreateCorner(type, "00", labels.ElementAtOrDefault(0) ?? "");
         GameObject sprite01 = CreateCorner(type, "01", labels.ElementAtOrDefault(1) ?? "");
         GameObject sprite10 = CreateCorner(type, "10", labels.ElementAtOrDefault(2) ?? "");
         GameObject sprite11 = CreateCorner(type, "11", labels.ElementAtOrDefault(3) ?? "");
+
+        var subSprites = new List<GameObject>(new[] { sprite00, sprite01, sprite10, sprite11 });
+
+        foreach (var subSprite in subSprites)
+        {
+            subSprite.transform.parent = transform;
+            subSprite.transform.position = transform.position;
+        }
 
         sprite00.transform.position += Vector3.left * 0.25f + Vector3.down * 0.25f;
         sprite01.transform.position += Vector3.left * 0.25f + Vector3.up * 0.25f;
         sprite10.transform.position += Vector3.right * 0.25f + Vector3.down * 0.25f;
         sprite11.transform.position += Vector3.right * 0.25f + Vector3.up * 0.25f;
 
-        sprite00.transform.parent = transform;
-        sprite01.transform.parent = transform;
-        sprite10.transform.parent = transform;
-        sprite11.transform.parent = transform;
+        return subSprites;
     }
 
     public abstract void UpdateSprite();
@@ -78,16 +85,25 @@ public abstract class Tile : MonoBehaviour
     public virtual void OnDestroy()
     {
         World world = Util.GetWorld();
+        if (world is null)
+            return;
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
             neighTile.UpdateSprite();
         }
     }
+
+    public virtual bool CanSpread(Player player)
+    {
+        return true;
+    }
 }
 
 public class GroundTile : Tile
 {
+    private List<GameObject> _subSpriteObjects = new List<GameObject>();
+
     public override bool IsVisible()
     {
         bool isVisible = false;
@@ -127,7 +143,11 @@ public class GroundTile : Tile
         }
 
         (subSpriteLabels[0], subSpriteLabels[1], subSpriteLabels[2], subSpriteLabels[3]) = (subSpriteLabels[0], subSpriteLabels[3], subSpriteLabels[1], subSpriteLabels[2]);
-        CreateSpriteObject("ground", subSpriteLabels);
+
+        foreach (var child in _subSpriteObjects)
+            Destroy(child);
+        
+        _subSpriteObjects = CreateSpriteObject("ground", subSpriteLabels);
     }
 }
 
@@ -180,6 +200,8 @@ public class RootTile : Tile
     public override void OnDestroy()
     {
         World world = Util.GetWorld();
+        if (world is null)
+            return;
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
             if (ConnectedDirections[(int)dir])

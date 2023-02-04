@@ -1,6 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+
+public class GridSquare
+{
+    public int X;
+    public int Y;
+    public Tile Tile;
+    public List<Entity> Entities = new List<Entity>();
+    public float WaterLevel = 0; // TODO maybe generalize to multiple fluids?
+
+    public GridSquare(int x, int y, Tile tile = null)
+    {
+        X = x;
+        Y = y;
+        Tile = tile;
+    }
+
+    public bool CanSpread(Player player)
+    {
+        if(Tile != null && !Tile.CanSpread(player))
+            return false;
+        
+        foreach (var entity in Entities)
+        {
+            if (!entity.CanSpread(player))
+                return false;
+        }
+
+        return true;
+    }
+}
 
 public class World : MonoBehaviour
 {
@@ -8,45 +39,66 @@ public class World : MonoBehaviour
     public const int MAP_WIDTH = 21;
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
+    public Player player;
+    public int ExtraSimulatedRows = 10;
 
-    private List<Tile[]> _tiles;
+    private List<GridSquare[]> _tiles = new List<GridSquare[]>();
     private float _offsetX; // based on camera witdth
-    private float _offsetY; // camera position
+
+    public static bool InBounds((int, int) coords)
+    {
+        return coords.Item1 >= 0 && coords.Item1 < MAP_WIDTH && coords.Item2 <= 0;
+    }
+
+    public GridSquare GetSquare(int x, int y)
+    {
+        if (!InBounds((x, y)))
+            return null;
+        while (-y >= _tiles.Count && -y < SimulatedRowsEnd)
+            GenerateMoreMap();
+        if (-y >= _tiles.Count)
+            return null;
+        return _tiles[-y][x];
+    }
 
     public Tile GetTile(int x, int y)
     {
-        // TODO if y below current row count generate more rows
-        if (x < 0 || x >= MAP_WIDTH || y > 0 || y <= -_tiles.Count)
-            return null;
-        return _tiles[-y][x];
+        return GetSquare(x, y)?.Tile;
     }
 
     // Start is called before the first frame update
     void Start()
     {
         _offsetX = -(MAP_WIDTH / 2f);
-        _offsetY = 0;
 
         Sprites = LoadSprites();
 
         // Generation of world
-        _tiles = new List<Tile[]>();
-        for (int i = 0; i < 30; i++)
+        GenerateMoreMap();
+    }
+
+    void GenerateMoreMap(int rowsToGenerate = 10)
+    {
+        // rowsToGenerate might need to be fixed in the end idk
+
+        int yStart = _tiles.Count;
+        for (int i = 0; i < rowsToGenerate; i++)
         {
-            _tiles.Add(new Tile[MAP_WIDTH]);
+            _tiles.Add(new GridSquare[MAP_WIDTH]);
             for (int j = 0; j < MAP_WIDTH; j++)
             {
+                _tiles[yStart + i][j] = new GridSquare(j, -yStart - i);
                 if (Random.Range(0, 100) < 50)
-                    _tiles[i][j] = TileFactory.RootTile(this.gameObject, j, -i);
+                    _tiles[yStart + i][j].Tile = TileFactory.RootTile(this.gameObject, j, -yStart - i);
                 else
-                    _tiles[i][j] = TileFactory.GroundTile(this.gameObject, j, -i);
+                    _tiles[yStart + i][j].Tile = TileFactory.GroundTile(this.gameObject, j, -yStart - i);
             }
         }
 
         int xStart = 0;
-        int yStart = (int)(_offsetY / TILE_SIZE);
+        // int yStart = (int)(_offsetY / TILE_SIZE);
         int xCount = MAP_WIDTH;
-        int yCount = _tiles.Count;
+        int yCount = _tiles.Count - yStart;
 
         for (int y = 0; y < yCount; y++)
         {
@@ -55,25 +107,41 @@ public class World : MonoBehaviour
                 int xIndex = xStart + x;
                 int yIndex = yStart + y;
 
-                var tile = _tiles[yIndex][xIndex];
+                var tile = _tiles[yIndex][xIndex].Tile;
                 tile.UpdateSprite();
                 tile.transform.position =
                     new Vector2(
                         x: _offsetX + xIndex,
-                        y: - yIndex - 0.5f
-                        );
+                        y: -yIndex - 0.5f
+                    );
 
+                // TODO check if in camera bounds before setting active
                 tile.gameObject.SetActive(true);
             }
         }
+
+        // fix sprites on the border row
+        if(yStart - 1 >= 0)
+            foreach (GridSquare square in _tiles[yStart - 1])
+            {
+                square.Tile?.UpdateSprite();
+            }
     }
+
+    public int SimulatedRowsStart => Mathf.Max(0, (int)(-_camera.transform.position.y - _camera.orthographicSize - ExtraSimulatedRows));
+    public int SimulatedRowsEnd => (int)(-_camera.transform.position.y + _camera.orthographicSize + ExtraSimulatedRows);
 
     // Update is called once per frame
     void Update()
     {
-        foreach (Tile[] row in _tiles)
-            foreach (Tile tile in row)
+        while (_tiles.Count < SimulatedRowsEnd)
+            GenerateMoreMap();
+
+        // TODO don't iterate over all rows probably
+        foreach (GridSquare[] row in _tiles)
+            foreach (GridSquare square in row)
             {
+                var tile = square.Tile;
                 tile.gameObject.SetActive(
                     Mathf.Abs(tile.transform.position.x - _camera.transform.position.x) < _camera.orthographicSize * _camera.aspect + TILE_SIZE / 2f
                     && Mathf.Abs(tile.transform.position.y - _camera.transform.position.y) < _camera.orthographicSize + 0.5f
@@ -85,7 +153,7 @@ public class World : MonoBehaviour
         {
             try
             {
-                var randomTile = _tiles[Random.Range(0, _tiles.Count)][Random.Range(0, MAP_WIDTH)];
+                var randomTile = _tiles[Random.Range(0, _tiles.Count)][Random.Range(0, MAP_WIDTH)].Tile;
                 if (randomTile is RootTile rootTile)
                 {
                     rootTile.ConnectWithNeigh((Direction)Random.Range(0, 4));
@@ -95,6 +163,11 @@ public class World : MonoBehaviour
             {
             }
         }
+    }
+
+    public void SimulationStep()
+    {
+
     }
 
     private Dictionary<string, Sprite> LoadSprites()
