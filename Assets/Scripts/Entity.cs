@@ -1,4 +1,5 @@
 ﻿
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -37,8 +38,8 @@ public class EntityFactory
         // entity.UpdateSprite();
         go.transform.position =
         new Vector2(
-                x: -(World.MAP_WIDTH / 2f) + x,
-                y: y - 0.5f
+                x: -(World.MAP_WIDTH / 2) + x,
+                y: y
             );
 
         foreach (var location in entity.GetLocations())
@@ -56,6 +57,7 @@ public abstract class Entity : MonoBehaviour
     protected List<(int, int)> Locations;
     public int X;
     public int Y;
+    private Tween moveTween;
 
     public List<(int, int)> GetLocations()
     {
@@ -126,12 +128,9 @@ public abstract class Entity : MonoBehaviour
             var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
             square.Entities.Add(this);
         }
-
-        gameObject.transform.position =
-            new Vector2(
-                x: -(World.MAP_WIDTH / 2f) + X,
-                y: Y - 0.5f
-            );
+        
+        moveTween?.Kill();
+        moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
 
         return true;
     }
