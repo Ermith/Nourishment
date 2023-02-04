@@ -160,21 +160,15 @@ public class World : MonoBehaviour
         // prevent non dirt tiles from appearing in first 3 layers
         if (y >= MIN_TILE_ENTITY_Y)
         {
-<<<<<<< HEAD
             if (prob < rootTreshold)
                 return TileFactory.RootTile(this.gameObject, x, y);
 
             if (prob < rockTreshold)
             {
                 var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
-                EntityFactory.PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
+                Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
                 return tile;
             }
-=======
-            var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
-            Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
-            return tile;
->>>>>>> 8ee5e06a3e8bc565e988e51afde6e1f0e82ec49e
         }
 
 
