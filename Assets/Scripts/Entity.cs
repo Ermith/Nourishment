@@ -80,12 +80,18 @@ public abstract class Entity : MonoBehaviour
 
     protected void Fall()
     {
+        int fallenHeight = 0;
         while (Move(Direction.Down, false))
         {
+            fallenHeight++;
         }
-        
-        moveTween?.Kill();
-        moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+
+        if (fallenHeight > 0)
+        {
+            moveTween?.Kill();
+            moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f * fallenHeight);
+            moveTween.SetEase(Ease.OutBounce);
+        }
     }
 
     public virtual bool CanSpread(Player player, Direction spreadDirection)
@@ -155,6 +161,7 @@ public abstract class Entity : MonoBehaviour
         {
             moveTween?.Kill();
             moveTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+            moveTween.SetEase(Ease.InOutCubic);
         }
 
         return true;
