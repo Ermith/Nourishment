@@ -62,6 +62,10 @@ public class Player : MonoBehaviour
         World world = Util.GetWorld();
         int newX = X + direction.X();
         int newY = Y + direction.Y();
+
+        if (newY > -1)
+            return false;
+
         Tile oldTile = world.GetTile(X, Y);
         Tile newTile = world.GetTile(newX, newY);
         if (retreat && newTile is not RootTile)
