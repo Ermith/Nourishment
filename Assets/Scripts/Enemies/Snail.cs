@@ -8,6 +8,6 @@ public class Snail : Slug
     {
         if (_animator == null)
             _animator = GetComponent<Animator>();
-        _animator.SetTrigger("Death");
+        _animator.SetTrigger("Die");
     }
 }
