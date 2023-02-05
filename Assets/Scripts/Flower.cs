@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -54,7 +55,7 @@ public class Flower : MonoBehaviour
             if (_nourishment < GAME_OVER_NOURISHMENT)
                 SceneManager.LoadScene("GameOverScene");
 
-            NourishmentText.text = $"Nourishment: {_nourishment}";
+            NourishmentText.text = $"Nourishment: {String.Format("{0:.##}", _nourishment)}";
         }
     }
 
