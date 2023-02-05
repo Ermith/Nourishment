@@ -288,27 +288,32 @@ public class World : MonoBehaviour
         if (prob < snail && tile is AirTile)
             type = EntityType.Snail;
 
-        if (prob < slug && tile is AirTile)
+        else if (prob < slug && tile is AirTile)
             type = EntityType.Slug;
 
-        if (prob < amberBee)
+        else if (prob < amberBee)
             type = EntityType.AmberBee;
 
-        if (prob < squareRock)
-            type = EntityType.SquareRock;
+        else if (prob < squareRock)
+            type = EntityType.RandomRock4X4;
 
-        if (prob < smallRock)
+        else if (prob < smallRock)
             type = EntityType.SmallRock;
 
         if (type == null)
             return null;
-        
-        Entity e = Util.GetEntityFactory().PlaceEntity(gameObject, type.Value, x, y);
-        if (e is null || !e.IsPlacementValid())
+
+        int tries = 10;
+        Entity e;
+        do
         {
-            Destroy(e);
-            return null;
-        }
+            e = Util.GetEntityFactory().PlaceEntity(gameObject, type.Value, x, y);
+            if (e is null || !e.IsPlacementValid())
+            {
+                Destroy(e);
+                e = null;
+            }
+        } while (tries-- > 0);
 
         return e;
     }
