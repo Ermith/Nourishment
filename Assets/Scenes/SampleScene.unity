@@ -1000,6 +1000,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f768e2847d434a41ae3af1356395921, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Bee: {fileID: 5491073945550156827, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
   Slug: {fileID: 1004342910692165456, guid: 6857c168807fd344b91ab9da07a2a17e, type: 3}
   Snail: {fileID: 2865792478350114045, guid: d4884787b5b1b9143b54198f7d2d7665, type: 3}
 --- !u!4 &1835742019

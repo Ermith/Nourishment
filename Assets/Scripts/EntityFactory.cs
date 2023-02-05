@@ -19,7 +19,7 @@ public enum EntityType
 }
 public class EntityFactory : MonoBehaviour
 {
-
+    public GameObject Bee;
     public GameObject Slug;
     public GameObject Snail;
 
