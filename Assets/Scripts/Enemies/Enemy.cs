@@ -108,7 +108,7 @@ public abstract class Enemy : Entity
         // rotate 180 degrees as default
         transform.DORotate(new Vector3(0, 0, 180), 0.2f);
         _localShift = new Vector3(0, -0.8f, 0);
-        transform.DOMoveY(transform.localPosition.y - 0.8f, 0.2f);
+        transform.DOMove(_localShift  + new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
     }
 
     public void Kill()
