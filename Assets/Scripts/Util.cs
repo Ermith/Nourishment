@@ -198,4 +198,19 @@ public class Util
 
         return CreateSpriteObject(parent, type, subSpriteLabels);
     }
+
+    public static T WeightedPick<T>(Dictionary<T, float> weights)
+    {
+        float totalWeight = weights.Values.Sum();
+        float randomWeight = UnityEngine.Random.Range(0, totalWeight);
+
+        foreach (var (key, weight) in weights)
+        {
+            if (randomWeight < weight)
+                return key;
+            randomWeight -= weight;
+        }
+
+        return weights.Keys.First();
+    }
 }
