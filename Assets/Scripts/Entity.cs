@@ -51,7 +51,7 @@ public abstract class Entity : MonoBehaviour
         foreach (var location in Locations)
         {
             var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
-            if (square == null || square.Y >= World.MIN_ENTITY_Y || square.Entities.Count > 1 || square.Entities.Count == 1 && square.Entities[0] != this)
+            if (square == null || square.Y >= World.MIN_ENTITY_Y || square.Entities.Count > 1 || square.Entities.Count == 1 && square.Entities[0] != this || square.Tile is SuperGroundTile)
                 return false;
         }
 
