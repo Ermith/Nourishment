@@ -211,15 +211,22 @@ public class AmberBee : Entity
         if (base.CanSpread(player, spreadDirection))
         {
             // miro TODO: spawn bee above ground?
-
             var flower = Util.GetFlower();
-            flower.ObtainedBeeQueen();
 
-            base.OnSpread(player, spreadDirection);
-            Destroy(gameObject);
+            if (flower.IsAbleToBreakAmber())
+            {
+                if (flower.CanObtainQueen())
+                    flower.ObtainBeeQueen();
+                else
+                    flower.PowerUpQueen();
+
+                flower.BreakAmber();
+                Destroy(gameObject);
+                return;
+            }
         }
-        else
-            Move(spreadDirection);
+        
+        Move(spreadDirection);
     }
 
     public override bool CanPass(Entity entity, Direction moveDirection)

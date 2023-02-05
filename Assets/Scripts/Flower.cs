@@ -7,6 +7,8 @@ public class Flower : MonoBehaviour
 {
     public List<Sprite> GrowthSprites;
     public int RequiredLevelAmberBreak = 6;
+    public int QueenLevel = 0;
+    public float AmberBreakCost = 250;
     public bool HasHatchedBee = false;
     public GameObject HatchedBeeQueen = null;
     public const int GAME_OVER_NOURISHMENT = 5;
@@ -43,18 +45,18 @@ public class Flower : MonoBehaviour
         set
         {
             _nourishment = value;
-            Level = NourishmentToLevel();
+            Level = NourishmentToLevel(_nourishment);
             if (_nourishment < GAME_OVER_NOURISHMENT)
                 SceneManager.LoadScene("GameOverScene");
         }
     }
 
-    private int NourishmentToLevel()
+    private int NourishmentToLevel(float expectedNourishment)
     {
         int currentLevel = -1;
         foreach (float nextLevel in NourishmentForLevel)
         {
-            if (nextLevel <= _nourishment)
+            if (nextLevel <= expectedNourishment)
                 currentLevel++;
             else
                 break;
@@ -87,10 +89,32 @@ public class Flower : MonoBehaviour
         GUILayout.Label($"Nourishment: {Nourishment}");
     }
 
-    public void ObtainedBeeQueen()
+    public void ObtainBeeQueen()
     {
         HasHatchedBee = true;
         if (HatchedBeeQueen != null)
             HatchedBeeQueen.SetActive(true);
+    }
+
+    public bool IsAbleToBreakAmber()
+    {
+        // current level is higher or equal
+        // changed level is still higher or equal to break level
+        return Level >= RequiredLevelAmberBreak &&
+               NourishmentToLevel(_nourishment - AmberBreakCost) >= RequiredLevelAmberBreak;
+    }
+    public void BreakAmber()
+    {
+        Util.GetFlower().Nourishment -= AmberBreakCost;
+    }
+
+    public bool CanObtainQueen()
+    {
+        return !HasHatchedBee;
+    }
+
+    public void PowerUpQueen()
+    {
+        QueenLevel += 1;
     }
 }
