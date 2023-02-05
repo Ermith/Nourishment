@@ -147,7 +147,7 @@ public class World : MonoBehaviour
     public Dictionary<string, Sprite> Sprites;
     public Player Player;
     public int ExtraSimulatedRows = 10;
-    public bool CheatsEnabled = true; // TODO change
+    public bool CheatsEnabled = false;
 
     public SpriteRenderer Background1;
     public SpriteRenderer Background2;
@@ -270,7 +270,8 @@ public class World : MonoBehaviour
         var rnd = new System.Random();
         float prob = (float)rnd.NextDouble() * 100;
 
-        float evil = 40 + (-y / CHUNK_SIZE * 2);
+        float evil = 45 + (-y / CHUNK_SIZE * 2);
+        float nutrition = evil + 10;
         float air = 20;
         float root = 10 - (-y / CHUNK_SIZE);
         float water = 15 - (-y / CHUNK_SIZE * 2);
@@ -291,6 +292,8 @@ public class World : MonoBehaviour
 
             if (prob < evil)
                 return TileFactory.CreateTile(gameObject, x, y, TileType.EvilGround);
+            if (prob < nutrition)
+                return TileFactory.CreateTile(gameObject, x, y, TileType.NutritionGround);
         }
 
         return TileFactory.CreateTile(gameObject, x, y, TileType.Ground);
@@ -434,7 +437,7 @@ public class World : MonoBehaviour
             }
         }
 
-        CellularAutomaton(yStart, TileType.EvilGround, treshold: 3);
+        CellularAutomaton(yStart, TileType.EvilGround, treshold: 4);
         CellularAutomaton(yStart, TileType.Root);
         CellularAutomaton(yStart, TileType.Air);
         

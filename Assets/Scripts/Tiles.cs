@@ -13,7 +13,8 @@ public enum TileType
     Root,
     Grass,
     SuperGround,
-    EvilGround
+    EvilGround,
+    NutritionGround
 }
 
 public class TileFactory
@@ -74,6 +75,8 @@ public class TileFactory
                 return CreateTile<SuperGroundTile>(parent, x, y);
             case TileType.EvilGround:
                 return CreateTile<EvilGroundTile>(parent, x, y);
+            case TileType.NutritionGround:
+                return CreateTile<NutritionGroundTile>(parent, x, y);
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -126,7 +129,7 @@ public abstract class Tile : MonoBehaviour
 
 public class GroundTile : Tile
 {
-    public override float Hardness => 5;
+    public override float Hardness => 4;
     private List<GameObject> _subSpriteObjects = new List<GameObject>();
     public override string Audio => "Dirt";
 
@@ -189,6 +192,29 @@ public class EvilGroundTile : GroundTile
             Destroy(subSprite);
 
         _subSpriteObjects = Util.GroundLikeSprite(gameObject, "evil_ground", dir =>
+        {
+            Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
+            return neighTile is GroundTile || neighTile is GrassTile;
+        });
+    }
+}
+
+public class NutritionGroundTile : GroundTile
+{
+    public float Nutrition = 12;
+    public override float Hardness => 0;
+    private List<GameObject> _subSpriteObjects = new List<GameObject>();
+
+    public override TileType Type => TileType.EvilGround;
+
+    public override void UpdateSprite()
+    {
+        World world = Util.GetWorld();
+
+        foreach (var subSprite in _subSpriteObjects)
+            Destroy(subSprite);
+
+        _subSpriteObjects = Util.GroundLikeSprite(gameObject, "nutrition_ground", dir =>
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
             return neighTile is GroundTile || neighTile is GrassTile;

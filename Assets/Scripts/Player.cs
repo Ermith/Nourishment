@@ -157,10 +157,12 @@ public class Player : MonoBehaviour
             };
         }
 
-        if (oldTile is RootTile rootTile)
-            rootTile.ConnectWithNeigh(direction);
+        oldTile.ConnectWithNeigh(direction);
 
         Util.GetFlower().Nourishment -= newTile.Hardness;
+        if (newTile is NutritionGroundTile nutritionGroundTile)
+            Util.GetFlower().Nourishment += nutritionGroundTile.Nutrition;
+        
         Util.GetAudioManager().Play(newTile.Audio);
         Lowest = Mathf.Min(Lowest, Y);
 
