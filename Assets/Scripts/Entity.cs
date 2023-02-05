@@ -202,12 +202,37 @@ public class AmberBee : Entity
     public override bool AffectedByGravity => true;
     public override float Heaviness => 600;
 
-    public override bool CanPass(Entity entity, Direction moveDirection) => true;
+    public override bool CanSpread(Player player, Direction spreadDirection)
+    {
+        return base.CanSpread(player, spreadDirection) || CanMove(spreadDirection);
+    }
 
     public override void OnSpread(Player player, Direction spreadDirection)
     {
-        base.OnSpread(player, spreadDirection);
-        Destroy(this);
+        if (base.CanSpread(player, spreadDirection))
+        {
+            // miro TODO: spawn bee above ground?
+            base.OnSpread(player, spreadDirection);
+            Destroy(gameObject);
+        }
+        else
+            Move(spreadDirection);
+    }
+
+    public override bool CanPass(Entity entity, Direction moveDirection)
+    {
+        return CanMove(moveDirection) || entity is Rock && moveDirection == Direction.Down;
+    }
+
+    public override void OnPass(Entity entity, Direction moveDirection)
+    {
+        if (entity is Rock && moveDirection == Direction.Down && !CanMove(moveDirection))
+        {
+            Destroy(gameObject);
+            Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Bee, X, Y);
+        }
+        else
+            Move(moveDirection);
     }
 
     public override void Initialize(int x, int y)
