@@ -142,7 +142,7 @@ public class World : MonoBehaviour
     public const float WATER_HEALING_RATIO = 0.03f; //! how much health do you get by being next to water
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
-    public Player player;
+    public Player Player;
     public int ExtraSimulatedRows = 10;
 
     public SpriteRenderer Background1;
@@ -254,7 +254,7 @@ public class World : MonoBehaviour
         {
             RootTile tile = TileFactory.CreateTile(gameObject, x, y, TileType.Root) as RootTile;
             tile.ForceConnect(Direction.Up);
-            tile.SetStatus(RootTile.RootStatus.Initial);
+            tile.Status = RootTile.RootStatus.Initial;
             return tile;
         }
 
