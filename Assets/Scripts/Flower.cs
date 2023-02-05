@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +11,10 @@ public class Flower : MonoBehaviour
     public bool HasHatchedBee = false;
     public GameObject HatchedBeeQueen = null;
     public const int GAME_OVER_NOURISHMENT = 5;
+    public TMP_Text NourishmentText;
+    public TMP_Text HintsText;
+    public TMP_Text HintForHintsText;
+     
 
     private SpriteRenderer _spriteRenderer;
 
@@ -46,6 +51,8 @@ public class Flower : MonoBehaviour
             Level = NourishmentToLevel();
             if (_nourishment < GAME_OVER_NOURISHMENT)
                 SceneManager.LoadScene("GameOverScene");
+
+            NourishmentText.text = $"Nourishment: {_nourishment}";
         }
     }
 
@@ -75,6 +82,12 @@ public class Flower : MonoBehaviour
     void Update()
     {
         _spriteRenderer.sprite = GrowthSprites[Level];
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            HintForHintsText.enabled = !HintForHintsText.enabled;
+            HintsText.enabled = !HintsText.enabled;
+        }
     }
 
     private void OnGUI()
