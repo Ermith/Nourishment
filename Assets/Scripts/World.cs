@@ -357,9 +357,10 @@ public class World : MonoBehaviour
                 x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
                 y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
                 rock = Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
-                if(rock.IsPlacementValid())
+                if(rock?.IsPlacementValid() ?? false)
                     break;
-                Destroy(rock.gameObject);
+                if(rock)
+                    Destroy(rock.gameObject);
                 rock = null;
             } while (tries-- > 0);
             

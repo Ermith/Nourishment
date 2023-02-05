@@ -59,6 +59,11 @@ public class EntityFactory : MonoBehaviour
         foreach (var location in entity.GetLocations())
         {
             var square = Util.GetWorld().GetSquare(location.Item1, location.Item2, true);
+            if (square is null)
+            {
+                Destroy(entity);
+                return null;
+            }
             square.Entities.Add(entity);
         }
 
