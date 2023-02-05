@@ -253,10 +253,12 @@ public class World : MonoBehaviour
         if (x == 0 || x == MAP_WIDTH - 1)
             return TileFactory.CreateTile(gameObject, x, y, TileType.SuperGround);
 
-        int prob = UnityEngine.Random.Range(0, 100);
 
-        int air = 30;
-        int root = 15;
+        var rnd = new System.Random();
+        float prob = (float)rnd.NextDouble() * 100;
+
+        float air = 30;
+        float root = 15;
 
         if (y < MIN_TILE_ENTITY_Y)
         {
@@ -278,13 +280,14 @@ public class World : MonoBehaviour
         if (x == 0 || x == MAP_WIDTH - 1)
             return null;
 
-        int amberBee = 2;
-        int squareRock = 4;
-        int smallRock = 7;
-        int snail = 17;
-        int slug = 35;
+        float amberBee = 0.00001f;
+        float squareRock = 4;
+        float smallRock = 7;
+        float snail = 17;
+        float slug = 35;
 
-        int prob = UnityEngine.Random.Range(0, 100);
+        var rnd = new System.Random();
+        float prob = (float)rnd.NextDouble() * 100;
         Tile tile = GetTile(x, y);
         EntityType? type = null;
 
