@@ -127,7 +127,7 @@ public class World : MonoBehaviour
     public static int MIN_TILE_ENTITY_Y = -3;
     public static int MIN_ENTITY_Y = -5;
     public const int TILE_SIZE = 32;
-    public static int MAP_WIDTH = 21;
+    public static int MAP_WIDTH = 23;
     public const int CHUNK_SIZE = 14;
     public const int FLUID_SUBSTEPS = 5;
     public const float WATER_CONVERSION_RATIO = 15f; //! how much nourishment you get per 1 tile of water
@@ -249,6 +249,9 @@ public class World : MonoBehaviour
             tile.Protected = true;
             return tile;
         }
+
+        if (x == 0 || x == MAP_WIDTH - 1)
+            return TileFactory.CreateTile(gameObject, x, y, TileType.SuperGround);
 
         int prob = UnityEngine.Random.Range(0, 100);
 

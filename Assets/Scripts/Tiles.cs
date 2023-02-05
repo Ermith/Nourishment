@@ -10,7 +10,8 @@ public enum TileType
     Air,
     Ground,
     Root,
-    Grass
+    Grass,
+    SuperGround
 }
 
 public class TileFactory
@@ -66,6 +67,8 @@ public class TileFactory
                 return RootTile(parent, x, y);
             case TileType.Grass:
                 return GrassTile(parent, x, y);
+            case TileType.SuperGround:
+                return CreateTile<SuperGroundTile>(parent, x, y);
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -132,8 +135,35 @@ public class GroundTile : Tile
         _subSpriteObjects = Util.GroundLikeSprite(gameObject, "ground", dir =>
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
-            return neighTile is GroundTile || neighTile is GrassTile;
+            return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
         });
+    }
+}
+
+public class SuperGroundTile : Tile
+{
+    public override float Hardness => -1;
+    private List<GameObject> _subSpriteObjects = new List<GameObject>();
+
+    public override TileType Type => TileType.SuperGround;
+
+    public override void UpdateSprite()
+    {
+        World world = Util.GetWorld();
+
+        foreach (var subSprite in _subSpriteObjects)
+            Destroy(subSprite);
+
+        _subSpriteObjects = Util.GroundLikeSprite(gameObject, "superGround", dir =>
+        {
+            Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
+            return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
+        });
+
+        foreach (var subSprite in _subSpriteObjects)
+        {
+            subSprite.GetComponent<SpriteRenderer>().color = Color.gray;
+        }
     }
 }
 
