@@ -3,6 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EntityType
+{
+    SmallRock,
+    SquareRock,
+    Slug,
+    Snail,
+    AmberBee,
+    RandomRock3X3,
+    RandomRock4X4,
+    RandomRock5X5,
+    RandomRock6X6,
+    RandomRock6X3,
+    RandomRock3X6,
+}
 public class EntityFactory : MonoBehaviour
 {
 
@@ -42,7 +56,22 @@ public class EntityFactory : MonoBehaviour
                 entity = go.AddComponent<AmberBee>();
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                if (type.ToString().StartsWith("RandomRock"))
+                {
+                    var size = type.ToString().Substring("RandomRock".Length);
+                    var parts = size.Split("X");
+                    var width = int.Parse(parts[0]);
+                    var height = int.Parse(parts[1]);
+                    entity = go.AddComponent<RandomRock>();
+                    ((RandomRock)entity).Width = width;
+                    ((RandomRock)entity).Height = height;
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                }
+
+                break;
         }
 
         entity.name = type.ToString();

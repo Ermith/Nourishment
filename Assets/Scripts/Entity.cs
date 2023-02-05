@@ -8,15 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.U2D;
 using static UnityEditor.FilePathAttribute;
 using static UnityEngine.UI.GridLayoutGroup;
-
-public enum EntityType
-{
-    SmallRock,
-    SquareRock,
-    Slug,
-    Snail,
-    AmberBee
-}
+using Random = UnityEngine.Random;
 
 public abstract class Entity : MonoBehaviour
 {
@@ -311,5 +303,94 @@ public class SquareRock : Rock
             {true, true},
             {true, true}
         };
+    }
+}
+
+public class RandomRock : Rock
+{
+    public int Width = 3;
+    public int Height = 3;
+    public float Chance = 0.5f;
+
+    protected override bool[,] GetShape()
+    {
+        var shape = new bool[Width, Height];
+        for (int i = 0; i < Width; i++)
+            for (int j = 0; j < Height; j++)
+                shape[i, j] = Random.value < Chance;
+        for (int i = 0; i < Width; i++)
+        {
+            bool found = false;
+            for (int j = 0; j < Height; j++)
+            {
+                if (shape[i, j])
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                int j = Random.Range(0, Height);
+                shape[i, j] = true;
+            }
+        }
+        for (int j = 0; j < Height; j++)
+        {
+            bool found = false;
+            for (int i = 0; i < Width; i++)
+            {
+                if (shape[i, j])
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                int i = Random.Range(0, Width);
+                shape[i, j] = true;
+            }
+        }
+
+        // make it convex
+        for (int i = 0; i < Width; i++)
+        {
+            int minJ = -1;
+            int maxJ = -1;
+            for (int j = 0; j < Height; j++)
+            {
+                if (shape[i, j])
+                {
+                    if (minJ == -1)
+                        minJ = j;
+                    maxJ = j;
+                }
+            }
+            if (minJ != -1)
+            {
+                for (int j = minJ; j <= maxJ; j++)
+                    shape[i, j] = true;
+            }
+        }
+        for (int j = 0; j < Height; j++)
+        {
+            int minI = -1;
+            int maxI = -1;
+            for (int i = 0; i < Width; i++)
+            {
+                if (shape[i, j])
+                {
+                    if (minI == -1)
+                        minI = i;
+                    maxI = i;
+                }
+            }
+            if (minI != -1)
+            {
+                for (int i = minI; i <= maxI; i++)
+                    shape[i, j] = true;
+            }
+        }
     }
 }
