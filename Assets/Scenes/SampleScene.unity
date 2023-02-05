@@ -1657,12 +1657,12 @@ MonoBehaviour:
   HintForHintsText: {fileID: 1432990826}
   NourishmentForLevel:
   - 5
-  - 50
   - 100
   - 200
-  - 350
-  - 500
-  - 750
+  - 300
+  - 450
+  - 600
+  - 1000
   - 3000
   StartingNourishment: 200
 --- !u!1 &1950914747

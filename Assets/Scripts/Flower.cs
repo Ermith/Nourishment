@@ -36,7 +36,7 @@ public class Flower : MonoBehaviour
     }
 
     [SerializeField]
-    private float StartingNourishment = 200;
+    private float StartingNourishment = 400;
 
     private float _nourishment;
 

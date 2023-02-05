@@ -140,8 +140,8 @@ public class World : MonoBehaviour
     public static int MAP_WIDTH = 23;
     public const int CHUNK_SIZE = 20;
     public const int FLUID_SUBSTEPS = 5;
-    public const float WATER_CONVERSION_RATIO = 15f; //! how much nourishment you get per 1 tile of water
-    public const float WATER_CONVERSION_SPEED = 0.03f; //! how much water do you absorb per 1 tick per water/root boundary
+    public const float WATER_CONVERSION_RATIO = 25f; //! how much nourishment you get per 1 tile of water
+    public const float WATER_CONVERSION_SPEED = 0.02f; //! how much water do you absorb per 1 tick per water/root boundary
     public const float WATER_HEALING_RATIO = 0.03f; //! how much health do you get by being next to water
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
