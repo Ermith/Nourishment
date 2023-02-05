@@ -105,6 +105,7 @@ public class Flower : MonoBehaviour
     public void ObtainBeeQueen()
     {
         HasHatchedBee = true;
+        PowerUpQueen();
         if (HatchedBeeQueen != null)
             HatchedBeeQueen.SetActive(true);
     }
@@ -133,6 +134,9 @@ public class Flower : MonoBehaviour
 
     public void OnWorldSimulationStep()
     {
-
+        if (HasHatchedBee)
+        {
+            Nourishment += QueenLevel;
+        }
     }
 }
