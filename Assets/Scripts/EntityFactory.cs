@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class EntityFactory : MonoBehaviour
 {
-
+    public GameObject Bee;
     public GameObject Slug;
     public GameObject Snail;
 
