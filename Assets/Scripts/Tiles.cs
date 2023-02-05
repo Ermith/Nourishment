@@ -205,7 +205,7 @@ public class NutritionGroundTile : GroundTile
     public override float Hardness => 0;
     private List<GameObject> _subSpriteObjects = new List<GameObject>();
 
-    public override TileType Type => TileType.EvilGround;
+    public override TileType Type => TileType.NutritionGround;
 
     public override void UpdateSprite()
     {
