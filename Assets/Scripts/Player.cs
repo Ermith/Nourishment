@@ -5,6 +5,7 @@ using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using System;
+using UnityEngine.SceneManagement;
 using static RootTile;
 
 public class Player : MonoBehaviour
@@ -27,6 +28,9 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            SceneManager.LoadScene("MainMenuScene");
+
         if (Input.GetKeyDown(KeyCode.Space))
             Util.GetWorld().SimulationStep();
 

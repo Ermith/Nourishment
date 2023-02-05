@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Flower : MonoBehaviour
 {
     public List<Sprite> GrowthSprites;
     public int RequiredLevelAmberBreak = 6;
     public bool HasHatchedBee = false;
+    public const int GAME_OVER_NOURISHMENT = 5;
 
     private SpriteRenderer _spriteRenderer;
 
@@ -36,6 +38,8 @@ public class Flower : MonoBehaviour
         {
             _nourishment = value;
             Level = (int)(_nourishment / 100);
+            if (_nourishment < GAME_OVER_NOURISHMENT)
+                SceneManager.LoadScene("GameOverScene");
         }
     }
 
