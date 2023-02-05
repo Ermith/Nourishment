@@ -188,7 +188,7 @@ public class EvilGroundTile : GroundTile
         foreach (var subSprite in _subSpriteObjects)
             Destroy(subSprite);
 
-        _subSpriteObjects = Util.GroundLikeSprite(gameObject, "evilGround", dir =>
+        _subSpriteObjects = Util.GroundLikeSprite(gameObject, "evil_ground", dir =>
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
             return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
