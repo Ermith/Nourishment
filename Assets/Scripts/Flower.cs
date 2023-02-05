@@ -7,8 +7,14 @@ public class Flower : MonoBehaviour
     public List<Sprite> GrowthSprites;
     public int RequiredLevelAmberBreak = 6;
     public bool HasHatchedBee = false;
+    public GameObject HatchedBeeQueen = null;
 
     private SpriteRenderer _spriteRenderer;
+
+    public float[] NourishmentForLevel = new float[]
+    {
+
+    };
 
     private int _level;
     public int Level
@@ -35,8 +41,22 @@ public class Flower : MonoBehaviour
         set
         {
             _nourishment = value;
-            Level = (int)(_nourishment / 100);
+            Level = NourishmentToLevel();
         }
+    }
+
+    private int NourishmentToLevel()
+    {
+        int currentLevel = 0;
+        foreach (float nextLevel in NourishmentForLevel)
+        {
+            if (nextLevel <= _nourishment)
+                currentLevel++;
+            else
+                break;
+        }
+
+        return currentLevel;
     }
 
     // Start is called before the first frame update
@@ -61,5 +81,12 @@ public class Flower : MonoBehaviour
             Nourishment -= 100;
 
         GUILayout.Label($"Nourishment: {Nourishment}");
+    }
+
+    public void ObtainedBeeQueen()
+    {
+        HasHatchedBee = true;
+        if (HatchedBeeQueen != null)
+            HatchedBeeQueen.SetActive(true);
     }
 }
