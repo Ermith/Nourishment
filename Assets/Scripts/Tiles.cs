@@ -164,7 +164,7 @@ public class SuperGroundTile : GroundTile
         _subSpriteObjects = Util.GroundLikeSprite(gameObject, "superGround", dir =>
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
-            return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
+            return neighTile is GroundTile || neighTile is GrassTile;
         });
 
         foreach (var subSprite in _subSpriteObjects)
@@ -191,7 +191,7 @@ public class EvilGroundTile : GroundTile
         _subSpriteObjects = Util.GroundLikeSprite(gameObject, "evil_ground", dir =>
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
-            return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
+            return neighTile is GroundTile || neighTile is GrassTile;
         });
     }
 }
