@@ -313,6 +313,21 @@ public class RootTile : Tile
 
     public float Health = 1.0f;
 
+    private Tween _colorTween;
+
+    private void changeColor(Color color, float time=0.5f)
+    {
+        if (time <= 0f)
+        {
+            SpriteRenderer.color = color;
+        }
+        else
+        {
+            _colorTween?.Kill();
+            _colorTween = SpriteRenderer.DOColor(color, 0.5f);
+        }
+    }
+
     public override void SimulationStep()
     {
         
@@ -322,15 +337,16 @@ public class RootTile : Tile
         }
         // interpolate color
         if (Status == RootStatus.Spawned)
-            SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health);
+            changeColor(Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health));
         else
-            SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health);
+            changeColor(Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health));
         if (Health <= 0)
         {
             World world = Util.GetWorld();
             world.ReplaceTile(X, Y, TileType.Air);
         }
     }
+
 
     private RootStatus? _status;
     public RootStatus? Status {
@@ -339,9 +355,9 @@ public class RootTile : Tile
         { 
             _status = value;
             if (_status == RootStatus.Spawned)
-                SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health);
+                changeColor(Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health), 0f);
             else
-                SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health);
+                changeColor(Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health));
         }
     }
 
