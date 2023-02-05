@@ -762,6 +762,11 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+--- !u!1 &1573234018 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5491073945550156827, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
+  m_PrefabInstance: {fileID: 1794101214}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1584036435
 GameObject:
   m_ObjectHideFlags: 0
@@ -982,7 +987,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7996975303591466502, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
       propertyPath: MinMove
-      value: -3
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: -7996975303591466502, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
       propertyPath: StepLength
@@ -995,6 +1000,10 @@ PrefabInstance:
     - target: {fileID: 5491073945550156827, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
       propertyPath: m_Name
       value: OverworldBee
+      objectReference: {fileID: 0}
+    - target: {fileID: 5491073945550156827, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
       propertyPath: m_RootOrder
@@ -1010,11 +1019,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.54
+      value: -1.8
       objectReference: {fileID: 0}
     - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.7
+      value: 0.81
       objectReference: {fileID: 0}
     - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1277,6 +1286,16 @@ MonoBehaviour:
   - {fileID: 21300000, guid: fb0210283e5fddc44bb0c1377a9cf2d6, type: 3}
   RequiredLevelAmberBreak: 6
   HasHatchedBee: 0
+  HatchedBeeQueen: {fileID: 1573234018}
+  NourishmentForLevel:
+  - 5
+  - 50
+  - 100
+  - 200
+  - 350
+  - 500
+  - 750
+  - 3000
   StartingNourishment: 200
 --- !u!1 &2019286965
 GameObject:

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -43,8 +44,9 @@ public class TileFactory
 
     public static Tile RootTile(GameObject parent, int x, int y)
     {
-        var tile = CreateTile<RootTile>(parent, x, y);
+        var tile = (RootTile)CreateTile<RootTile>(parent, x, y);
         tile.gameObject.AddComponent<SpriteRenderer>();
+        tile.SetStatus(global::RootTile.RootStatus.Spawned);
         return tile;
     }
 
@@ -242,9 +244,52 @@ public class RootNotFoundException : Exception
 
 public class RootTile : Tile
 {
+    public enum RootStatus
+    {
+        Connected,
+        Disconnected,
+        Spawned,
+        Initial,
+    }
+
+    private readonly Color HEALTHY_COLOR = Color.white;
+    private readonly Color DAMAGED_COLOR = new Color(0.7f, 0.4f, 0.2f);
+    private readonly Color SPAWNED_COLOR = new Color(0.7f, 0.7f, 0.7f);
+
+    public float Health = 1.0f;
+
+    public override void SimulationStep()
+    {
+        
+        if (Status == RootStatus.Disconnected)
+        {
+            Health -= 0.02f;
+        }
+        // interpolate color
+        if (Status == RootStatus.Spawned)
+            SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health);
+        else
+            SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health);
+        if (Health <= 0)
+        {
+            World world = Util.GetWorld();
+            world.ReplaceTile(X, Y, TileType.Air);
+        }
+    }
+
+    public void SetStatus(RootStatus status)
+    {
+        Status = status;
+        if (Status == RootStatus.Spawned)
+            SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health);
+        else
+            SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health);
+    }
+
+    public RootStatus? Status;
+
     public override TileType Type => TileType.Root;
     public override float Hardness => 0;
-    public bool Protected;
     
     private bool[] ConnectedDirections;
 
@@ -263,6 +308,35 @@ public class RootTile : Tile
     public RootTile()
     {
         ConnectedDirections = new bool[4];
+    }
+
+    public HashSet<RootTile> BFSApply(Action<RootTile> action, Predicate<RootTile> connPredicate = null)
+    {
+        World world = Util.GetWorld();
+        Queue<RootTile> queue = new Queue<RootTile>();
+        HashSet<RootTile> visited = new HashSet<RootTile>();
+        queue.Enqueue(this);
+        while (queue.Count > 0)
+        {
+            RootTile tile = queue.Dequeue();
+            if (visited.Contains(tile))
+                continue;
+            visited.Add(tile);
+            action(tile);
+            foreach (Direction direction in Util.CARDINAL_DIRECTIONS)
+            {
+                if (!tile.ConnectedDirections[(int)direction])
+                    continue;
+                Tile neighTile = world.GetTile(tile.X + direction.X(), tile.Y + direction.Y());
+                if (neighTile is not RootTile neighRoot)
+                    continue;
+                if (connPredicate is not null && !connPredicate(neighRoot))
+                    continue;
+                queue.Enqueue(neighRoot);
+            }
+        }
+
+        return visited;
     }
 
     public void Start()
@@ -297,6 +371,7 @@ public class RootTile : Tile
         World world = Util.GetWorld();
         if (world is null)
             return;
+        HashSet<RootTile> visited = new HashSet<RootTile>();
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
             if (ConnectedDirections[(int)dir])
@@ -304,13 +379,27 @@ public class RootTile : Tile
                 Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
                 if (neighTile is not RootTile neighRoot)
                 {
-                    if (Protected)
+                    if (Status == RootStatus.Initial)
                         continue;
                     else
                         throw new System.Exception("How did we end up connected to a non-root tile?");
                 }
 
                 neighRoot.ConnectedDirections[(int)dir.Opposite()] = false;
+
+                if (!visited.Contains(neighRoot))
+                {
+                    var curVisited = neighRoot.BFSApply(tile => { }, tile => tile.Status == RootStatus.Connected);
+                    var foundInitial = curVisited.Any(tile => tile.Status == RootStatus.Initial);
+                    if (!foundInitial)
+                    {
+                        foreach (var tile in curVisited)
+                        {
+                            tile.SetStatus(RootStatus.Disconnected);
+                        }
+                    }
+                    visited.UnionWith(curVisited);
+                }
             }
         }
         base.OnDestroy();

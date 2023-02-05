@@ -5,6 +5,8 @@ using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using System;
+using UnityEngine.SceneManagement;
+using static RootTile;
 
 public class Player : MonoBehaviour
 {
@@ -26,6 +28,9 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            SceneManager.LoadScene("MainMenuScene");
+
         if (Input.GetKeyDown(KeyCode.Space))
             Util.GetWorld().SimulationStep();
 
@@ -99,7 +104,7 @@ public class Player : MonoBehaviour
 
         if (oldTile is RootTile oldRoot && retreat)
         {
-            if (oldRoot.Protected)
+            if (oldRoot.Status == RootStatus.Initial)
                 return false;
 
             world.ReplaceTile(X, Y, TileType.Air);
@@ -109,8 +114,27 @@ public class Player : MonoBehaviour
         square.OnSpread(this, direction);
         X = newX;
         Y = newY;
-        if(newTile is not RootTile)
-            world.ReplaceTile(X, Y, TileType.Root);
+        if (newTile is RootTile newExistingRootTile)
+        {
+            newExistingRootTile.BFSApply(tile =>
+                {
+                    tile.SetStatus(RootStatus.Connected);
+                },
+                tile => tile.Status == RootStatus.Disconnected || tile.Status == RootStatus.Spawned);
+        }
+        else
+        {
+            var newRootTile = (RootTile)world.ReplaceTile(X, Y, TileType.Root);
+            if (oldTile is RootTile oldRootTile)
+                newRootTile.SetStatus(oldRootTile.Status.Value switch
+                {
+                    RootStatus.Connected => RootStatus.Connected,
+                    RootStatus.Initial => RootStatus.Connected,
+                    RootStatus.Disconnected => RootStatus.Disconnected,
+                    _ => throw new NotImplementedException(),
+                });
+        }
+
         if (oldTile is RootTile rootTile)
             rootTile.ConnectWithNeigh(direction);
 

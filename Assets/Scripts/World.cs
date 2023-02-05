@@ -89,8 +89,15 @@ public class GridSquare
         float absorbAmount = 0f;
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
-            if (Util.GetWorld().GetTile(X + dir.X(), Y + dir.Y()) is RootTile)
+            if (Util.GetWorld().GetTile(X + dir.X(), Y + dir.Y()) is RootTile root &&
+                root.Status == RootTile.RootStatus.Connected)
+            {
                 absorbAmount += World.WATER_CONVERSION_SPEED;
+                if (root.Health < 1f)
+                {
+                    root.Health += World.WATER_HEALING_RATIO;
+                }
+            }
         }
 
         absorbAmount = Mathf.Min(Water.Amount, absorbAmount);
@@ -132,6 +139,7 @@ public class World : MonoBehaviour
     public const int FLUID_SUBSTEPS = 5;
     public const float WATER_CONVERSION_RATIO = 15f; //! how much nourishment you get per 1 tile of water
     public const float WATER_CONVERSION_SPEED = 0.03f; //! how much water do you absorb per 1 tick per water/root boundary
+    public const float WATER_HEALING_RATIO = 0.03f; //! how much health do you get by being next to water
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
     public Player player;
@@ -246,7 +254,7 @@ public class World : MonoBehaviour
         {
             RootTile tile = TileFactory.CreateTile(gameObject, x, y, TileType.Root) as RootTile;
             tile.ForceConnect(Direction.Up);
-            tile.Protected = true;
+            tile.SetStatus(RootTile.RootStatus.Initial);
             return tile;
         }
 

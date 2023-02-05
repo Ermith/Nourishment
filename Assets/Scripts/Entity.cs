@@ -199,7 +199,7 @@ public abstract class Entity : MonoBehaviour
 public class AmberBee : Entity
 {
     public override bool AffectedByGravity => true;
-    public override float Heaviness => 600;
+    public override float Heaviness => 750;
 
     public override bool CanSpread(Player player, Direction spreadDirection)
     {
