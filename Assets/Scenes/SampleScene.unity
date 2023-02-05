@@ -820,6 +820,26 @@ MonoBehaviour:
     volume: 1
     pitch: 1
     AudioSource: {fileID: 0}
+  - Name: Corpse
+    clip: {fileID: 8300000, guid: 04fe35d51627813429d7f92e12f79890, type: 3}
+    volume: 1
+    pitch: 1
+    AudioSource: {fileID: 0}
+  - Name: Music
+    clip: {fileID: 8300000, guid: 6e96ec2ad783cb04db4254a2f1590705, type: 3}
+    volume: 0.4
+    pitch: 1
+    AudioSource: {fileID: 0}
+  - Name: Death
+    clip: {fileID: 8300000, guid: c1e9aabb785f44e448294104543bdac8, type: 3}
+    volume: 1
+    pitch: 1
+    AudioSource: {fileID: 0}
+  - Name: Hit
+    clip: {fileID: 8300000, guid: 1704152c0599dc34bb1b5dcd7482bac9, type: 3}
+    volume: 1
+    pitch: 1
+    AudioSource: {fileID: 0}
 --- !u!4 &1428597181
 Transform:
   m_ObjectHideFlags: 0
@@ -1217,6 +1237,7 @@ MonoBehaviour:
   _camera: {fileID: 519420031}
   Player: {fileID: 0}
   ExtraSimulatedRows: 10
+  CheatsEnabled: 1
   Background1: {fileID: 1235685978}
   Background2: {fileID: 1112595879}
   Background3: {fileID: 1358852388}
