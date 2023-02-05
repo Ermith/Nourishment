@@ -147,6 +147,7 @@ public class World : MonoBehaviour
     public Dictionary<string, Sprite> Sprites;
     public Player Player;
     public int ExtraSimulatedRows = 10;
+    public bool CheatsEnabled = true; // TODO change
 
     public SpriteRenderer Background1;
     public SpriteRenderer Background2;

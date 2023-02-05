@@ -34,21 +34,23 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
             Util.GetWorld().SimulationStep();
 
-        if (Input.GetKeyDown(KeyCode.F))
-            Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Slug, X, Y);
+        if (Util.GetWorld().CheatsEnabled)
+        {
+            if (Input.GetKeyDown(KeyCode.F))
+                Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Slug, X, Y);
 
-        if (Input.GetKeyDown(KeyCode.G))
-            Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Snail, X, Y);
+            if (Input.GetKeyDown(KeyCode.G))
+                Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Snail, X, Y);
 
-        if (Input.GetKeyDown(KeyCode.B))
-            Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Bee, X, Y);
+            if (Input.GetKeyDown(KeyCode.B))
+                Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Bee, X, Y);
 
-        if (Input.GetKeyDown(KeyCode.N))
-            Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.AmberBee, X, Y);
-
-
-        if (Input.GetKeyDown(KeyCode.V))
-            Util.GetWorld().GetSquare(X, Y).Water.Amount = 1.0f;
+            if (Input.GetKeyDown(KeyCode.N))
+                Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.AmberBee, X, Y);
+            
+            if (Input.GetKeyDown(KeyCode.V))
+                Util.GetWorld().GetSquare(X, Y).Water.Amount = 1.0f;
+        }
 
         Direction? movementDir = null;
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
