@@ -90,7 +90,13 @@ public class Player : MonoBehaviour
         if (newY > -1)
             return false;
 
-        Tile oldTile = world.GetTile(X, Y);
+        RootTile oldTile = world.GetTile(X, Y) as RootTile;
+        if (oldTile == null)
+        {
+            Util.GetFlower().Nourishment = 0.0f; // kill
+            return false;
+        }
+
         Tile newTile = world.GetTile(newX, newY);
 
         if (!newTile.Diggable)
@@ -102,9 +108,9 @@ public class Player : MonoBehaviour
         if (retreat && newTile is not RootTile)
             return false;
 
-        if (oldTile is RootTile oldRoot && retreat)
+        if (retreat)
         {
-            if (oldRoot.Status == RootStatus.Initial)
+            if (oldTile.Status == RootStatus.Initial)
                 return false;
 
             world.ReplaceTile(X, Y, TileType.Air);
@@ -116,23 +122,35 @@ public class Player : MonoBehaviour
         Y = newY;
         if (newTile is RootTile newExistingRootTile)
         {
-            newExistingRootTile.BFSApply(tile =>
-                {
-                    tile.SetStatus(RootStatus.Connected);
-                },
-                tile => tile.Status == RootStatus.Disconnected || tile.Status == RootStatus.Spawned);
+            var oldConn = oldTile.Status == RootStatus.Connected || oldTile.Status == RootStatus.Initial;
+            var newConn = newExistingRootTile.Status == RootStatus.Connected || newExistingRootTile.Status == RootStatus.Initial;
+            if (oldConn != newConn || newExistingRootTile.Status == RootStatus.Spawned)
+            {
+                var newStatus = (oldConn || newConn) ? RootStatus.Connected : RootStatus.Disconnected;
+                if (newExistingRootTile.Status != newStatus)
+                    newExistingRootTile.BFSApply(tile =>
+                        {
+                            tile.Status = newStatus;
+                        },
+                        tile => tile.Status == RootStatus.Disconnected || tile.Status == RootStatus.Spawned);
+                else if (oldTile.Status != newStatus)
+                    oldTile.BFSApply(tile =>
+                        {
+                            tile.Status = newStatus;
+                        },
+                        tile => tile.Status == RootStatus.Disconnected || tile.Status == RootStatus.Spawned);
+            }
         }
         else
         {
             var newRootTile = (RootTile)world.ReplaceTile(X, Y, TileType.Root);
-            if (oldTile is RootTile oldRootTile)
-                newRootTile.SetStatus(oldRootTile.Status.Value switch
-                {
-                    RootStatus.Connected => RootStatus.Connected,
-                    RootStatus.Initial => RootStatus.Connected,
-                    RootStatus.Disconnected => RootStatus.Disconnected,
-                    _ => throw new NotImplementedException(),
-                });
+            newRootTile.Status = oldTile.Status.Value switch
+            {
+                RootStatus.Connected => RootStatus.Connected,
+                RootStatus.Initial => RootStatus.Connected,
+                RootStatus.Disconnected => RootStatus.Disconnected,
+                _ => throw new NotImplementedException(),
+            };
         }
 
         if (oldTile is RootTile rootTile)

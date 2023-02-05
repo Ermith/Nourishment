@@ -63,12 +63,13 @@ public abstract class Entity : MonoBehaviour
         World world = Util.GetWorld();
         if (world is null)
             return;
-        foreach (var location in Locations)
-        {
-            var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
-            if (square != null)
-                square.Entities.Remove(this);
-        }
+        if(Locations is not null)
+            foreach (var location in Locations)
+            {
+                var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
+                if (square != null)
+                    square.Entities.Remove(this);
+            }
     }
 
     public virtual void SimulationStep()
@@ -265,6 +266,11 @@ public abstract class Rock : Entity
     public override bool CanPass(Entity entity, Direction moveDirection)
     {
         return CanMove(moveDirection);
+    }
+
+    public override bool CanSpread(Player player, Direction spreadDirection)
+    {
+        return CanMove(spreadDirection);
     }
 
     public override void OnPass(Entity entity, Direction moveDirection)

@@ -46,7 +46,7 @@ public class TileFactory
     {
         var tile = (RootTile)CreateTile<RootTile>(parent, x, y);
         tile.gameObject.AddComponent<SpriteRenderer>();
-        tile.SetStatus(global::RootTile.RootStatus.Spawned);
+        tile.Status = global::RootTile.RootStatus.Spawned;
         return tile;
     }
 
@@ -279,16 +279,18 @@ public class RootTile : Tile
         }
     }
 
-    public void SetStatus(RootStatus status)
-    {
-        Status = status;
-        if (Status == RootStatus.Spawned)
-            SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health);
-        else
-            SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health);
+    private RootStatus? _status;
+    public RootStatus? Status {
+        get => _status;
+        set
+        { 
+            _status = value;
+            if (_status == RootStatus.Spawned)
+                SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health);
+            else
+                SpriteRenderer.color = Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health);
+        }
     }
-
-    public RootStatus? Status;
 
     public override TileType Type => TileType.Root;
     public override float Hardness => 0;
@@ -391,13 +393,14 @@ public class RootTile : Tile
 
                 if (!visited.Contains(neighRoot))
                 {
-                    var curVisited = neighRoot.BFSApply(tile => { }, tile => tile.Status == RootStatus.Connected);
+                    var curVisited = neighRoot.BFSApply(tile => { },
+                        tile => tile.Status == RootStatus.Connected || tile.Status == RootStatus.Initial);
                     var foundInitial = curVisited.Any(tile => tile.Status == RootStatus.Initial);
                     if (!foundInitial)
                     {
                         foreach (var tile in curVisited)
                         {
-                            tile.SetStatus(RootStatus.Disconnected);
+                            tile.Status = RootStatus.Disconnected;
                         }
                     }
                     visited.UnionWith(curVisited);
@@ -405,6 +408,9 @@ public class RootTile : Tile
             }
         }
         base.OnDestroy();
+        var player = Util.GetWorld().Player;
+        if (player && player.X == X && player.Y == Y)
+            Util.GetFlower().Nourishment = 0.0f; // kills the Player
     }
 
     public override void UpdateSprite()

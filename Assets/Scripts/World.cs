@@ -138,14 +138,14 @@ public class World : MonoBehaviour
     public static int MIN_ENTITY_Y = -5;
     public const int TILE_SIZE = 32;
     public static int MAP_WIDTH = 23;
-    public const int CHUNK_SIZE = 14;
+    public const int CHUNK_SIZE = 20;
     public const int FLUID_SUBSTEPS = 5;
     public const float WATER_CONVERSION_RATIO = 15f; //! how much nourishment you get per 1 tile of water
     public const float WATER_CONVERSION_SPEED = 0.03f; //! how much water do you absorb per 1 tick per water/root boundary
     public const float WATER_HEALING_RATIO = 0.03f; //! how much health do you get by being next to water
     public Camera _camera;
     public Dictionary<string, Sprite> Sprites;
-    public Player player;
+    public Player Player;
     public int ExtraSimulatedRows = 10;
 
     public SpriteRenderer Background1;
@@ -257,7 +257,7 @@ public class World : MonoBehaviour
         {
             RootTile tile = TileFactory.CreateTile(gameObject, x, y, TileType.Root) as RootTile;
             tile.ForceConnect(Direction.Up);
-            tile.SetStatus(RootTile.RootStatus.Initial);
+            tile.Status = RootTile.RootStatus.Initial;
             return tile;
         }
 
@@ -455,11 +455,18 @@ public class World : MonoBehaviour
     public int SimulatedRowsStart => Mathf.Max(0, (int)(-_camera.transform.position.y - _camera.orthographicSize - ExtraSimulatedRows));
     public int SimulatedRowsEnd => (int)(-_camera.transform.position.y + _camera.orthographicSize + ExtraSimulatedRows);
 
+    private bool _initSimDone = false;
     // Update is called once per frame
     void Update()
     {
         while (_tiles.Count < SimulatedRowsEnd)
             GenerateMoreMap();
+
+        if (!_initSimDone)
+        {
+            SimulationStep();
+            _initSimDone = true;
+        }
 
         // TODO don't iterate over all rows probably
         int i = 0;
