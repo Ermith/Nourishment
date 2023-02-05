@@ -395,6 +395,32 @@ public class RandomRock : Rock
             }
         }
 
+        // make it connected
+        for (int i = 0; i < Width; i++)
+        {
+            for (int j = 0; j < Height; j++)
+            {
+                if (shape[i, j])
+                {
+                    if (i > 0 && j > 0 && shape[i - 1, j - 1] && !shape[i - 1, j] && !shape[i, j - 1])
+                    {
+                        if (Random.value < 0.5f)
+                            shape[i - 1, j] = true;
+                        else
+                            shape[i, j - 1] = true;
+                    }
+                    if (i > 0 && j < Height - 1 && shape[i - 1, j + 1] && !shape[i - 1, j] && !shape[i, j + 1])
+                    {
+                        if (Random.value < 0.5f)
+                            shape[i - 1, j] = true;
+                        else
+                            shape[i, j + 1] = true;
+                    }
+                    break;
+                }
+            }
+        }
+
         // make it convex
         for (int i = 0; i < Width; i++)
         {
