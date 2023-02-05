@@ -257,8 +257,10 @@ public class World : MonoBehaviour
         var rnd = new System.Random();
         float prob = (float)rnd.NextDouble() * 100;
 
-        float air = 30;
-        float root = 15;
+        float air = 20;
+        float root = 10 - (-y / CHUNK_SIZE);
+        float water = 15 - (-y / CHUNK_SIZE * 2);
+        water = Mathf.Max(water, 2f);
 
         if (y < MIN_TILE_ENTITY_Y)
         {
@@ -266,7 +268,12 @@ public class World : MonoBehaviour
                 return TileFactory.CreateTile(gameObject, x, y, TileType.Root);
 
             if (prob < air)
+            {
+                if (prob < water)
+                    GetSquare(x, y).Water.Amount = prob / water;
+
                 return TileFactory.CreateTile(gameObject, x, y, TileType.Air);
+            }
         }
 
         return TileFactory.CreateTile(gameObject, x, y, TileType.Ground);
@@ -280,11 +287,11 @@ public class World : MonoBehaviour
         if (x == 0 || x == MAP_WIDTH - 1)
             return null;
 
-        float amberBee = 0.00001f;
-        float squareRock = 4;
-        float smallRock = 7;
-        float snail = 17;
-        float slug = 35;
+        float amberBee = 0.1f;
+        float squareRock = 1;
+        float smallRock = 5;
+        float snail = 8;
+        float slug = 15;
 
         var rnd = new System.Random();
         float prob = (float)rnd.NextDouble() * 100;
@@ -307,7 +314,9 @@ public class World : MonoBehaviour
             type = EntityType.SmallRock;
 
         if (type == null)
+        {
             return null;
+        }
 
         int tries = 10;
         Entity e;
