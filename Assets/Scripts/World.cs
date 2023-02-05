@@ -222,6 +222,7 @@ public class World : MonoBehaviour
         var square = GetSquare(x, y);
 
         var oldTile = square.Tile;
+
         if (oldTile != null)
             Destroy(oldTile.gameObject);
 
@@ -232,49 +233,95 @@ public class World : MonoBehaviour
         return newTile;
     }
 
-    /// <summary>
-    /// groundTreshold (default) < rockTrshold < rootTreshold
-    /// </summary>
-    /// <param name="x">Tile position</param>
-    /// <param name="y">Tile position</param>
-    /// <param name="rockThreshold">[0-99] number</param>
-    /// <param name="rootThreshold">[0-99] number</param>
-    /// <returns></returns>
-    private Tile RandomTile(int x, int y, int rockThreshold, int rootThreshold)
+    private Tile RandomTile(int x, int y)
     {
-        int prob = UnityEngine.Random.Range(0, 100);
+        // First row
+        if (y == 0 && x == MAP_WIDTH / 2)
+            return TileFactory.CreateTile(gameObject, x, y, TileType.Air);
 
-        // prevent non dirt tiles from appearing in first 3 layers
-        if (y >= MIN_TILE_ENTITY_Y)
+        if (y == 0)
+            return TileFactory.CreateTile(gameObject, x, y, TileType.Grass);
+
+        if (y == -1 && x == MAP_WIDTH / 2)
         {
-            if (prob < rootThreshold)
-                return TileFactory.RootTile(this.gameObject, x, y);
-
-            if (prob < rockThreshold)
-            {
-                var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
-                Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
-                return tile;
-            }
+            RootTile tile = TileFactory.CreateTile(gameObject, x, y, TileType.Root) as RootTile;
+            tile.ForceConnect(Direction.Up);
+            tile.Protected = true;
+            return tile;
         }
 
+        int prob = UnityEngine.Random.Range(0, 100);
 
-        return TileFactory.GroundTile(this.gameObject, x, y);
+        int air = 30;
+        int root = 15;
+
+        if (y < MIN_TILE_ENTITY_Y)
+        {
+            if (prob < root)
+                return TileFactory.CreateTile(gameObject, x, y, TileType.Root);
+
+            if (prob < air)
+                return TileFactory.CreateTile(gameObject, x, y, TileType.Air);
+        }
+
+        return TileFactory.CreateTile(gameObject, x, y, TileType.Ground);
     }
 
-    private void CellularAutomaton(int yStart)
+    private Entity RandomEntity(int x, int y)
+    {
+        if (y >= MIN_ENTITY_Y)
+            return null;
+
+        int amberBee = 2;
+        int squareRock = 80;
+        int smallRock = 16;
+        int snail = 17;
+        int slug = 35;
+
+        int prob = UnityEngine.Random.Range(0, 100);
+        Tile tile = GetTile(x, y);
+        EntityType? type = null;
+
+        if (prob < snail && tile is AirTile)
+            type = EntityType.Snail;
+
+        if (prob < slug && tile is AirTile)
+            type = EntityType.Slug;
+
+        if (prob < amberBee)
+            type = EntityType.AmberBee;
+
+        if (prob < squareRock)
+            type = EntityType.SquareRock;
+
+        if (prob < smallRock)
+            type = EntityType.SmallRock;
+
+        if (type == null)
+            return null;
+        
+        Entity e = Util.GetEntityFactory().PlaceEntity(gameObject, type.Value, x, y);
+        if (!e.IsPlacementValid())
+        {
+            Destroy(e);
+            return null;
+        }
+
+        return e;
+    }
+
+    private void CellularAutomaton(int yStart, TileType type, int treshold = 2, int neighborhood = 1)
     {
         int[,] niehgbours = new int[MAP_WIDTH, CHUNK_SIZE];
-        int neighborhood = 1;
 
-        Func<Func<GridSquare, bool>, int, int, int> countNeighbors = (Func<GridSquare, bool> check, int x, int y) =>
+        Func<int, int, int> countNeighbors = (int x, int y) =>
         {
             int count = 0;
             for (int i = -neighborhood; i <= neighborhood; i++)
                 for (int j = -neighborhood; j <= neighborhood; j++)
                 {
                     var square = GetSquare(x + i, y + j);
-                    if (square != null && check(square))
+                    if (square != null && square.Tile.Type == type)
                         count++;
                 }
 
@@ -285,18 +332,22 @@ public class World : MonoBehaviour
         var toChange = new Dictionary<(int, int), Action<GridSquare>>();
 
         // Transform roots
-        int rootTreshold = 2;
-        Func<GridSquare, bool> isRoot = (GridSquare square) => square.Tile is RootTile;
         for (int i = 0; i < CHUNK_SIZE; i++)
             for (int j = 0; j < MAP_WIDTH; j++)
             {
-                if (countNeighbors(isRoot, j, -yStart - i) > rootTreshold)
-                    toChange.Add((j, -yStart - i), (GridSquare square) =>
-                        ReplaceTile(square.X, square.Y, TileType.Root));
+                int x = j;
+                int y = -yStart - i;
+
+                if (y >= MIN_TILE_ENTITY_Y)
+                    continue;
+
+                if (countNeighbors(x, y) > treshold)
+                    toChange.Add((x, y), (GridSquare square) =>
+                        ReplaceTile(square.X, square.Y, type));
                 else
-                    toChange.Add((j, -yStart - i), (GridSquare square) =>
+                    toChange.Add((x, y), (GridSquare square) =>
                     {
-                        if (square.Tile is RootTile)
+                        if (square.Tile.Type == type)
                             ReplaceTile(square.X, square.Y, TileType.Ground);
                     });
             }
@@ -311,9 +362,8 @@ public class World : MonoBehaviour
     {
         // Genrate more map
         int yStart = _tiles.Count;
-        int rockTreshold = 10;
-        int rootTreshold = 10 - yStart / CHUNK_SIZE * 4;
 
+        // Create Tiles
         for (int i = 0; i < CHUNK_SIZE; i++)
         {
             _tiles.Add(new GridSquare[MAP_WIDTH]);
@@ -323,52 +373,29 @@ public class World : MonoBehaviour
                 int y = -yStart - i;
 
                 GridSquare square = AddSquare(x, y);
-                square.Tile = RandomTile(x, y, rockTreshold, rootTreshold);
+                square.Tile = RandomTile(x, y);
                 square.SetActive(IsTileOnCamera(square.Tile));
             }
         }
 
-        CellularAutomaton(yStart);
-
-        // First row is grass
-        for (int i = 0; i < MAP_WIDTH; i++)
-        {
-            ReplaceTile(i, 0, TileType.Grass);
-        }
-
-        // That will be tree
-        ReplaceTile(MAP_WIDTH / 2, 0, TileType.Air);
-
-        // Player starts on root
-        int xSpawn = MAP_WIDTH / 2;
-        int ySpawn = -1;
-        RootTile spawnTile = ReplaceTile(xSpawn, ySpawn, TileType.Root) as RootTile;
-        spawnTile.ForceConnect(Direction.Up);
-        spawnTile.Protected = true;
+        CellularAutomaton(yStart, TileType.Root);
+        CellularAutomaton(yStart, TileType.Air);
 
 
-        for (int i = 0; i < 3; i++)
-        {
-            int tries = 10;
-            int x, y;
-            Entity rock;
-            do
-            {
-                x = UnityEngine.Random.Range(0, MAP_WIDTH - 1);
-                y = -UnityEngine.Random.Range(yStart + 1, _tiles.Count);
-                rock = Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SquareRock, x, y);
-                if(rock.IsPlacementValid())
-                    break;
-                Destroy(rock.gameObject);
-                rock = null;
-            } while (tries-- > 0);
-            
-            if(rock)
-                foreach (var location in rock.GetLocations())
-                {
-                    ReplaceTile(location.Item1, location.Item2, TileType.Air);
-                }
-        }
+        // Create Entities
+        //for (int i = 0; i < CHUNK_SIZE; i++)
+        //{
+        //    for (int j = 0; j < MAP_WIDTH; j++)
+        //    {
+        //        int x = j;
+        //        int y = -yStart - i;
+        //
+        //        Entity e = RandomEntity(x, y);
+        //        if (e != null)
+        //            foreach ((int ex, int ey) in e.GetLocations())
+        //                ReplaceTile(ex, ey, TileType.Air);
+        //    }
+        //}
 
         for (int i = 0; i < CHUNK_SIZE; i++)
             for (int j = 0; j < MAP_WIDTH; j++)
@@ -384,16 +411,6 @@ public class World : MonoBehaviour
             {
                 square.Tile?.UpdateSprite();
             }
-
-
-
-        if ((int)(yStart / CHUNK_SIZE) == 1) //randomize this bee position
-        {
-            var beex = MAP_WIDTH / 2;
-            var beey = -yStart - CHUNK_SIZE / 2;
-            ReplaceTile(beex, beey, TileType.Air);
-            Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.AmberBee, beex, beey);
-        }
     }
 
     public int SimulatedRowsStart => Mathf.Max(0, (int)(-_camera.transform.position.y - _camera.orthographicSize - ExtraSimulatedRows));
