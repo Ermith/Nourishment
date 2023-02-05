@@ -312,8 +312,13 @@ public class RandomRock : Rock
     public int Height = 3;
     public float Chance = 0.5f;
 
+    protected bool[,] _shape = null;
+
     protected override bool[,] GetShape()
     {
+        if (_shape != null)
+            return _shape;
+        
         var shape = new bool[Width, Height];
         for (int i = 0; i < Width; i++)
             for (int j = 0; j < Height; j++)
@@ -393,6 +398,7 @@ public class RandomRock : Rock
             }
         }
 
+        _shape = shape;
         return shape;
     }
 }
