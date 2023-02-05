@@ -1664,7 +1664,7 @@ MonoBehaviour:
   - 600
   - 1000
   - 3000
-  StartingNourishment: 32000
+  StartingNourishment: 320
 --- !u!1 &1950914747
 GameObject:
   m_ObjectHideFlags: 0
