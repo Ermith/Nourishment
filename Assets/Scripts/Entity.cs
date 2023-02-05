@@ -2,7 +2,12 @@
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.U2D;
+using static UnityEditor.FilePathAttribute;
+using static UnityEngine.UI.GridLayoutGroup;
 using Random = UnityEngine.Random;
 
 public abstract class Entity : MonoBehaviour
@@ -195,11 +200,13 @@ public abstract class Entity : MonoBehaviour
 public class AmberBee : Entity
 {
     public override bool AffectedByGravity => true;
-    public override float Heaviness => 600;
+    public override float Heaviness => 750;
 
     public override bool CanSpread(Player player, Direction spreadDirection)
     {
-        return base.CanSpread(player, spreadDirection) || CanMove(spreadDirection);
+        return
+            Util.GetFlower().IsAbleToBreakAmber() &&
+            (base.CanSpread(player, spreadDirection) || CanMove(spreadDirection));
     }
 
     public override void OnSpread(Player player, Direction spreadDirection)
@@ -207,14 +214,22 @@ public class AmberBee : Entity
         if (base.CanSpread(player, spreadDirection))
         {
             // miro TODO: spawn bee above ground?
-            var x = 5;
-            var y = 2;
-            Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Bee, x, y);
-            base.OnSpread(player, spreadDirection);
-            Destroy(gameObject);
+            var flower = Util.GetFlower();
+
+            if (flower.IsAbleToBreakAmber())
+            {
+                if (flower.CanObtainQueen())
+                    flower.ObtainBeeQueen();
+                else
+                    flower.PowerUpQueen();
+
+                flower.BreakAmber();
+                Destroy(gameObject);
+                return;
+            }
         }
-        else
-            Move(spreadDirection);
+        
+        Move(spreadDirection);
     }
 
     public override bool CanPass(Entity entity, Direction moveDirection)

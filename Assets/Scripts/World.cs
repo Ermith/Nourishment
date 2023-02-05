@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GridSquare
 {
@@ -131,6 +132,8 @@ public class GridSquare
 
 public class World : MonoBehaviour
 {
+    public UnityEvent WorldSimulationStepEvent;
+
     public static int MIN_TILE_ENTITY_Y = -3;
     public static int MIN_ENTITY_Y = -5;
     public const int TILE_SIZE = 32;
@@ -495,6 +498,7 @@ public class World : MonoBehaviour
 
     public void SimulationStep()
     {
+        WorldSimulationStepEvent.Invoke();
         // TODO maybe optimize (hashtable)
         List<Entity> simulatedEntities = new List<Entity>();
         ApplyToSimulatedTiles(square =>
