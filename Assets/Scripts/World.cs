@@ -270,7 +270,7 @@ public class World : MonoBehaviour
         var rnd = new System.Random();
         float prob = (float)rnd.NextDouble() * 100;
 
-        float evil = 45 + (-y / CHUNK_SIZE * 2);
+        float evil = 40 + (-y / CHUNK_SIZE * 2);
         float nutrition = evil + 10;
         float air = 20;
         float root = 10 - (-y / CHUNK_SIZE);
