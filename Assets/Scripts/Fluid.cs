@@ -50,10 +50,13 @@ public abstract class Fluid
                 availTargets.Add(aboveSquare);
         }
 
-        float amountPerTarget = Amount / availTargets.Count;
+        availTargets.Sort((a, b) => a.Water.Amount.CompareTo(b.Water.Amount));
+        int targetsLeft = availTargets.Count;
         foreach (var target in availTargets)
         {
-            AddFluid(target.X, target.Y, amountPerTarget);
+            float amountPerTarget = Amount / targetsLeft;
+            AddFluid(target.X, target.Y, Mathf.Min(amountPerTarget, 1.0f - target.Water.Amount));
+            targetsLeft--;
         }
         Amount = 0.0f;
     }
