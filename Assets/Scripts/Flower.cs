@@ -5,6 +5,9 @@ using UnityEngine;
 public class Flower : MonoBehaviour
 {
     public List<Sprite> GrowthSprites;
+    public int RequiredLevelAmberBreak = 6;
+    public bool HasHatchedBee = false;
+
     private SpriteRenderer _spriteRenderer;
 
     private int _level;

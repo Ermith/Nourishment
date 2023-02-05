@@ -29,7 +29,7 @@ public abstract class Enemy : Entity
     {
         if (!Alive)
             return true;
-        
+
         if (entity is Rock rock)
         {
             if (moveDirection == Direction.Down)
