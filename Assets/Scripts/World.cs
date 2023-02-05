@@ -253,10 +253,14 @@ public class World : MonoBehaviour
         if (x == 0 || x == MAP_WIDTH - 1)
             return TileFactory.CreateTile(gameObject, x, y, TileType.SuperGround);
 
-        int prob = UnityEngine.Random.Range(0, 100);
 
-        int air = 30;
-        int root = 15;
+        var rnd = new System.Random();
+        float prob = (float)rnd.NextDouble() * 100;
+
+        float air = 20;
+        float root = 10 - (-y / CHUNK_SIZE);
+        float water = 15 - (-y / CHUNK_SIZE * 2);
+        water = Mathf.Max(water, 2f);
 
         if (y < MIN_TILE_ENTITY_Y)
         {
@@ -264,7 +268,12 @@ public class World : MonoBehaviour
                 return TileFactory.CreateTile(gameObject, x, y, TileType.Root);
 
             if (prob < air)
+            {
+                if (prob < water)
+                    GetSquare(x, y).Water.Amount = prob / water;
+
                 return TileFactory.CreateTile(gameObject, x, y, TileType.Air);
+            }
         }
 
         return TileFactory.CreateTile(gameObject, x, y, TileType.Ground);
@@ -278,13 +287,14 @@ public class World : MonoBehaviour
         if (x == 0 || x == MAP_WIDTH - 1)
             return null;
 
-        int amberBee = 2;
-        int squareRock = 4;
-        int smallRock = 7;
-        int snail = 17;
-        int slug = 35;
+        float amberBee = 0.1f;
+        float squareRock = 1;
+        float smallRock = 5;
+        float snail = 8;
+        float slug = 15;
 
-        int prob = UnityEngine.Random.Range(0, 100);
+        var rnd = new System.Random();
+        float prob = (float)rnd.NextDouble() * 100;
         Tile tile = GetTile(x, y);
         EntityType? type = null;
 
@@ -304,7 +314,9 @@ public class World : MonoBehaviour
             type = EntityType.SmallRock;
 
         if (type == null)
+        {
             return null;
+        }
 
         int tries = 10;
         Entity e;

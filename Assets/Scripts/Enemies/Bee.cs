@@ -12,6 +12,13 @@ public class Bee : Enemy
     private Vector3 toLeft = new Vector3(-1, 1, 1);
     private Vector3 toRight = new Vector3(1, 1, 1);
 
+    public override bool CanPass(Entity entity, Direction moveDirection)
+    {
+        if (entity is Enemy)
+            return true;
+        return base.CanPass(entity, moveDirection);
+    }
+
     private void Flip()
     {
         if (_currentDir == Direction.Left)
