@@ -270,6 +270,7 @@ public class World : MonoBehaviour
         var rnd = new System.Random();
         float prob = (float)rnd.NextDouble() * 100;
 
+        float evil = 40 + (-y / CHUNK_SIZE * 2);
         float air = 20;
         float root = 10 - (-y / CHUNK_SIZE);
         float water = 15 - (-y / CHUNK_SIZE * 2);
@@ -287,6 +288,9 @@ public class World : MonoBehaviour
 
                 return TileFactory.CreateTile(gameObject, x, y, TileType.Air);
             }
+
+            if (prob < evil)
+                return TileFactory.CreateTile(gameObject, x, y, TileType.EvilGround);
         }
 
         return TileFactory.CreateTile(gameObject, x, y, TileType.Ground);
@@ -429,9 +433,11 @@ public class World : MonoBehaviour
                 square.SetActive(IsTileOnCamera(square.Tile));
             }
         }
-        
+
+        CellularAutomaton(yStart, TileType.EvilGround, treshold: 3);
         CellularAutomaton(yStart, TileType.Root);
         CellularAutomaton(yStart, TileType.Air);
+        
 
 
         // Create Entities

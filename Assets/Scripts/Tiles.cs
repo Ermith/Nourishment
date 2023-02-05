@@ -193,11 +193,6 @@ public class EvilGroundTile : GroundTile
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
             return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
         });
-
-        foreach (var subSprite in _subSpriteObjects)
-        {
-            subSprite.GetComponent<SpriteRenderer>().color = Color.gray;
-        }
     }
 }
 
