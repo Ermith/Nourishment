@@ -313,7 +313,8 @@ public class World : MonoBehaviour
             e = Util.GetEntityFactory().PlaceEntity(gameObject, type.Value, x, y);
             if (e is null || !e.IsPlacementValid())
             {
-                Destroy(e.gameObject);
+                if(e is not null)
+                    Destroy(e.gameObject);
                 e = null;
             }
             else
