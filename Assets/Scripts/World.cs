@@ -454,7 +454,10 @@ public class World : MonoBehaviour
                 Entity e = RandomEntity(x, y);
                 if (e != null)
                     foreach ((int ex, int ey) in e.GetLocations())
+                    {
                         ReplaceTile(ex, ey, TileType.Air);
+                        GetSquare(ex, ey).Water.Amount = 0f;
+                    }
             }
         }
 
