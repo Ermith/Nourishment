@@ -275,6 +275,9 @@ public class World : MonoBehaviour
         if (y >= MIN_ENTITY_Y)
             return null;
 
+        if (x == 0 || x == MAP_WIDTH - 1)
+            return null;
+
         int amberBee = 2;
         int squareRock = 4;
         int smallRock = 7;
