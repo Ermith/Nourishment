@@ -12,7 +12,8 @@ public enum TileType
     Ground,
     Root,
     Grass,
-    SuperGround
+    SuperGround,
+    EvilGround
 }
 
 public class TileFactory
@@ -71,6 +72,8 @@ public class TileFactory
                 return GrassTile(parent, x, y);
             case TileType.SuperGround:
                 return CreateTile<SuperGroundTile>(parent, x, y);
+            case TileType.EvilGround:
+                return CreateTile<EvilGroundTile>(parent, x, y);
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -139,12 +142,12 @@ public class GroundTile : Tile
         _subSpriteObjects = Util.GroundLikeSprite(gameObject, "ground", dir =>
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
-            return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
+            return neighTile is GroundTile || neighTile is GrassTile;
         });
     }
 }
 
-public class SuperGroundTile : Tile
+public class SuperGroundTile : GroundTile
 {
     public override float Hardness => -1;
     private List<GameObject> _subSpriteObjects = new List<GameObject>();
@@ -159,6 +162,33 @@ public class SuperGroundTile : Tile
             Destroy(subSprite);
 
         _subSpriteObjects = Util.GroundLikeSprite(gameObject, "superGround", dir =>
+        {
+            Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
+            return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
+        });
+
+        foreach (var subSprite in _subSpriteObjects)
+        {
+            subSprite.GetComponent<SpriteRenderer>().color = Color.gray;
+        }
+    }
+}
+
+public class EvilGroundTile : GroundTile
+{
+    public override float Hardness => 10;
+    private List<GameObject> _subSpriteObjects = new List<GameObject>();
+
+    public override TileType Type => TileType.EvilGround;
+
+    public override void UpdateSprite()
+    {
+        World world = Util.GetWorld();
+
+        foreach (var subSprite in _subSpriteObjects)
+            Destroy(subSprite);
+
+        _subSpriteObjects = Util.GroundLikeSprite(gameObject, "evilGround", dir =>
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
             return neighTile is GroundTile || neighTile is GrassTile || neighTile is SuperGroundTile;
