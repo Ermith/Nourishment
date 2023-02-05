@@ -113,6 +113,8 @@ public abstract class Enemy : Entity
 
     public void Kill()
     {
+        if (!Alive)
+            return;
         Util.GetAudioManager().Play("Death");
         Alive = false;
         SetDeathSprite();
