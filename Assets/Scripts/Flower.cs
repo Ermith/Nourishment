@@ -94,12 +94,15 @@ public class Flower : MonoBehaviour
 
     private void OnGUI()
     {
-        if (GUILayout.Button("+ 100"))
-            Nourishment += 100;
-        if (GUILayout.Button("- 100"))
-            Nourishment -= 100;
+        if (Util.GetWorld().CheatsEnabled)
+        {
+            if (GUILayout.Button("+ 100"))
+                Nourishment += 100;
+            if (GUILayout.Button("- 100"))
+                Nourishment -= 100;
 
-        GUILayout.Label($"Nourishment: {Nourishment}");
+            GUILayout.Label($"Nourishment: {Nourishment}");
+        }
     }
 
     public void ObtainBeeQueen()
