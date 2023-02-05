@@ -8,10 +8,10 @@ public class Slug : Enemy
     public Direction DownDir = Direction.Down;
     public Direction ForwardDir;
     private bool _rotatesClockwise;
-    private Tween _rotateTween;
+    protected Tween _rotateTween;
     protected Animator _animator;
 
-    private Sequence _eatTween;
+    protected Sequence _eatTween;
 
     public override void Initialize(int x, int y)
     {
@@ -44,10 +44,12 @@ public class Slug : Enemy
     }
     public override void SetDeathSprite()
     {
-        base.SetDeathSprite();
+        _eatTween.Kill();
+        _rotateTween.Kill();
         if (_animator == null)
             _animator = GetComponent<Animator>();
         _animator.SetTrigger("StopMoving");
+        base.SetDeathSprite();
     }
 
     public override void AIStep()

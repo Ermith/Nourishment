@@ -10,7 +10,7 @@ public abstract class Enemy : Entity
     public float Breath = 40.0f;
     public float MaxBreath = 40.0f;
 
-    private Tween _colorTween;
+    protected Tween _colorTween;
 
 
     public override bool CanSpread(Player player, Direction spreadDirection)
@@ -102,6 +102,8 @@ public abstract class Enemy : Entity
 
     public virtual void SetDeathSprite()
     {
+        moveTween?.Kill();
+        fallTween?.Kill();
         var sprite = GetComponent<SpriteRenderer>();
         _colorTween?.Kill();
         _colorTween = sprite.DOColor(new Color(1f, 1f, 1f), 0.2f);
