@@ -51,7 +51,7 @@ public class Flower : MonoBehaviour
 
     private int NourishmentToLevel()
     {
-        int currentLevel = 0;
+        int currentLevel = -1;
         foreach (float nextLevel in NourishmentForLevel)
         {
             if (nextLevel <= _nourishment)
