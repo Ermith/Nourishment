@@ -200,9 +200,7 @@ public class AmberBee : Entity
 
     public override bool CanSpread(Player player, Direction spreadDirection)
     {
-        return
-            Util.GetFlower().IsAbleToBreakAmber() &&
-            (base.CanSpread(player, spreadDirection) || CanMove(spreadDirection));
+        return CanMove(spreadDirection) || Util.GetFlower().IsAbleToBreakAmber();
     }
 
     public override void OnSpread(Player player, Direction spreadDirection)
