@@ -349,7 +349,7 @@ public class World : MonoBehaviour
 
         // Transform roots
         for (int i = 0; i < CHUNK_SIZE; i++)
-            for (int j = 0; j < MAP_WIDTH; j++)
+            for (int j = 1; j < MAP_WIDTH - 1; j++)
             {
                 int x = j;
                 int y = -yStart - i;
