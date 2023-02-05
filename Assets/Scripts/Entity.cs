@@ -392,5 +392,7 @@ public class RandomRock : Rock
                     shape[i, j] = true;
             }
         }
+
+        return shape;
     }
 }
