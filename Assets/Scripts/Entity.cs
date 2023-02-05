@@ -109,8 +109,7 @@ public abstract class Entity : MonoBehaviour
 
     public virtual bool CanSpread(Player player, Direction spreadDirection)
     {
-        return CanPass(null, spreadDirection)
-            && Heaviness >= 0
+        return Heaviness >= 0
             && Heaviness < Util.GetFlower().Nourishment;
     }
 
