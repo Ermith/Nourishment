@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Snail : Slug
 {
+    public override float NourishmentFromCorpse => 60;
+
     public override void SetDeathSprite()
     {
         if (_animator == null)
