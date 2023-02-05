@@ -18,6 +18,7 @@ public abstract class Enemy : Entity
     {
         // TODO sound + visual effect?
         Util.GetFlower().Nourishment += NourishmentFromCorpse;
+        Util.GetAudioManager().Play("Corpse");
         Destroy(gameObject);
     }
 
