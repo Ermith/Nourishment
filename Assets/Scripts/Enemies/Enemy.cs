@@ -55,6 +55,7 @@ public abstract class Enemy : Entity
     {
         if (entity is Rock rock && moveDirection == Direction.Down && !CanMove(moveDirection))
         {
+            Util.GetAudioManager().Play("hit");
             Kill();
             var squareBelow = Util.GetWorld().GetSquare(X, Y - 1, true);
             while (squareBelow is null || squareBelow.Entities.Any(e => e is Rock))
@@ -112,6 +113,7 @@ public abstract class Enemy : Entity
 
     public void Kill()
     {
+        Util.GetAudioManager().Play("Death");
         Alive = false;
         SetDeathSprite();
     }
