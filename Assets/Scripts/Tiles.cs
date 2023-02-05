@@ -439,6 +439,15 @@ public class RootTile : Tile
         return true;
     }
 
+    public void GrowAnim(Direction dir)
+    {
+        var opdir = dir.Opposite();
+        transform.position = new Vector3(X + -World.MAP_WIDTH / 2f + 0.5f + opdir.X(), Y + opdir.Y());
+        transform.localScale = new Vector3(dir.X() != 0 ? 0f : 1f, dir.Y() != 0 ? 0f : 1f, 1f);
+        transform.DOMove(new Vector3(X + -World.MAP_WIDTH / 2f + 0.5f, Y), 0.2f);
+        transform.DOScale(new Vector3(1f, 1f, 1f), 0.2f);
+    }
+
     public override void OnDestroy()
     {
         World world = Util.GetWorld();

@@ -155,6 +155,7 @@ public class Player : MonoBehaviour
                 RootStatus.Disconnected => RootStatus.Disconnected,
                 _ => throw new NotImplementedException(),
             };
+            newRootTile.GrowAnim(direction);
         }
 
         oldTile.ConnectWithNeigh(direction);
