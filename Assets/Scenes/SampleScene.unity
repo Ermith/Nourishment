@@ -1144,6 +1144,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 202a71bda79067c4f885af57b0a06165, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WorldSimulationStepEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1928678957}
+        m_TargetAssemblyTypeName: Flower, Assembly-CSharp
+        m_MethodName: OnWorldSimulationStep
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   _camera: {fileID: 519420031}
   player: {fileID: 1525839684}
   ExtraSimulatedRows: 10
@@ -1557,6 +1572,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 28d985aad45b2f545a6550caa3993645, type: 3}
   - {fileID: 21300000, guid: fb0210283e5fddc44bb0c1377a9cf2d6, type: 3}
   RequiredLevelAmberBreak: 6
+  QueenLevel: 0
+  AmberBreakCost: 250
   HasHatchedBee: 0
   HatchedBeeQueen: {fileID: 1573234018}
   NourishmentText: {fileID: 1006220948}

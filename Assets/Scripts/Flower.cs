@@ -130,4 +130,9 @@ public class Flower : MonoBehaviour
     {
         QueenLevel += 1;
     }
+
+    public void OnWorldSimulationStep()
+    {
+
+    }
 }
