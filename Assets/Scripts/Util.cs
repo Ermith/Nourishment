@@ -126,6 +126,11 @@ public class Util
         return GameObject.Find("AudioManager").GetComponent<AudioManager>();
     }
 
+    public static Player GetPlayer()
+    {
+        return GameObject.Find("Player")?.GetComponent<Player>();
+    }
+
     public static List<GameObject> CreateSpriteObject(
         GameObject parent,
         string type,

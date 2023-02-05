@@ -461,7 +461,7 @@ public class RootTile : Tile
             }
         }
         base.OnDestroy();
-        var player = Util.GetWorld().Player;
+        var player = Util.GetPlayer();
         if (player && player.X == X && player.Y == Y)
             Util.GetFlower().Nourishment = 0.0f; // kills the Player
     }
