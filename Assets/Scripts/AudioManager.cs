@@ -32,11 +32,12 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void Play(string name)
+    public void Play(string name, bool loop = false)
     {
         foreach (Sound s in Sounds)
             if (s.Name == name)
             {
+                s.AudioSource.loop = loop;
                 s.AudioSource.Play();
                 return;
             }

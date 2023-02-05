@@ -147,6 +147,7 @@ public class World : MonoBehaviour
     public Dictionary<string, Sprite> Sprites;
     public Player Player;
     public int ExtraSimulatedRows = 10;
+    public bool CheatsEnabled = true; // TODO change
 
     public SpriteRenderer Background1;
     public SpriteRenderer Background2;
@@ -219,6 +220,7 @@ public class World : MonoBehaviour
     void Start()
     {
         Sprites = LoadSprites();
+        Util.GetAudioManager().Play("Music", true);
 
         // Generation of world
         GenerateMoreMap();
@@ -299,8 +301,8 @@ public class World : MonoBehaviour
             return null;
 
         float amberBee = 0.1f;
-        float squareRock = 1;
-        float smallRock = 5;
+        float bigRock = 2;
+        float smallRock = 6;
         float snail = 8;
         float slug = 15;
 
@@ -318,8 +320,19 @@ public class World : MonoBehaviour
         else if (prob < amberBee)
             type = EntityType.AmberBee;
 
-        else if (prob < squareRock)
-            type = EntityType.RandomRock4X4;
+        else if (prob < bigRock)
+        {
+            type = Util.WeightedPick(new Dictionary<EntityType, float>()
+            {
+                { EntityType.SquareRock , 2f },
+                { EntityType.RandomRock3X3 , 3f },
+                { EntityType.RandomRock4X4 , 2f },
+                { EntityType.RandomRock5X5 , 0.5f },
+                { EntityType.RandomRock6X6 , 0.05f },
+                { EntityType.RandomRock6X3 , 0.1f },
+                { EntityType.RandomRock3X6 , 0.1f }
+            });
+        }
 
         else if (prob < smallRock)
             type = EntityType.SmallRock;

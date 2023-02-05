@@ -460,8 +460,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4289134788
-  m_fontColor: {r: 0.76699996, g: 0, b: 0.6562988, a: 1}
+    rgba: 4283016281
+  m_fontColor: {r: 0.34801453, g: 0.6415094, b: 0.28746885, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -484,7 +484,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -820,6 +820,26 @@ MonoBehaviour:
     volume: 1
     pitch: 1
     AudioSource: {fileID: 0}
+  - Name: Corpse
+    clip: {fileID: 8300000, guid: 04fe35d51627813429d7f92e12f79890, type: 3}
+    volume: 1
+    pitch: 1
+    AudioSource: {fileID: 0}
+  - Name: Music
+    clip: {fileID: 8300000, guid: 6e96ec2ad783cb04db4254a2f1590705, type: 3}
+    volume: 0.4
+    pitch: 1
+    AudioSource: {fileID: 0}
+  - Name: Death
+    clip: {fileID: 8300000, guid: c1e9aabb785f44e448294104543bdac8, type: 3}
+    volume: 1
+    pitch: 1
+    AudioSource: {fileID: 0}
+  - Name: Hit
+    clip: {fileID: 8300000, guid: 1704152c0599dc34bb1b5dcd7482bac9, type: 3}
+    volume: 1
+    pitch: 1
+    AudioSource: {fileID: 0}
 --- !u!4 &1428597181
 Transform:
   m_ObjectHideFlags: 0
@@ -902,8 +922,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280155904
-  m_fontColor: {r: 0, g: 1, b: 0.11529493, a: 1}
+    rgba: 4282422084
+  m_fontColor: {r: 0.2666663, g: 0.5754717, b: 0.2524475, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -926,7 +946,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -1217,6 +1237,7 @@ MonoBehaviour:
   _camera: {fileID: 519420031}
   Player: {fileID: 0}
   ExtraSimulatedRows: 10
+  CheatsEnabled: 1
   Background1: {fileID: 1235685978}
   Background2: {fileID: 1112595879}
   Background3: {fileID: 1358852388}
@@ -1719,7 +1740,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4280155904
-  m_fontColor: {r: 0, g: 1, b: 0.11529493, a: 1}
+  m_fontColor: {r: 0.3097188, g: 0.754717, b: 0.36032638, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1742,7 +1763,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -1834,10 +1855,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
