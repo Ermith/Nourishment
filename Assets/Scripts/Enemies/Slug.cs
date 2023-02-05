@@ -24,8 +24,8 @@ public class Slug : Enemy
     public override bool AffectedByGravity {
         get
         {
-            var squareBelow = Util.GetWorld().GetSquare(X + DownDir.X(), Y + DownDir.Y());
-            return !Alive || squareBelow.CanPass(this, DownDir);
+            var squareBelow = Util.GetWorld().GetSquare(X + DownDir.X(), Y + DownDir.Y(), true);
+            return !Alive || (squareBelow?.CanPass(this, DownDir) ?? false);
         }
     }
 
@@ -55,10 +55,10 @@ public class Slug : Enemy
             return;
         }
         var squareForward = Util.GetWorld().GetSquare(X + ForwardDir.X(), Y + ForwardDir.Y());
-        if (squareForward.CanPass(this, ForwardDir))
+        if (squareForward?.CanPass(this, ForwardDir) ?? false)
         {
             var belowForward = Util.GetWorld().GetSquare(X + ForwardDir.X() + DownDir.X(), Y + ForwardDir.Y() + DownDir.Y());
-            if (!belowForward.CanPass(this, DownDir))
+            if (belowForward is null || !belowForward.CanPass(this, DownDir))
             {
                 Move(ForwardDir);
             }

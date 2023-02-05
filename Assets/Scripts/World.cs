@@ -127,7 +127,7 @@ public class World : MonoBehaviour
     public static int MIN_TILE_ENTITY_Y = -3;
     public static int MIN_ENTITY_Y = -5;
     public const int TILE_SIZE = 32;
-    public static int MAP_WIDTH = 21;
+    public static int MAP_WIDTH = 23;
     public const int CHUNK_SIZE = 14;
     public const int FLUID_SUBSTEPS = 5;
     public const float WATER_CONVERSION_RATIO = 15f; //! how much nourishment you get per 1 tile of water
@@ -250,6 +250,9 @@ public class World : MonoBehaviour
             return tile;
         }
 
+        if (x == 0 || x == MAP_WIDTH - 1)
+            return TileFactory.CreateTile(gameObject, x, y, TileType.SuperGround);
+
         int prob = UnityEngine.Random.Range(0, 100);
 
         int air = 30;
@@ -273,8 +276,8 @@ public class World : MonoBehaviour
             return null;
 
         int amberBee = 2;
-        int squareRock = 80;
-        int smallRock = 16;
+        int squareRock = 4;
+        int smallRock = 7;
         int snail = 17;
         int slug = 35;
 
@@ -285,27 +288,32 @@ public class World : MonoBehaviour
         if (prob < snail && tile is AirTile)
             type = EntityType.Snail;
 
-        if (prob < slug && tile is AirTile)
+        else if (prob < slug && tile is AirTile)
             type = EntityType.Slug;
 
-        if (prob < amberBee)
+        else if (prob < amberBee)
             type = EntityType.AmberBee;
 
-        if (prob < squareRock)
-            type = EntityType.SquareRock;
+        else if (prob < squareRock)
+            type = EntityType.RandomRock4X4;
 
-        if (prob < smallRock)
+        else if (prob < smallRock)
             type = EntityType.SmallRock;
 
         if (type == null)
             return null;
-        
-        Entity e = Util.GetEntityFactory().PlaceEntity(gameObject, type.Value, x, y);
-        if (e is null || !e.IsPlacementValid())
+
+        int tries = 10;
+        Entity e;
+        do
         {
-            Destroy(e);
-            return null;
-        }
+            e = Util.GetEntityFactory().PlaceEntity(gameObject, type.Value, x, y);
+            if (e is null || !e.IsPlacementValid())
+            {
+                Destroy(e);
+                e = null;
+            }
+        } while (tries-- > 0);
 
         return e;
     }
@@ -383,19 +391,19 @@ public class World : MonoBehaviour
 
 
         // Create Entities
-        //for (int i = 0; i < CHUNK_SIZE; i++)
-        //{
-        //    for (int j = 0; j < MAP_WIDTH; j++)
-        //    {
-        //        int x = j;
-        //        int y = -yStart - i;
-        //
-        //        Entity e = RandomEntity(x, y);
-        //        if (e != null)
-        //            foreach ((int ex, int ey) in e.GetLocations())
-        //                ReplaceTile(ex, ey, TileType.Air);
-        //    }
-        //}
+        for (int i = 0; i < CHUNK_SIZE; i++)
+        {
+            for (int j = 0; j < MAP_WIDTH; j++)
+            {
+                int x = j;
+                int y = -yStart - i;
+        
+                Entity e = RandomEntity(x, y);
+                if (e != null)
+                    foreach ((int ex, int ey) in e.GetLocations())
+                        ReplaceTile(ex, ey, TileType.Air);
+            }
+        }
 
         for (int i = 0; i < CHUNK_SIZE; i++)
             for (int j = 0; j < MAP_WIDTH; j++)
