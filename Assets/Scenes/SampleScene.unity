@@ -815,6 +815,11 @@ MonoBehaviour:
     volume: 1
     pitch: 1
     AudioSource: {fileID: 0}
+  - Name: Root
+    clip: {fileID: 8300000, guid: e004287a3d756ef49942429d9eb5abca, type: 3}
+    volume: 1
+    pitch: 1
+    AudioSource: {fileID: 0}
 --- !u!4 &1428597181
 Transform:
   m_ObjectHideFlags: 0
@@ -1210,7 +1215,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   _camera: {fileID: 519420031}
-  player: {fileID: 1525839684}
+  Player: {fileID: 0}
   ExtraSimulatedRows: 10
   Background1: {fileID: 1235685978}
   Background2: {fileID: 1112595879}

@@ -224,6 +224,7 @@ public class GrassTile : Tile
 
 public class AirTile : Tile
 {
+    public override string Audio => "Root";
     public override TileType Type => TileType.Air;
     public override float Hardness => 1;
     public override bool CanPass(Entity entity, Direction moveDirection)
@@ -246,6 +247,7 @@ public class RootNotFoundException : Exception
 
 public class RootTile : Tile
 {
+    public override string Audio => "Root";
     public enum RootStatus
     {
         Connected,
