@@ -1237,7 +1237,7 @@ MonoBehaviour:
   _camera: {fileID: 519420031}
   Player: {fileID: 0}
   ExtraSimulatedRows: 10
-  CheatsEnabled: 1
+  CheatsEnabled: 0
   Background1: {fileID: 1235685978}
   Background2: {fileID: 1112595879}
   Background3: {fileID: 1358852388}
