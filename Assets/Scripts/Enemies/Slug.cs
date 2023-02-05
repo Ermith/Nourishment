@@ -65,6 +65,7 @@ public class Slug : Enemy
             _eatTween = DOTween.Sequence();
             var downVec = DownDir.ToVector();
             var baseScale = transform.localScale;
+            baseScale = new Vector3(baseScale.x > 0 ? 1f : -1f, 1f, 1f);
             _eatTween.Append(transform.DOScale(new Vector3(baseScale.x, baseScale.y / 2, baseScale.z), 0.1f));
             _eatTween.Join(transform.DOMove(transform.position + new Vector3(0.5f * downVec.x, 0.5f * downVec.y, 0), 0.1f));
             _eatTween.Append(transform.DOScale(baseScale, 0.1f));
