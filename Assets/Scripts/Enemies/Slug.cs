@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using Sequence = DG.Tweening.Sequence;
 
 public class Slug : Enemy
 {
@@ -9,6 +10,8 @@ public class Slug : Enemy
     private bool _rotatesClockwise;
     private Tween _rotateTween;
     protected Animator _animator;
+
+    private Sequence _eatTween;
 
     public override void Initialize(int x, int y)
     {
@@ -52,6 +55,20 @@ public class Slug : Enemy
         if (AffectedByGravity) // we fell but are still directed weirdly!
         {
             Rotate();
+            return;
+        }
+        var tileBelow = Util.GetWorld().GetTile(X + DownDir.X(), Y + DownDir.Y());
+        if (tileBelow is RootTile rootBelow)
+        {
+            rootBelow.Health -= 0.05f;
+            _eatTween?.Kill();
+            _eatTween = DOTween.Sequence();
+            var downVec = DownDir.ToVector();
+            var baseScale = transform.localScale;
+            _eatTween.Append(transform.DOScale(new Vector3(baseScale.x, baseScale.y / 2, baseScale.z), 0.1f));
+            _eatTween.Join(transform.DOMove(transform.position + new Vector3(0.5f * downVec.x, 0.5f * downVec.y, 0), 0.1f));
+            _eatTween.Append(transform.DOScale(baseScale, 0.1f));
+            _eatTween.Join(transform.DOMove(transform.position, 0.1f));
             return;
         }
         var squareForward = Util.GetWorld().GetSquare(X + ForwardDir.X(), Y + ForwardDir.Y());
