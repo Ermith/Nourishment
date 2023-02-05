@@ -273,8 +273,8 @@ public class World : MonoBehaviour
             return null;
 
         int amberBee = 2;
-        int squareRock = 80;
-        int smallRock = 16;
+        int squareRock = 4;
+        int smallRock = 7;
         int snail = 17;
         int slug = 35;
 
@@ -383,19 +383,19 @@ public class World : MonoBehaviour
 
 
         // Create Entities
-        //for (int i = 0; i < CHUNK_SIZE; i++)
-        //{
-        //    for (int j = 0; j < MAP_WIDTH; j++)
-        //    {
-        //        int x = j;
-        //        int y = -yStart - i;
-        //
-        //        Entity e = RandomEntity(x, y);
-        //        if (e != null)
-        //            foreach ((int ex, int ey) in e.GetLocations())
-        //                ReplaceTile(ex, ey, TileType.Air);
-        //    }
-        //}
+        for (int i = 0; i < CHUNK_SIZE; i++)
+        {
+            for (int j = 0; j < MAP_WIDTH; j++)
+            {
+                int x = j;
+                int y = -yStart - i;
+        
+                Entity e = RandomEntity(x, y);
+                if (e != null)
+                    foreach ((int ex, int ey) in e.GetLocations())
+                        ReplaceTile(ex, ey, TileType.Air);
+            }
+        }
 
         for (int i = 0; i < CHUNK_SIZE; i++)
             for (int j = 0; j < MAP_WIDTH; j++)
