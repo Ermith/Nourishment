@@ -19,10 +19,12 @@ public class Player : MonoBehaviour
     private Tween playerTween;
     private Tween cameraTween;
 
+    public static float Lowest = 0;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        Lowest = 0;
     }
 
     // Update is called once per frame
@@ -160,6 +162,7 @@ public class Player : MonoBehaviour
 
         Util.GetFlower().Nourishment -= newTile.Hardness;
         Util.GetAudioManager().Play(newTile.Audio);
+        Lowest = Mathf.Min(Lowest, Y);
 
         return true;
     }
