@@ -4,10 +4,13 @@ using UnityEngine;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
+using System;
 
 public class Player : MonoBehaviour
 {
+    [NonSerialized]
     public int X = World.MAP_WIDTH / 2;
+    [NonSerialized]
     public int Y = -1;
     public Camera Camera;
 
