@@ -6,7 +6,8 @@ using UnityEngine;
 public abstract class Enemy : Entity
 {
     public bool Alive = true;
-    public float NourishmentFromCorpse = 10;
+    public virtual float NourishmentFromCorpse => 40;
+    
 
     public override bool CanSpread(Player player, Direction spreadDirection)
     {
