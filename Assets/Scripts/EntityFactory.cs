@@ -38,6 +38,10 @@ public class EntityFactory : MonoBehaviour
                 go = Instantiate(Snail);
                 entity = go.GetComponent<Snail>();
                 break;
+            case EntityType.Bee:
+                go = Instantiate(Bee);
+                entity = go.GetComponent<Bee>();
+                break;
             case EntityType.AmberBee:
                 entity = go.AddComponent<AmberBee>();
                 break;

@@ -15,7 +15,8 @@ public enum EntityType
     SquareRock,
     Slug,
     Snail,
-    AmberBee
+    AmberBee,
+    Bee
 }
 
 public abstract class Entity : MonoBehaviour
