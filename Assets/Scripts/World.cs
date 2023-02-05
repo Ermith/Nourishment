@@ -237,20 +237,20 @@ public class World : MonoBehaviour
     /// </summary>
     /// <param name="x">Tile position</param>
     /// <param name="y">Tile position</param>
-    /// <param name="rockTreshold">[0-99] number</param>
-    /// <param name="rootTreshold">[0-99] number</param>
+    /// <param name="rockThreshold">[0-99] number</param>
+    /// <param name="rootThreshold">[0-99] number</param>
     /// <returns></returns>
-    private Tile RandomTile(int x, int y, int rockTreshold, int rootTreshold)
+    private Tile RandomTile(int x, int y, int rockThreshold, int rootThreshold)
     {
         int prob = UnityEngine.Random.Range(0, 100);
 
         // prevent non dirt tiles from appearing in first 3 layers
         if (y >= MIN_TILE_ENTITY_Y)
         {
-            if (prob < rootTreshold)
+            if (prob < rootThreshold)
                 return TileFactory.RootTile(this.gameObject, x, y);
 
-            if (prob < rockTreshold)
+            if (prob < rockThreshold)
             {
                 var tile = TileFactory.CreateTile(this.gameObject, x, y, TileType.Air);
                 Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.SmallRock, x, y);
@@ -384,6 +384,16 @@ public class World : MonoBehaviour
             {
                 square.Tile?.UpdateSprite();
             }
+
+
+
+        if ((int)(yStart / CHUNK_SIZE) == 1) //randomize this bee position
+        {
+            var beex = MAP_WIDTH / 2;
+            var beey = -yStart - CHUNK_SIZE / 2;
+            ReplaceTile(beex, beey, TileType.Air);
+            Util.GetEntityFactory().PlaceEntity(this.gameObject, EntityType.AmberBee, beex, beey);
+        }
     }
 
     public int SimulatedRowsStart => Mathf.Max(0, (int)(-_camera.transform.position.y - _camera.orthographicSize - ExtraSimulatedRows));
@@ -477,7 +487,7 @@ public class World : MonoBehaviour
     private Dictionary<string, Sprite> LoadSprites()
     {
         var sprites = new Dictionary<string, Sprite>();
-        foreach (var subdir in new string[] { "Ground", "Root", "Stone" })
+        foreach (var subdir in new string[] { "Ground", "Root", "Stone", "Characters" })
         {
             var groundSprites = Resources.LoadAll<Sprite>($"Sprites/{subdir}");
             foreach (var sprite in groundSprites)

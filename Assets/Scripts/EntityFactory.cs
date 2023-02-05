@@ -38,6 +38,9 @@ public class EntityFactory : MonoBehaviour
                 go = Instantiate(Snail);
                 entity = go.GetComponent<Snail>();
                 break;
+            case EntityType.AmberBee:
+                entity = go.AddComponent<AmberBee>();
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }

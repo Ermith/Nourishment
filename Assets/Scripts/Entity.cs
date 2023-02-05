@@ -14,7 +14,8 @@ public enum EntityType
     SmallRock,
     SquareRock,
     Slug,
-    Snail
+    Snail,
+    AmberBee
 }
 
 public abstract class Entity : MonoBehaviour
@@ -204,6 +205,26 @@ public abstract class Entity : MonoBehaviour
     }
 }
 
+public class AmberBee : Entity
+{
+    public override bool AffectedByGravity => true;
+    public override float Heaviness => 600;
+
+    public override bool CanPass(Entity entity, Direction moveDirection) => true;
+
+    public override void OnSpread(Player player, Direction spreadDirection)
+    {
+        base.OnSpread(player, spreadDirection);
+        Destroy(this);
+    }
+
+    public override void Initialize(int x, int y)
+    {
+        base.Initialize(x, y);
+        var renderer = this.gameObject.AddComponent<SpriteRenderer>();
+        renderer.sprite = Util.GetWorld().Sprites["bee_queen"];
+    }
+}
 
 public abstract class Rock : Entity
 {
