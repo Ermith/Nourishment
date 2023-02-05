@@ -4,10 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.U2D;
-using static UnityEditor.FilePathAttribute;
-using static UnityEngine.UI.GridLayoutGroup;
 using Random = UnityEngine.Random;
 
 public abstract class Entity : MonoBehaviour
