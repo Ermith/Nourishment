@@ -809,6 +809,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ccaf87a43aa3fa48985894748324e9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Sounds:
+  - Name: Dirt
+    clip: {fileID: 8300000, guid: d6df431738aacb147abb703a696c8ca6, type: 3}
+    volume: 1
+    pitch: 1
+    AudioSource: {fileID: 0}
 --- !u!4 &1428597181
 Transform:
   m_ObjectHideFlags: 0

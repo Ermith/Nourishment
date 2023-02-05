@@ -84,6 +84,7 @@ public abstract class Tile : MonoBehaviour
     public virtual float Hardness => -1;
     public bool Diggable => Hardness >= 0;
     public abstract TileType Type { get; }
+    public virtual string Audio => "";
 
     public abstract void UpdateSprite();
 
@@ -124,6 +125,7 @@ public class GroundTile : Tile
 {
     public override float Hardness => 5;
     private List<GameObject> _subSpriteObjects = new List<GameObject>();
+    public override string Audio => "Dirt";
 
     public override TileType Type => TileType.Ground;
 

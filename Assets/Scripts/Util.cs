@@ -121,6 +121,11 @@ public class Util
         return GameObject.Find("EntityFactory")?.GetComponent<EntityFactory>();
     }
 
+    public static AudioManager GetAudioManager()
+    {
+        return GameObject.Find("AudioManager").GetComponent<AudioManager>();
+    }
+
     public static List<GameObject> CreateSpriteObject(
         GameObject parent,
         string type,

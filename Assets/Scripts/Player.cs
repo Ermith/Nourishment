@@ -139,6 +139,7 @@ public class Player : MonoBehaviour
             rootTile.ConnectWithNeigh(direction);
 
         Util.GetFlower().Nourishment -= newTile.Hardness;
+        Util.GetAudioManager().Play(newTile.Audio);
 
         return true;
     }
