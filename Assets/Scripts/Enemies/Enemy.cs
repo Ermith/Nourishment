@@ -7,8 +7,8 @@ public abstract class Enemy : Entity
 {
     public bool Alive = true;
     public virtual float NourishmentFromCorpse => 40;
-    public float Breath = 30.0f;
-    public float MaxBreath = 30.0f;
+    public float Breath = 40.0f;
+    public float MaxBreath = 40.0f;
 
     private Tween _colorTween;
 
@@ -87,7 +87,7 @@ public abstract class Enemy : Entity
             }
             else
             {
-                Breath += 1f;
+                Breath += 2f;
                 if (Breath > MaxBreath)
                     Breath = MaxBreath;
             }
