@@ -219,6 +219,7 @@ public class World : MonoBehaviour
     void Start()
     {
         Sprites = LoadSprites();
+        Util.GetAudioManager().Play("Music", true);
 
         // Generation of world
         GenerateMoreMap();
