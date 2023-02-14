@@ -37,13 +37,13 @@ public abstract class Fluid
         if (availTargets.Count == 0)
         {
             var aboveSquare = square;
-            int maxSteps = 10;
+            int maxSteps = 15;
             while (aboveSquare is not null && !aboveSquare.CanFluidPass(this, Direction.Up) && maxSteps-- > 0)
             {
                 aboveSquare = Util.GetWorld().GetSquare(aboveSquare.X, aboveSquare.Y + 1);
             }
 
-            if (aboveSquare is null)
+            if (aboveSquare is null || maxSteps <= 0)
             {
                 Amount = 0.0f; // rip
                 return;
