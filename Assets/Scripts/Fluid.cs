@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public abstract class Fluid
@@ -157,18 +158,26 @@ public class FluidIndicator : MonoBehaviour
     {
         SpriteRenderer.enabled = Square.Water.Amount > 0.0f;
         var squareAbove = Util.GetWorld().GetSquare(Square.X, Square.Y + 1);
-        
+
+        float tweenTime = 0.5f;
+        // if this is the first frame don't tween
+        if (SpriteRenderer.color.r == 0.0f)
+            tweenTime = 0.0f;
+
+
         if (squareAbove != null && squareAbove.Water.Amount > 0.0f)
         {
-            SpriteRenderer.color = new Color(BASE_COLOR.r, BASE_COLOR.g, BASE_COLOR.b, BASE_ALPHA * Square.Water.Amount);
-            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-            transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+            SpriteRenderer.DOColor(
+                new Color(BASE_COLOR.r, BASE_COLOR.g, BASE_COLOR.b, BASE_ALPHA * Square.Water.Amount), tweenTime);
+            transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), tweenTime);
+            transform.DOLocalMove(new Vector3(0.0f, 0.0f, 0.0f), tweenTime);
         }
         else
         {
-            SpriteRenderer.color = new Color(BASE_COLOR.r, BASE_COLOR.g, BASE_COLOR.b, BASE_ALPHA);
-            transform.localScale = new Vector3(1.0f, Square.Water.Amount, 1.0f);
-            transform.localPosition = new Vector3(0.0f, -0.5f + Square.Water.Amount / 2, 0.0f);
+            SpriteRenderer.DOColor(
+                new Color(BASE_COLOR.r, BASE_COLOR.g, BASE_COLOR.b, BASE_ALPHA), tweenTime);
+            transform.DOScale(new Vector3(1.0f, Square.Water.Amount, 1.0f), tweenTime);
+            transform.DOLocalMove(new Vector3(0.0f, -0.5f + Square.Water.Amount / 2, 0.0f), tweenTime);
         }
     }
 }
