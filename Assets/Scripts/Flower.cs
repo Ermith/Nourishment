@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class Flower : MonoBehaviour
 {
+    public GameObject VictoryScreenPrompt;
+    public TMP_Text VictoryProgress;
     public List<Sprite> GrowthSprites;
     public int RequiredLevelAmberBreak = 6;
     public int QueenLevel = 0;
@@ -17,7 +19,9 @@ public class Flower : MonoBehaviour
     public TMP_Text NourishmentText;
     public TMP_Text HintsText;
     public TMP_Text HintForHintsText;
-     
+    public float BeeBonus = 0.5f;
+    private bool NourishmentChanged = false;
+    private float NourishmentOld = 0;
 
     private SpriteRenderer _spriteRenderer;
 
@@ -70,6 +74,11 @@ public class Flower : MonoBehaviour
                 break;
         }
 
+        if (currentLevel < QueenLevel)
+        {
+            currentLevel = QueenLevel;
+        }
+
         return currentLevel;
     }
 
@@ -79,6 +88,7 @@ public class Flower : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _spriteRenderer.sprite = GrowthSprites[Level];
         Nourishment = StartingNourishment;
+        UpdateProgress();
     }
 
     // Update is called once per frame
@@ -134,13 +144,49 @@ public class Flower : MonoBehaviour
     public void PowerUpQueen()
     {
         QueenLevel += 1;
+        UpdateProgress();
+        CheckVictory();
     }
 
-    public void OnWorldSimulationStep()
+    private void UpdateProgress()
     {
-        if (HasHatchedBee)
+        if (QueenLevel < NourishmentForLevel.Length)
         {
-            Nourishment += QueenLevel;
+            VictoryProgress.text = $"Bees saved: {QueenLevel} / {NourishmentForLevel.Length}  ";
+        }
+        else
+        {
+            VictoryProgress.text = $"Bees saved: {QueenLevel}  ";
+        }
+    }
+
+    public void CheckVictory()
+    {
+        if (QueenLevel == NourishmentForLevel.Length)
+        {
+            VictoryScreenPrompt.SetActive(true);
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    public void HideVictory()
+    {
+        VictoryScreenPrompt.SetActive(false);
+    }
+
+    public void OnWorldSimulationStep(bool passed)
+    {
+        NourishmentChanged = MathF.Abs(NourishmentOld - Nourishment) > 0;
+        NourishmentOld = Nourishment;
+        if (passed)
+            return;
+
+        if (HasHatchedBee && QueenLevel > NourishmentForLevel.Length && NourishmentChanged)
+        {
+            Nourishment += BeeBonus * (QueenLevel - NourishmentForLevel.Length);
         }
     }
 }

@@ -156,7 +156,7 @@ public class GridSquare
 
 public class World : MonoBehaviour
 {
-    public UnityEvent WorldSimulationStepEvent;
+    public UnityEvent<bool> WorldSimulationStepEvent;
 
     public static int MIN_TILE_ENTITY_Y = -3;
     public static int MIN_ENTITY_Y = -5;
@@ -546,9 +546,8 @@ public class World : MonoBehaviour
         }
     }
 
-    public void SimulationStep()
+    public void SimulationStep(bool passed = false)
     {
-        WorldSimulationStepEvent.Invoke();
         // TODO maybe optimize (hashtable)
         List<Entity> simulatedEntities = new List<Entity>();
         ApplyToSimulatedTiles(square =>
@@ -590,6 +589,8 @@ public class World : MonoBehaviour
                 indicatorComponent.Square = square;
             }
         });
+        // event will be fired at the end (for checks)
+        WorldSimulationStepEvent.Invoke(passed);
     }
 
     public bool IsTileOnCamera(Tile tile)
