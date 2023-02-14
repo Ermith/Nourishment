@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 public class Bee : Enemy
 {
@@ -26,9 +28,15 @@ public class Bee : Enemy
     private void Flip()
     {
         if (_currentDir == Direction.Left)
+        {
             transform.localScale = toRight;
+            _currentDir = Direction.Right;
+        }
         else if (_currentDir == Direction.Right)
+        {
             transform.localScale = toLeft;
+            _currentDir = Direction.Left;
+        }
     }
 
     public void Update()
@@ -63,6 +71,25 @@ public class Bee : Enemy
             transform.position.z);
     }
 
+    public override bool Move(Direction direction, bool tween = true)
+    {
+        var square = Util.GetWorld().GetSquare(X + direction.X(), Y + direction.Y());
+        if (square is null)
+            return false;
+        foreach (var entity in square.Entities)
+        {
+            if (entity is Enemy enemy && enemy is not Bee)
+            {
+                if (enemy.Alive)
+                {
+                    enemy.Kill();
+                    return false;
+                }
+            }
+        }
+        return base.Move(direction, tween);
+    }
+
     public override void AIStep()
     {
         if (IsOverworldBee)
@@ -71,29 +98,17 @@ public class Bee : Enemy
             return;
         }
 
-        Flip();
-        var squareForward = Util.GetWorld().GetSquare(X + ForwardDir.X(), Y + ForwardDir.Y());
-        if (_currentDir == Direction.Left && squareForward.CanPass(this, ForwardDir))
-        {
-            Move(ForwardDir);
-            return;
-        }
-        if (_currentDir == Direction.Left && !squareForward.CanPass(this, ForwardDir))
-        {
-            _currentDir = Direction.Right;
+        if (!Move(_currentDir))
             Flip();
-        }
+    }
 
-        var squareBackward = Util.GetWorld().GetSquare(X + BackwardDir.X(), Y + BackwardDir.Y());
-        if (_currentDir == Direction.Right && squareBackward.CanPass(this, BackwardDir))
-        {
-            Move(BackwardDir);
-            return;
-        }
-        if (_currentDir == Direction.Right && !squareBackward.CanPass(this, BackwardDir))
-        {
-            _currentDir = Direction.Left;
-            Flip();
-        }
+    public override bool CanSpread(Player player, Direction spreadDirection)
+    {
+        return CanMove(spreadDirection);
+    }
+
+    public override void OnSpread(Player player, Direction spreadDirection)
+    {
+        Move(spreadDirection);
     }
 }
