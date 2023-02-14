@@ -496,7 +496,7 @@ public class RootTile : Tile
 
                 neighRoot.ConnectedDirections[(int)dir.Opposite()] = false;
 
-                if (!visited.Contains(neighRoot))
+                if (!visited.Contains(neighRoot) && (neighRoot.Status == RootStatus.Connected || neighRoot.Status == RootStatus.Initial))
                 {
                     var curVisited = neighRoot.BFSApply(tile => { },
                         tile => tile.Status == RootStatus.Connected || tile.Status == RootStatus.Initial);
