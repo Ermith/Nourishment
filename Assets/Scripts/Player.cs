@@ -49,7 +49,10 @@ public class Player : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.N))
                 Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.AmberBee, X, Y);
-            
+
+            if(Input.GetKeyDown(KeyCode.R))
+                Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.SmallRock, X, Y);
+
             if (Input.GetKeyDown(KeyCode.V))
                 Util.GetWorld().GetSquare(X, Y).Water.Amount = 1.0f;
         }
