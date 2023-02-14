@@ -88,10 +88,17 @@ public class GridSquare
         if (Water.Amount <= 0f)
             return;
         float absorbAmount = 0f;
-        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        (int, int)[] neighTileCoords = new (int, int)[]
         {
-            if (Util.GetWorld().GetTile(X + dir.X(), Y + dir.Y()) is RootTile root &&
-                root.Status == RootTile.RootStatus.Connected)
+            (X, Y),
+            (X, Y - 1),
+            (X + 1, Y),
+            (X, Y + 1),
+            (X - 1, Y),
+        };
+        foreach (var (x, y) in neighTileCoords)
+        {
+            if (Util.GetWorld().GetTile(x, y) is RootTile { Status: RootTile.RootStatus.Connected } root)
             {
                 absorbAmount += World.WATER_CONVERSION_SPEED;
                 if (root.Health < 1f)
@@ -127,6 +134,19 @@ public class GridSquare
         }
 
         return true;
+    }
+
+    public bool PushesOutFluid(Fluid fluid, Direction moveDirection)
+    {
+        if (Tile != null && Tile.PushesOutFluid(fluid, moveDirection))
+            return true;
+        foreach (var entity in Entities)
+        {
+            if (!entity.CanFluidPass(fluid, moveDirection))
+                return true;
+        }
+
+        return false;
     }
 }
 
@@ -544,7 +564,7 @@ public class World : MonoBehaviour
         ApplyToSimulatedTiles(square => square.SimulationStepFluid());
         ApplyToSimulatedTiles(square =>
         {
-            if (square.Water.Amount > 0.0f && !square.CanFluidPass(square.Water, Direction.Down))
+            if (square.Water.Amount > 0.0f && square.PushesOutFluid(square.Water, Direction.Down))
                 square.Water.FixDisplacement(square);
         });
         for (int i = 0; i < FLUID_SUBSTEPS; i++)

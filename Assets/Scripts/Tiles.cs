@@ -128,6 +128,11 @@ public abstract class Tile : MonoBehaviour
     {
         return false;
     }
+
+    public virtual bool PushesOutFluid(Fluid fluid, Direction moveDirection)
+    {
+        return !CanFluidPass(fluid, moveDirection);
+    }
 }
 
 public class GroundTile : Tile
@@ -529,5 +534,10 @@ public class RootTile : Tile
     {
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
             ConnectWithNeigh(dir);
+    }
+
+    public override bool PushesOutFluid(Fluid fluid, Direction moveDirection)
+    {
+        return false;
     }
 }
