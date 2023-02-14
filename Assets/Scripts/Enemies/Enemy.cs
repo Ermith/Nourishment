@@ -53,6 +53,9 @@ public abstract class Enemy : Entity
 
     public override void OnPass(Entity entity, Direction moveDirection)
     {
+        if (!Alive)
+            return;
+
         if (entity is Rock rock && moveDirection == Direction.Down && !CanMove(moveDirection))
         {
             Util.GetAudioManager().Play("hit");
