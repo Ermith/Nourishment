@@ -126,7 +126,7 @@ public abstract class Fluid
 
 public class Water : Fluid
 {
-    public override float FlowRate() => 0.01f;
+    public override float FlowRate() => 0.05f;
 
     protected override (Fluid, GridSquare) GetFluid(int x, int y)
     {
