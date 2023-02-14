@@ -73,10 +73,15 @@ public class Flower : MonoBehaviour
             else
                 break;
         }
-
+        // bees to level
         if (currentLevel < QueenLevel)
         {
             currentLevel = QueenLevel;
+        }
+        if (NourishmentForLevel.Length <= QueenLevel && Nourishment < NourishmentForLevel[NourishmentForLevel.Length])
+        {
+            // final can be achieved only if victory condition is met
+            currentLevel -= 1;
         }
 
         return currentLevel;
@@ -162,7 +167,7 @@ public class Flower : MonoBehaviour
 
     public void CheckVictory()
     {
-        if (QueenLevel == NourishmentForLevel.Length)
+        if (QueenLevel == NourishmentForLevel.Length && Nourishment >= NourishmentForLevel[NourishmentForLevel.Length])
         {
             VictoryScreenPrompt.SetActive(true);
         }
