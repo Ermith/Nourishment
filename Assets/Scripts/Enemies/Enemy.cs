@@ -113,7 +113,7 @@ public abstract class Enemy : Entity
         moveTween?.Kill();
         fallTween?.Kill();
         var sprite = GetComponent<SpriteRenderer>();
-        _colorTween?.Kill();
+        _colorTween?.Complete();
         _colorTween = sprite.DOColor(new Color(1f, 1f, 1f), 0.2f);
         // rotate 180 degrees as default
         transform.DORotate(new Vector3(0, 0, 180), 0.2f);

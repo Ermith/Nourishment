@@ -44,8 +44,8 @@ public class Slug : Enemy
     }
     public override void SetDeathSprite()
     {
-        _eatTween.Kill();
-        _rotateTween.Kill();
+        _eatTween.Complete();
+        _rotateTween.Complete();
         if (_animator == null)
             _animator = GetComponent<Animator>();
         _animator.SetTrigger("StopMoving");
@@ -63,7 +63,7 @@ public class Slug : Enemy
         if (tileBelow is RootTile rootBelow)
         {
             rootBelow.Health -= 0.05f;
-            _eatTween?.Kill();
+            _eatTween?.Complete();
             _eatTween = DOTween.Sequence();
             var downVec = DownDir.ToVector();
             var baseScale = transform.localScale;
