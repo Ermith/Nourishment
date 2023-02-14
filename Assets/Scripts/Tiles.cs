@@ -14,7 +14,8 @@ public enum TileType
     Grass,
     SuperGround,
     EvilGround,
-    NutritionGround
+    NutritionGround,
+    FlowerGrass
 }
 
 public class TileFactory
@@ -77,6 +78,8 @@ public class TileFactory
                 return CreateTile<EvilGroundTile>(parent, x, y);
             case TileType.NutritionGround:
                 return CreateTile<NutritionGroundTile>(parent, x, y);
+            case TileType.FlowerGrass:
+                return CreateTile<FlowerGrassTile>(parent, x, y);
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -289,6 +292,25 @@ public class AirTile : Tile
     public override bool CanFluidPass(Fluid fluid, Direction moveDirection)
     {
         return true;
+    }
+}
+
+public class FlowerGrassTile : Tile
+{
+    public override string Audio => "Root";
+    public override TileType Type => TileType.FlowerGrass;
+    public override float Hardness => -1;
+    public override bool CanPass(Entity entity, Direction moveDirection)
+    {
+        return false;
+    }
+
+    public override void UpdateSprite()
+    {
+    }
+    public override bool CanFluidPass(Fluid fluid, Direction moveDirection)
+    {
+        return false;
     }
 }
 

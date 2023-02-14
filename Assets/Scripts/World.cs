@@ -250,7 +250,7 @@ public class World : MonoBehaviour
     {
         // First row
         if (y == 0 && x == MAP_WIDTH / 2)
-            return TileFactory.CreateTile(gameObject, x, y, TileType.Air);
+            return TileFactory.CreateTile(gameObject, x, y, TileType.FlowerGrass);
         
         if (y == 0)
             return TileFactory.CreateTile(gameObject, x, y, TileType.Grass);
