@@ -92,10 +92,15 @@ public abstract class Enemy : Entity
                 if (Breath > MaxBreath)
                     Breath = MaxBreath;
             }
+        }
+
+        // we might have died in the above so need to re-check!
+        if (Alive)
+        {
             _colorTween?.Kill();
             var sprite = GetComponent<SpriteRenderer>();
-            _colorTween = sprite.DOColor(new Color(0.5f * Breath / MaxBreath + 0.5f, 0.5f * Breath / MaxBreath + 0.5f, 1), 0.2f);
-            
+            _colorTween =
+                sprite.DOColor(new Color(0.5f * Breath / MaxBreath + 0.5f, 0.5f * Breath / MaxBreath + 0.5f, 1), 0.2f);
             AIStep();
         }
     }
