@@ -82,6 +82,8 @@ public class Bee : Enemy
                 if (enemy.Alive)
                 {
                     enemy.Kill();
+                    if (Random.value < 0.2f)
+                        Kill();
                     return false;
                 }
             }
