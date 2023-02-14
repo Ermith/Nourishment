@@ -37,7 +37,8 @@ public abstract class Fluid
         if (availTargets.Count == 0)
         {
             var aboveSquare = square;
-            while (aboveSquare is not null && !aboveSquare.CanFluidPass(this, Direction.Up))
+            int maxSteps = 10;
+            while (aboveSquare is not null && !aboveSquare.CanFluidPass(this, Direction.Up) && maxSteps-- > 0)
             {
                 aboveSquare = Util.GetWorld().GetSquare(aboveSquare.X, aboveSquare.Y + 1);
             }
