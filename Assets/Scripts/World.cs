@@ -108,6 +108,10 @@ public class GridSquare
             }
         }
 
+        // hack to clean up ugly worldgen water in root tiles
+        if (Util.GetWorld().GetTile(X, Y) is RootTile { Status: RootTile.RootStatus.Spawned })
+            absorbAmount += 1f;
+
         absorbAmount = Mathf.Min(Water.Amount, absorbAmount);
         Water.Amount -= absorbAmount;
         Util.GetFlower().Nourishment += absorbAmount * World.WATER_CONVERSION_RATIO;
@@ -294,7 +298,7 @@ public class World : MonoBehaviour
         float nutrition = evil + 3;
         float air = 20;
         float root = 10 - (-y / CHUNK_SIZE);
-        float water = 15 - (-y / CHUNK_SIZE * 2);
+        float water = 18 - (-y / CHUNK_SIZE * 1.5f);
         water = Mathf.Max(water, 2f);
 
         if (y < MIN_TILE_ENTITY_Y)
@@ -460,8 +464,6 @@ public class World : MonoBehaviour
         CellularAutomaton(yStart, TileType.EvilGround, treshold: 4);
         CellularAutomaton(yStart, TileType.Root);
         CellularAutomaton(yStart, TileType.Air);
-        
-
 
         // Create Entities
         for (int i = 0; i < CHUNK_SIZE; i++)
@@ -484,9 +486,12 @@ public class World : MonoBehaviour
         for (int i = 0; i < CHUNK_SIZE; i++)
             for (int j = 0; j < MAP_WIDTH; j++)
             {
+                var square = GetSquare(j, -yStart - i);
                 var tile = GetTile(j, -yStart - i);
                 (tile as RootTile)?.ConnectWithAllNeigh();
                 tile.UpdateSprite();
+                if (square.Water.Amount > 0.0f && square.PushesOutFluid(square.Water, Direction.Down))
+                    square.Water.Amount = 0.0f;
             }
 
         // fix sprites on the border row
