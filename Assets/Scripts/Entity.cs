@@ -347,7 +347,7 @@ public class RandomRock : Rock
 {
     public int Width = 3;
     public int Height = 3;
-    public float Chance = 0.5f;
+    public float Chance = 0.35f;
 
     protected bool[,] _shape = null;
 
@@ -373,7 +373,7 @@ public class RandomRock : Rock
             }
             if (!found)
             {
-                int j = Random.Range(0, Height);
+                int j = (int)(Random.value * Random.value * Height);
                 shape[i, j] = true;
             }
         }
@@ -390,38 +390,12 @@ public class RandomRock : Rock
             }
             if (!found)
             {
-                int i = Random.Range(0, Width);
+                int i = (int)(Random.value * Random.value * Width);
                 shape[i, j] = true;
             }
         }
 
-        // make it connected
-        for (int i = 0; i < Width; i++)
-        {
-            for (int j = 0; j < Height; j++)
-            {
-                if (shape[i, j])
-                {
-                    if (i > 0 && j > 0 && shape[i - 1, j - 1] && !shape[i - 1, j] && !shape[i, j - 1])
-                    {
-                        if (Random.value < 0.5f)
-                            shape[i - 1, j] = true;
-                        else
-                            shape[i, j - 1] = true;
-                    }
-                    if (i > 0 && j < Height - 1 && shape[i - 1, j + 1] && !shape[i - 1, j] && !shape[i, j + 1])
-                    {
-                        if (Random.value < 0.5f)
-                            shape[i - 1, j] = true;
-                        else
-                            shape[i, j + 1] = true;
-                    }
-                    break;
-                }
-            }
-        }
-
-        // make it convex
+        // make it convex-ish
         for (int i = 0; i < Width; i++)
         {
             int minJ = -1;
@@ -458,6 +432,53 @@ public class RandomRock : Rock
             {
                 for (int i = minI; i <= maxI; i++)
                     shape[i, j] = true;
+            }
+        }
+
+        // make it connected
+        
+        bool[,] visited = new bool[Width, Height];
+        Queue<(int, int)> queue = new Queue<(int, int)>();
+        for (int i = 0; i < Width; i++)
+        {
+            for (int j = 0; j < Height; j++)
+            {
+                if (shape[i, j])
+                {
+                    queue.Enqueue((i, j));
+                    visited[i, j] = true;
+                    break;
+                }
+            }
+            if (queue.Count > 0)
+                break;
+        }
+
+        while (queue.Count > 0)
+        {
+            var (i, j) = queue.Dequeue();
+            foreach (var dir in Util.CARDINAL_DIRECTIONS)
+            {
+                int i1 = i + dir.X();
+                int j1 = j + dir.Y();
+                if (i1 < 0 || i1 >= Width || j1 < 0 || j1 >= Height)
+                    continue;
+                if (visited[i1, j1])
+                    continue;
+                if (shape[i1, j1])
+                {
+                    queue.Enqueue((i1, j1));
+                    visited[i1, j1] = true;
+                }
+            }
+        }
+
+        for (int i = 0; i < Width; i++)
+        {
+            for (int j = 0; j < Height; j++)
+            {
+                if (!visited[i, j])
+                    shape[i, j] = false;
             }
         }
 
