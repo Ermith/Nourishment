@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -243,6 +244,8 @@ public class World : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        DOTween.SetTweensCapacity(1500, 50);
+
         Sprites = LoadSprites();
         Util.GetAudioManager().Play("Music", true);
 
