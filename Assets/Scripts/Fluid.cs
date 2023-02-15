@@ -7,6 +7,7 @@ public abstract class Fluid
 {
     public float Amount = 0.0f;
     protected float NextAmount = 0.0f;
+    public float MaxAmountSinceLast = 0.0f;
 
     public abstract float FlowRate();
 
@@ -16,6 +17,7 @@ public abstract class Fluid
     {
         Amount = NextAmount;
         NextAmount = 0.0f;
+        MaxAmountSinceLast = Mathf.Max(MaxAmountSinceLast, Amount);
     }
 
     protected void AddFluid(int x, int y, float amount)
@@ -149,7 +151,7 @@ public class FluidIndicator : MonoBehaviour
     private void Start()
     {
         SpriteRenderer = GetComponent<SpriteRenderer>();
-        SpriteRenderer.color = new Color(0.0f, 0.0f, 1.0f, 0.5f);
+        SpriteRenderer.color = new Color(0.0f, 0.0f, 1.0f, 0.0f);
         SpriteRenderer.sortingOrder = 1;
         // SpriteRenderer.sortingLayerName = "Fluid";
         SpriteRenderer.sprite = Resources.Load<Sprite>("Sprites/white");
@@ -157,7 +159,11 @@ public class FluidIndicator : MonoBehaviour
 
     private void Update()
     {
-        SpriteRenderer.enabled = Square.Water.Amount > 0.0f;
+        SpriteRenderer.enabled = Square.Water.Amount > 0.0f || Square.Water.MaxAmountSinceLast > 0.0f;
+
+        if (Square.Water.MaxAmountSinceLast == 0.0f) // no simulation happened since last
+            return;
+
         var squareAbove = Util.GetWorld().GetSquare(Square.X, Square.Y + 1);
 
         float tweenTime = 0.5f;
@@ -165,20 +171,41 @@ public class FluidIndicator : MonoBehaviour
         if (SpriteRenderer.color.r == 0.0f)
             tweenTime = 0.0f;
 
+        bool doMidStep = Square.Water.MaxAmountSinceLast > Square.Water.Amount + 0.05f;
+        var stepTime = doMidStep ? tweenTime / 2 : tweenTime;
+        var sequence = DOTween.Sequence();
 
         if (squareAbove != null && squareAbove.Water.Amount > 0.0f)
         {
-            SpriteRenderer.DOColor(
-                new Color(_baseColor.r, _baseColor.g, _baseColor.b, BaseAlpha * Square.Water.Amount), tweenTime);
-            transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), tweenTime);
-            transform.DOLocalMove(new Vector3(0.0f, 0.0f, 0.0f), tweenTime);
+            if (doMidStep)
+            {
+                sequence.Append(SpriteRenderer.DOColor(
+                    new Color(_baseColor.r, _baseColor.g, _baseColor.b, BaseAlpha * Square.Water.MaxAmountSinceLast), stepTime));
+                sequence.Join(transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), stepTime));
+                sequence.Join(transform.DOLocalMove(new Vector3(0.0f, 0.0f, 0.0f), stepTime));
+            }
+
+            sequence.Append(SpriteRenderer.DOColor(
+                new Color(_baseColor.r, _baseColor.g, _baseColor.b, BaseAlpha * Square.Water.Amount), stepTime));
+            sequence.Join(transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), stepTime));
+            sequence.Join(transform.DOLocalMove(new Vector3(0.0f, 0.0f, 0.0f), stepTime));
         }
         else
         {
-            SpriteRenderer.DOColor(
-                new Color(_baseColor.r, _baseColor.g, _baseColor.b, BaseAlpha), tweenTime);
-            transform.DOScale(new Vector3(1.0f, Square.Water.Amount, 1.0f), tweenTime);
-            transform.DOLocalMove(new Vector3(0.0f, -0.5f + Square.Water.Amount / 2, 0.0f), tweenTime);
+            if (doMidStep)
+            {
+                sequence.Append(SpriteRenderer.DOColor(
+                    new Color(_baseColor.r, _baseColor.g, _baseColor.b, BaseAlpha), tweenTime));
+                sequence.Join(transform.DOScale(new Vector3(1.0f, Square.Water.MaxAmountSinceLast, 1.0f), stepTime));
+                sequence.Join(transform.DOLocalMove(new Vector3(0.0f, -0.5f + Square.Water.MaxAmountSinceLast / 2, 0.0f), stepTime));
+            }
+
+            sequence.Append(SpriteRenderer.DOColor(
+                new Color(_baseColor.r, _baseColor.g, _baseColor.b, BaseAlpha), tweenTime));
+            sequence.Join(transform.DOScale(new Vector3(1.0f, Square.Water.Amount, 1.0f), stepTime));
+            sequence.Join(transform.DOLocalMove(new Vector3(0.0f, -0.5f + Square.Water.Amount / 2, 0.0f), stepTime));
         }
+
+        Square.Water.MaxAmountSinceLast = 0f;
     }
 }

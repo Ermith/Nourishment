@@ -592,12 +592,12 @@ public class World : MonoBehaviour
         ApplyToSimulatedTiles(square =>
         {
             var obj = square.Tile.gameObject;
-            if (square.Water.Amount > 0.0f && obj.GetComponentInChildren<FluidIndicator>() == null)
+            if (square.Water.Amount + square.Water.MaxAmountSinceLast > 0.0f && obj.GetComponentInChildren<FluidIndicator>() == null)
             {
                 var indicatorObj = new GameObject();
                 indicatorObj.transform.parent = obj.transform;
                 indicatorObj.transform.position = obj.transform.position;
-                indicatorObj.AddComponent<SpriteRenderer>();
+                indicatorObj.AddComponent<SpriteRenderer>().enabled = false;
                 var indicatorComponent = indicatorObj.AddComponent<FluidIndicator>();
                 indicatorComponent.Square = square;
             }
