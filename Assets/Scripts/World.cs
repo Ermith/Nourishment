@@ -294,7 +294,7 @@ public class World : MonoBehaviour
         var rnd = new System.Random();
         float prob = (float)rnd.NextDouble() * 100;
 
-        float evil = 40 + (-y / CHUNK_SIZE * 2);
+        float evil = 40 + Mathf.Min(20, -y / CHUNK_SIZE * 1.5f);
         float nutrition = evil + 3;
         float air = 20;
         float root = 10 - (-y / CHUNK_SIZE);
@@ -331,7 +331,7 @@ public class World : MonoBehaviour
         if (x == 0 || x == MAP_WIDTH - 1)
             return null;
 
-        float amberBee = 0.1f;
+        float amberBee = 0.25f;
         float bigRock = 2;
         float smallRock = 6;
         float snail = 8;

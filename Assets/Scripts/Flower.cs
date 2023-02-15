@@ -161,13 +161,17 @@ public class Flower : MonoBehaviour
     private bool HasCompletedBeeCondition => QueenLevel >= NourishmentForLevel.Length - 1;
     private void UpdateProgress()
     {
-        if (!VictoryAchieved)
+        if (QueenLevel > 0 && !VictoryAchieved)
         {
             VictoryProgress.text = $"Bees saved: {QueenLevel} / {NourishmentForLevel.Length - 1}  ";
         }
-        else
+        else if (QueenLevel > 0)
         {
             VictoryProgress.text = $"Bees saved: {QueenLevel}  ";
+        }
+        else
+        {
+            VictoryProgress.text = "";
         }
     }
 
@@ -192,8 +196,8 @@ public class Flower : MonoBehaviour
 
     public void OnWorldSimulationStep(bool passed)
     {
-        NourishmentChanged = MathF.Abs(NourishmentOld - Nourishment) > 0;
-        NourishmentOld = Nourishment;
+        NourishmentChanged = MathF.Abs(NourishmentOld - _nourishment) > 0;
+        NourishmentOld = _nourishment;
         if (passed)
             return;
 
