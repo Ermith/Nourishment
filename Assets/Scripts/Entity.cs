@@ -94,8 +94,8 @@ public abstract class Entity : MonoBehaviour
 
             void FallAnim()
             {
-                MoveTween = gameObject.transform.DOMove(LocalShift + new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f * fallenHeight);
-                MoveTween.SetEase(Ease.OutBounce);
+                FallTween = gameObject.transform.DOMove(LocalShift + new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f * fallenHeight);
+                FallTween.SetEase(Ease.OutBounce);
             }
 
             if ((MoveTween?.IsActive() ?? false) && MoveTween.IsPlaying())

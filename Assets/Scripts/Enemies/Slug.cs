@@ -68,10 +68,11 @@ public class Slug : Enemy
             var downVec = DownDir.ToVector();
             var baseScale = transform.localScale;
             baseScale = new Vector3(baseScale.x > 0 ? 1f : -1f, 1f, 1f);
+            var basePosition = new Vector3(x: -(World.MapWidth / 2) + X, y: Y, 0);
             EatTween.Append(transform.DOScale(new Vector3(baseScale.x, baseScale.y / 2, baseScale.z), 0.1f));
-            EatTween.Join(transform.DOMove(transform.position + new Vector3(0.5f * downVec.x, 0.5f * downVec.y, 0), 0.1f));
+            EatTween.Join(transform.DOMove(basePosition + new Vector3(0.5f * downVec.x, 0.5f * downVec.y, 0), 0.1f));
             EatTween.Append(transform.DOScale(baseScale, 0.1f));
-            EatTween.Join(transform.DOMove(transform.position, 0.1f));
+            EatTween.Join(transform.DOMove(basePosition, 0.1f));
             return;
         }
         var squareForward = Util.GetWorld().GetSquare(X + ForwardDir.X(), Y + ForwardDir.Y());
