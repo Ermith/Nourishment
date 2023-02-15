@@ -60,13 +60,6 @@ public abstract class Enemy : Entity
         {
             Util.GetAudioManager().Play("hit");
             Kill();
-            var squareBelow = Util.GetWorld().GetSquare(X, Y - 1, true);
-            while (squareBelow is null || squareBelow.Entities.Any(e => e is Rock))
-            {
-                Y--;
-                squareBelow = Util.GetWorld().GetSquare(X, squareBelow.Y - 1, true);
-            }
-            FallTween = transform.DOMove(LocalShift + new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f);
             return;
         }
         Move(moveDirection);
