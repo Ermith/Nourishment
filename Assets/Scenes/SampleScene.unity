@@ -1690,7 +1690,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1726295477
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 550e149a9dc65ae4ba5b99b9adcd4808, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.64705884}
@@ -1850,8 +1850,8 @@ MonoBehaviour:
         m_CallState: 2
   Camera: {fileID: 519420031}
   Player: {fileID: 1525839684}
-  ExtraSimulatedRows: 10
-  CheatsEnabled: 1
+  ExtraSimulatedRows: 25
+  CheatsEnabled: 0
   Background1: {fileID: 1235685978}
   Background2: {fileID: 1112595879}
   Background3: {fileID: 1358852388}
