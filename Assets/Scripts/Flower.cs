@@ -1,6 +1,8 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -22,13 +24,10 @@ public class Flower : MonoBehaviour
     public float BeeBonus = 0.5f;
     private bool NourishmentChanged = false;
     private float NourishmentOld = 0;
-
+    private bool VictoryAchieved = false;
     private SpriteRenderer _spriteRenderer;
 
-    public float[] NourishmentForLevel = new float[]
-    {
-
-    };
+    public float[] NourishmentForLevel = new float[] { };
 
     private int _level;
     public int Level
@@ -36,6 +35,7 @@ public class Flower : MonoBehaviour
         get { return _level; }
         set
         {
+            // this checks only sprites
             _level = Mathf.Clamp(value, 0, GrowthSprites.Count - 1);
         }
     }
@@ -51,16 +51,34 @@ public class Flower : MonoBehaviour
         {
             return _nourishment;
         }
-
         set
         {
             _nourishment = value;
-            Level = NourishmentToLevel(_nourishment);
+            Level = ApplyLevelRestriction(NourishmentToLevel(_nourishment));
             if (_nourishment < GAME_OVER_NOURISHMENT)
                 SceneManager.LoadScene("GameOverScene");
 
+            CheckVictory();
+
             NourishmentText.text = $"Nourishment: {String.Format("{0:.##}", _nourishment)}";
         }
+    }
+
+    private int ApplyLevelRestriction(int desiredLevel)
+    {
+        // Bees defines minimum level as well
+        var newLevel = Math.Max(desiredLevel, QueenLevel);
+        // Check if new level is expected to be max
+        bool isMaxLevel = newLevel >= NourishmentForLevel.Length - 1;
+        // max level requires bee condition and nourishment condition
+        bool isComplete = HasCompletedBeeCondition && HasCompletedNourishmentCondition;
+        if (isMaxLevel && !isComplete)
+        {
+            // get level that is not last as current level
+            newLevel = NourishmentForLevel.Length - 2;
+        }
+        // Otherwise tree can be shown as max level tree
+        return newLevel;
     }
 
     private int NourishmentToLevel(float expectedNourishment)
@@ -72,16 +90,6 @@ public class Flower : MonoBehaviour
                 currentLevel++;
             else
                 break;
-        }
-        // bees to level
-        if (currentLevel < QueenLevel)
-        {
-            currentLevel = QueenLevel;
-        }
-        if (NourishmentForLevel.Length <= QueenLevel && Nourishment < NourishmentForLevel[NourishmentForLevel.Length])
-        {
-            // final can be achieved only if victory condition is met
-            currentLevel -= 1;
         }
 
         return currentLevel;
@@ -128,7 +136,6 @@ public class Flower : MonoBehaviour
         if (HatchedBeeQueen != null)
             HatchedBeeQueen.SetActive(true);
     }
-
     public bool IsAbleToBreakAmber()
     {
         // current level is higher or equal
@@ -140,24 +147,23 @@ public class Flower : MonoBehaviour
     {
         Util.GetFlower().Nourishment -= AmberBreakCost;
     }
-
     public bool CanObtainQueen()
     {
         return !HasHatchedBee;
     }
-
+    // Bee level will be changed
     public void PowerUpQueen()
     {
         QueenLevel += 1;
         UpdateProgress();
-        CheckVictory();
     }
-
+    private bool HasCompletedNourishmentCondition => _nourishment >= NourishmentForLevel.Last();
+    private bool HasCompletedBeeCondition => QueenLevel >= NourishmentForLevel.Length - 1;
     private void UpdateProgress()
     {
-        if (QueenLevel < NourishmentForLevel.Length)
+        if (!VictoryAchieved)
         {
-            VictoryProgress.text = $"Bees saved: {QueenLevel} / {NourishmentForLevel.Length}  ";
+            VictoryProgress.text = $"Bees saved: {QueenLevel} / {NourishmentForLevel.Length - 1}  ";
         }
         else
         {
@@ -167,9 +173,11 @@ public class Flower : MonoBehaviour
 
     public void CheckVictory()
     {
-        if (QueenLevel == NourishmentForLevel.Length && Nourishment >= NourishmentForLevel[NourishmentForLevel.Length])
+        if (!VictoryAchieved && HasCompletedBeeCondition && HasCompletedNourishmentCondition)
         {
+            VictoryAchieved = true;
             VictoryScreenPrompt.SetActive(true);
+            UpdateProgress();
         }
         else
         {
@@ -189,9 +197,9 @@ public class Flower : MonoBehaviour
         if (passed)
             return;
 
-        if (HasHatchedBee && QueenLevel > NourishmentForLevel.Length && NourishmentChanged)
+        if (HasCompletedBeeCondition && NourishmentChanged)
         {
-            Nourishment += BeeBonus * (QueenLevel - NourishmentForLevel.Length);
+            Nourishment += BeeBonus * (QueenLevel - NourishmentForLevel.Length - 1);
         }
     }
 }
