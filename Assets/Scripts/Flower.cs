@@ -250,7 +250,7 @@ public class Flower : MonoBehaviour
 
         if (HasCompletedBeeCondition && _nourishmentChanged)
         {
-            ModifyNourishmentWithSource(BeeBonus * (QueenLevel - NourishmentForLevel.Length - 1), gameObject);
+            ModifyNourishmentWithSource(BeeBonus * (QueenLevel - NourishmentForLevel.Length + 1), gameObject);
         }
     }
 }
