@@ -17,6 +17,10 @@ public class Snail : Slug
             Animator = GetComponent<Animator>();
         Animator.SetTrigger("Die");
         var sprite = GetComponent<SpriteRenderer>();
+        
+        // shouldn't be necessary but somehow is in the edge case where the snail dies immediately after spawning
+        sprite.sprite = Util.GetWorld().Sprites["snail_dead"];
+        
         ColorTween?.Complete();
         ColorTween = sprite.DOColor(new Color(1f, 1f, 1f), 0.2f);
         transform.DORotate(new Vector3(0, 0, 0), 0.2f);
