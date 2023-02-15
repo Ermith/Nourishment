@@ -94,6 +94,8 @@ public class Player : MonoBehaviour
         if (!square.CanSpread(this, direction))
             return false;
         World world = Util.GetWorld();
+        int oldX = X;
+        int oldY = Y;
         int newX = X + direction.X();
         int newY = Y + direction.Y();
 
@@ -118,18 +120,20 @@ public class Player : MonoBehaviour
         if (retreat && newTile is not RootTile)
             return false;
 
-        if (retreat)
-        {
-            if (oldTile.Status == RootStatus.Initial)
-                return false;
+        if (retreat && oldTile.Status == RootStatus.Initial)
+            return false;
 
-            world.ReplaceTile(X, Y, TileType.Air);
-            Util.GetFlower().Nourishment++;
-        }
-
-        square.OnSpread(this, direction);
         X = newX;
         Y = newY;
+        
+        if(retreat)
+        {
+            world.ReplaceTile(oldX, oldY, TileType.Air);
+            Util.GetFlower().Nourishment++;
+        }
+        
+        square.OnSpread(this, direction);
+        
         if (newTile is RootTile newExistingRootTile)
         {
             var oldConn = oldTile.Status == RootStatus.Connected || oldTile.Status == RootStatus.Initial;
@@ -164,7 +168,8 @@ public class Player : MonoBehaviour
             newRootTile.GrowAnim(direction);
         }
 
-        oldTile.ConnectWithNeigh(direction);
+        if(!retreat)
+            oldTile.ConnectWithNeigh(direction);
 
         Util.GetFlower().Nourishment -= newTile.Hardness;
         if (newTile is NutritionGroundTile nutritionGroundTile)

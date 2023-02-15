@@ -95,7 +95,7 @@ public class EntityFactory : MonoBehaviour
             var square = Util.GetWorld().GetSquare(location.Item1, location.Item2, true);
             if (square is null)
             {
-                Destroy(entity.gameObject);
+                entity.Remove();
                 return null;
             }
             square.Entities.Add(entity);

@@ -264,11 +264,21 @@ public class World : MonoBehaviour
         var oldTile = square.Tile;
 
         if (oldTile != null)
+        {
             Destroy(oldTile.gameObject);
+            oldTile.OnRemove();
+        }
 
         var newTile = TileFactory.CreateTile(gameObject, x, y, type);
         newTile.UpdateSprite();
         square.Tile = newTile;
+
+        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        {
+            var neighbor = GetTile(x + dir.X(), y + dir.Y());
+            if (neighbor != null)
+                neighbor.UpdateSprite();
+        }
 
         return newTile;
     }
@@ -383,8 +393,8 @@ public class World : MonoBehaviour
             e = Util.GetEntityFactory().PlaceEntity(gameObject, type.Value, x, y);
             if (e is null || !e.IsPlacementValid())
             {
-                if(e is not null)
-                    Destroy(e.gameObject);
+                if (e is not null)
+                    e.Remove();
                 e = null;
             }
             else

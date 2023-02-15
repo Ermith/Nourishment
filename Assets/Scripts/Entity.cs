@@ -54,7 +54,13 @@ public abstract class Entity : MonoBehaviour
         return true;
     }
 
-    public virtual void OnDestroy()
+    public void Remove()
+    {
+        OnRemove();
+        Destroy(gameObject);
+    }
+
+    public virtual void OnRemove()
     {
         World world = Util.GetWorld();
         if (world is null)
@@ -218,7 +224,7 @@ public class AmberBee : Entity
                     flower.PowerUpQueen();
 
                 flower.BreakAmber();
-                Destroy(gameObject);
+                Remove();
                 return;
             }
         }
@@ -235,7 +241,7 @@ public class AmberBee : Entity
     {
         if (entity is Rock && moveDirection == Direction.Down && !CanMove(moveDirection))
         {
-            Destroy(gameObject);
+            Remove();
             Util.GetEntityFactory().PlaceEntity(Util.GetWorld().gameObject, EntityType.Bee, X, Y);
         }
         else

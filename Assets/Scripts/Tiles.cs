@@ -96,8 +96,8 @@ public abstract class Tile : MonoBehaviour
     public virtual string Audio => "";
 
     public abstract void UpdateSprite();
-
-    public virtual void OnDestroy()
+    
+    public virtual void OnRemove()
     {
         World world = Util.GetWorld();
         if (world is null)
@@ -379,7 +379,7 @@ public class RootTile : Tile
     public RootStatus? Status {
         get => _status;
         set
-        { 
+        {
             if (_status == RootStatus.Initial)
                 throw new Exception("RootStatus.Initial cannot be changed.");
             _status = value;
@@ -477,11 +477,12 @@ public class RootTile : Tile
         transform.DOScale(new Vector3(1f, 1f, 1f), 0.2f);
     }
 
-    public override void OnDestroy()
+    public override void OnRemove()
     {
         World world = Util.GetWorld();
         if (world is null)
             return;
+        _colorTween?.Kill();
         HashSet<RootTile> visited = new HashSet<RootTile>();
         foreach (var dir in Util.CARDINAL_DIRECTIONS)
         {
@@ -514,7 +515,7 @@ public class RootTile : Tile
                 }
             }
         }
-        base.OnDestroy();
+        base.OnRemove();
         var player = Util.GetPlayer();
         if (player && player.X == X && player.Y == Y)
             Util.GetFlower().Nourishment = 0.0f; // kills the Player
