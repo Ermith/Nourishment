@@ -86,7 +86,7 @@ public class EntityFactory : MonoBehaviour
         entity.UpdateSprite();
         go.transform.position =
         new Vector2(
-                x: -(World.MAP_WIDTH / 2) + x,
+                x: -(World.MapWidth / 2) + x,
                 y: y
             );
 

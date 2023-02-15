@@ -6,12 +6,12 @@ using UnityEngine;
 public class Sound
 {
     public string Name;
-    public AudioClip clip;
+    public AudioClip Clip;
 
     [Range(0f, 1f)]
-    public float volume = 1;
+    public float Volume = 1;
     [Range(.1f, 3f)]
-    public float pitch = 1;
+    public float Pitch = 1;
 
     [HideInInspector]
     public AudioSource AudioSource;
@@ -26,9 +26,9 @@ public class AudioManager : MonoBehaviour
         foreach(Sound s in Sounds)
         {
             s.AudioSource = gameObject.AddComponent<AudioSource>();
-            s.AudioSource.clip = s.clip;
-            s.AudioSource.volume = s.volume;
-            s.AudioSource.pitch = s.pitch;
+            s.AudioSource.clip = s.Clip;
+            s.AudioSource.volume = s.Volume;
+            s.AudioSource.pitch = s.Pitch;
         }
     }
 

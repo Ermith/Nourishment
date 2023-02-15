@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI : MonoBehaviour
+public class Ui : MonoBehaviour
 {
-    float marker1;
+    float _marker1;
     Camera _camera;
 
-    public Text text1;
-    public Image image1;
-    public Canvas _canvas;
+    public Text Text1;
+    public Image Image1;
+    public Canvas Canvas;
 
     // Start is called before the first frame update
     void Start()
@@ -24,23 +24,23 @@ public class UI : MonoBehaviour
         float d = 10;
 
         //float startingPosition = -_camera.transform.position.y + (_camera.transform.position.y % d) + float.Epsilon;
-        float distance = -_camera.transform.position.y - marker1 + float.Epsilon;
+        float distance = -_camera.transform.position.y - _marker1 + float.Epsilon;
 
-        if (distance > d) marker1 += d * 2;
-        if (distance < -d) marker1 -= d * 2;
+        if (distance > d) _marker1 += d * 2;
+        if (distance < -d) _marker1 -= d * 2;
 
-        distance = -_camera.transform.position.y - marker1 + float.Epsilon;
+        distance = -_camera.transform.position.y - _marker1 + float.Epsilon;
 
         float perc = distance / _camera.orthographicSize / 2;
 
-        Vector2 p = text1.rectTransform.anchoredPosition;
-        p.y = _canvas.renderingDisplaySize.y * perc;
-        text1.rectTransform.anchoredPosition = p;
+        Vector2 p = Text1.rectTransform.anchoredPosition;
+        p.y = Canvas.renderingDisplaySize.y * perc;
+        Text1.rectTransform.anchoredPosition = p;
 
-        p = image1.rectTransform.anchoredPosition;
-        p.y = _canvas.renderingDisplaySize.y * perc;
-        image1.rectTransform.anchoredPosition = p;
+        p = Image1.rectTransform.anchoredPosition;
+        p.y = Canvas.renderingDisplaySize.y * perc;
+        Image1.rectTransform.anchoredPosition = p;
 
-        text1.text = $"{marker1}";
+        Text1.text = $"{_marker1}";
     }
 }

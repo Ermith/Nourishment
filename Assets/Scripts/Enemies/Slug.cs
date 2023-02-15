@@ -8,10 +8,10 @@ public class Slug : Enemy
     public Direction DownDir = Direction.Down;
     public Direction ForwardDir;
     private bool _rotatesClockwise;
-    protected Tween _rotateTween;
-    protected Animator _animator;
+    protected Tween RotateTween;
+    protected Animator Animator;
 
-    protected Sequence _eatTween;
+    protected Sequence EatTween;
 
     public override void Initialize(int x, int y)
     {
@@ -38,21 +38,21 @@ public class Slug : Enemy
         ForwardDir = cw ? ForwardDir.Clockwise() : ForwardDir.CounterClockwise();
         DownDir = cw ? DownDir.Clockwise() : DownDir.CounterClockwise();
 
-        _rotateTween?.Kill();
+        RotateTween?.Kill();
         var visAngle = DownDir.CounterClockwise().Angle();
-        _rotateTween = transform.DORotate(new Vector3(0, 0, visAngle), 0.2f);
+        RotateTween = transform.DORotate(new Vector3(0, 0, visAngle), 0.2f);
     }
     public override void SetDeathSprite()
     {
-        _eatTween.Complete();
-        _rotateTween.Complete();
-        if (_animator == null)
-            _animator = GetComponent<Animator>();
-        _animator.SetTrigger("StopMoving");
+        EatTween.Complete();
+        RotateTween.Complete();
+        if (Animator == null)
+            Animator = GetComponent<Animator>();
+        Animator.SetTrigger("StopMoving");
         base.SetDeathSprite();
     }
 
-    public override void AIStep()
+    public override void AiStep()
     {
         if (AffectedByGravity) // we fell but are still directed weirdly!
         {
@@ -63,15 +63,15 @@ public class Slug : Enemy
         if (tileBelow is RootTile rootBelow)
         {
             rootBelow.Health -= 0.05f;
-            _eatTween?.Complete();
-            _eatTween = DOTween.Sequence();
+            EatTween?.Complete();
+            EatTween = DOTween.Sequence();
             var downVec = DownDir.ToVector();
             var baseScale = transform.localScale;
             baseScale = new Vector3(baseScale.x > 0 ? 1f : -1f, 1f, 1f);
-            _eatTween.Append(transform.DOScale(new Vector3(baseScale.x, baseScale.y / 2, baseScale.z), 0.1f));
-            _eatTween.Join(transform.DOMove(transform.position + new Vector3(0.5f * downVec.x, 0.5f * downVec.y, 0), 0.1f));
-            _eatTween.Append(transform.DOScale(baseScale, 0.1f));
-            _eatTween.Join(transform.DOMove(transform.position, 0.1f));
+            EatTween.Append(transform.DOScale(new Vector3(baseScale.x, baseScale.y / 2, baseScale.z), 0.1f));
+            EatTween.Join(transform.DOMove(transform.position + new Vector3(0.5f * downVec.x, 0.5f * downVec.y, 0), 0.1f));
+            EatTween.Append(transform.DOScale(baseScale, 0.1f));
+            EatTween.Join(transform.DOMove(transform.position, 0.1f));
             return;
         }
         var squareForward = Util.GetWorld().GetSquare(X + ForwardDir.X(), Y + ForwardDir.Y());
@@ -100,10 +100,10 @@ public class Slug : Enemy
         bool success = base.Move(direction, tween);
         if (success && Alive)
         {
-            if (_animator == null)
-                _animator = GetComponent<Animator>();
-            _animator.SetTrigger("Move");
-            moveTween.OnKill(() => _animator.SetTrigger("StopMoving"));
+            if (Animator == null)
+                Animator = GetComponent<Animator>();
+            Animator.SetTrigger("Move");
+            MoveTween.OnKill(() => Animator.SetTrigger("StopMoving"));
         }
         return success;
     }

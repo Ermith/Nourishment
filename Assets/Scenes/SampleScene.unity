@@ -1425,34 +1425,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Sounds:
   - Name: Dirt
-    clip: {fileID: 8300000, guid: d6df431738aacb147abb703a696c8ca6, type: 3}
-    volume: 1
-    pitch: 1
+    Clip: {fileID: 0}
+    Volume: 1
+    Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Root
-    clip: {fileID: 8300000, guid: e004287a3d756ef49942429d9eb5abca, type: 3}
-    volume: 1
-    pitch: 1
+    Clip: {fileID: 0}
+    Volume: 1
+    Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Corpse
-    clip: {fileID: 8300000, guid: 04fe35d51627813429d7f92e12f79890, type: 3}
-    volume: 1
-    pitch: 1
+    Clip: {fileID: 0}
+    Volume: 1
+    Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Music
-    clip: {fileID: 8300000, guid: 6e96ec2ad783cb04db4254a2f1590705, type: 3}
-    volume: 0.4
-    pitch: 1
+    Clip: {fileID: 0}
+    Volume: 1
+    Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Death
-    clip: {fileID: 8300000, guid: c1e9aabb785f44e448294104543bdac8, type: 3}
-    volume: 1
-    pitch: 1
+    Clip: {fileID: 0}
+    Volume: 1
+    Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Hit
-    clip: {fileID: 8300000, guid: 1704152c0599dc34bb1b5dcd7482bac9, type: 3}
-    volume: 1
-    pitch: 1
+    Clip: {fileID: 0}
+    Volume: 1
+    Pitch: 1
     AudioSource: {fileID: 0}
 --- !u!4 &1428597181
 Transform:
@@ -1848,8 +1848,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  _camera: {fileID: 519420031}
-  Player: {fileID: 0}
+  Camera: {fileID: 519420031}
+  Player: {fileID: 1525839684}
   ExtraSimulatedRows: 10
   CheatsEnabled: 0
   Background1: {fileID: 1235685978}
@@ -2194,7 +2194,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00012207031, y: 0}
+  m_AnchoredPosition: {x: -0.00024414062, y: 0}
   m_SizeDelta: {x: -0.00012207, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1898556357
@@ -2361,7 +2361,7 @@ MonoBehaviour:
   - 600
   - 1000
   - 3000
-  StartingNourishment: 320
+  _startingNourishment: 400
 --- !u!1 &1950914747
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ public class GridSquare
     public Tile Tile;
     public List<Entity> Entities = new List<Entity>();
     public Water Water = new Water();
-    public bool active = true;
+    public bool Active = true;
     
     public GridSquare(int x, int y, Tile tile = null)
     {
@@ -74,9 +74,9 @@ public class GridSquare
 
     public void SetActive(bool active)
     {
-        if (active == this.active)
+        if (active == this.Active)
             return;
-        this.active = active;
+        this.Active = active;
         Tile?.gameObject.SetActive(active);
         /*
         foreach (var entity in Entities)
@@ -101,10 +101,10 @@ public class GridSquare
         {
             if (Util.GetWorld().GetTile(x, y) is RootTile { Status: RootTile.RootStatus.Connected } root)
             {
-                absorbAmount += World.WATER_CONVERSION_SPEED;
+                absorbAmount += World.WaterConversionSpeed;
                 if (root.Health < 1f)
                 {
-                    root.Health += World.WATER_HEALING_RATIO;
+                    root.Health += World.WaterHealingRatio;
                 }
             }
         }
@@ -115,7 +115,7 @@ public class GridSquare
 
         absorbAmount = Mathf.Min(Water.Amount, absorbAmount);
         Water.Amount -= absorbAmount;
-        Util.GetFlower().Nourishment += absorbAmount * World.WATER_CONVERSION_RATIO;
+        Util.GetFlower().Nourishment += absorbAmount * World.WaterConversionRatio;
         // TODO visual / sound effect?
     }
 
@@ -159,16 +159,16 @@ public class World : MonoBehaviour
 {
     public UnityEvent<bool> WorldSimulationStepEvent;
 
-    public static int MIN_TILE_ENTITY_Y = -3;
-    public static int MIN_ENTITY_Y = -5;
-    public const int TILE_SIZE = 32;
-    public static int MAP_WIDTH = 23;
-    public const int CHUNK_SIZE = 20;
-    public const int FLUID_SUBSTEPS = 10;
-    public const float WATER_CONVERSION_RATIO = 25f; //! how much nourishment you get per 1 tile of water
-    public const float WATER_CONVERSION_SPEED = 0.01f; //! how much water do you absorb per 1 tick per water/root boundary
-    public const float WATER_HEALING_RATIO = 0.03f; //! how much health do you get by being next to water
-    public Camera _camera;
+    public static int MinTileEntityY = -3;
+    public static int MinEntityY = -5;
+    public const int TileSize = 32;
+    public static int MapWidth = 23;
+    public const int ChunkSize = 20;
+    public const int FluidSubsteps = 10;
+    public const float WaterConversionRatio = 25f; //! how much nourishment you get per 1 tile of water
+    public const float WaterConversionSpeed = 0.01f; //! how much water do you absorb per 1 tick per water/root boundary
+    public const float WaterHealingRatio = 0.03f; //! how much health do you get by being next to water
+    public Camera Camera;
     public Dictionary<string, Sprite> Sprites;
     public Player Player;
     public int ExtraSimulatedRows = 10;
@@ -178,10 +178,10 @@ public class World : MonoBehaviour
     public SpriteRenderer Background2;
     public SpriteRenderer Background3;
     public SpriteRenderer Background4;
-    private float start1;
-    private float start2;
-    private float start3;
-    private float start4;
+    private float _start1;
+    private float _start2;
+    private float _start3;
+    private float _start4;
     //private SpriteRenderer CurrentBackground;
 
 
@@ -192,15 +192,15 @@ public class World : MonoBehaviour
         float length = Background1.size.y / 2f;
         float parallax = 0.5f;
 
-        float temp = _camera.transform.position.y * (1 - parallax);
-        float dist = _camera.transform.position.y * parallax;
+        float temp = Camera.transform.position.y * (1 - parallax);
+        float dist = Camera.transform.position.y * parallax;
 
         float oldStart = start;
 
-        if (temp > start1 + length)
+        if (temp > _start1 + length)
             start += length;
 
-        if (temp < start1 - length)
+        if (temp < _start1 - length)
             start -= length;
 
         return Vector3.up * (oldStart + dist) + Vector3.forward * 100;
@@ -208,15 +208,15 @@ public class World : MonoBehaviour
 
     public void MoveBackground()
     {
-        Background1.transform.position = ComputeParallax(ref start1);
-        Background2.transform.position = ComputeParallax(ref start2);
-        Background3.transform.position = ComputeParallax(ref start3);
-        Background4.transform.position = ComputeParallax(ref start4);
+        Background1.transform.position = ComputeParallax(ref _start1);
+        Background2.transform.position = ComputeParallax(ref _start2);
+        Background3.transform.position = ComputeParallax(ref _start3);
+        Background4.transform.position = ComputeParallax(ref _start4);
     }
 
     public static bool InBounds((int, int) coords)
     {
-        return coords.Item1 >= 0 && coords.Item1 < MAP_WIDTH && coords.Item2 <= 0;
+        return coords.Item1 >= 0 && coords.Item1 < MapWidth && coords.Item2 <= 0;
     }
 
     public GridSquare GetSquare(int x, int y, bool allowGeneration = false)
@@ -251,10 +251,10 @@ public class World : MonoBehaviour
 
         // Generation of world
         GenerateMoreMap();
-        start1 = Background1.transform.position.y;
-        start2 = Background2.transform.position.y;
-        start3 = Background3.transform.position.y;
-        start4 = Background3.transform.position.y;
+        _start1 = Background1.transform.position.y;
+        _start2 = Background2.transform.position.y;
+        _start3 = Background3.transform.position.y;
+        _start4 = Background3.transform.position.y;
     }
 
     public Tile ReplaceTile(int x, int y, TileType type)
@@ -273,7 +273,7 @@ public class World : MonoBehaviour
         newTile.UpdateSprite();
         square.Tile = newTile;
 
-        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        foreach (var dir in Util.CardinalDirections)
         {
             var neighbor = GetTile(x + dir.X(), y + dir.Y());
             if (neighbor != null)
@@ -286,13 +286,13 @@ public class World : MonoBehaviour
     private Tile RandomTile(int x, int y)
     {
         // First row
-        if (y == 0 && x == MAP_WIDTH / 2)
+        if (y == 0 && x == MapWidth / 2)
             return TileFactory.CreateTile(gameObject, x, y, TileType.FlowerGrass);
         
         if (y == 0)
             return TileFactory.CreateTile(gameObject, x, y, TileType.Grass);
 
-        if (y == -1 && x == MAP_WIDTH / 2)
+        if (y == -1 && x == MapWidth / 2)
         {
             RootTile tile = TileFactory.CreateTile(gameObject, x, y, TileType.Root) as RootTile;
             tile.ForceConnect(Direction.Up);
@@ -300,21 +300,21 @@ public class World : MonoBehaviour
             return tile;
         }
 
-        if (x == 0 || x == MAP_WIDTH - 1)
+        if (x == 0 || x == MapWidth - 1)
             return TileFactory.CreateTile(gameObject, x, y, TileType.SuperGround);
 
 
         var rnd = new System.Random();
         float prob = (float)rnd.NextDouble() * 100;
 
-        float evil = 40 + Mathf.Min(20, -y / CHUNK_SIZE * 1.5f);
+        float evil = 40 + Mathf.Min(20, -y / ChunkSize * 1.5f);
         float nutrition = evil + 3;
         float air = 20;
-        float root = 10 - (-y / CHUNK_SIZE);
-        float water = 18 - (-y / CHUNK_SIZE * 1.5f);
+        float root = 10 - (-y / ChunkSize);
+        float water = 18 - (-y / ChunkSize * 1.5f);
         water = Mathf.Max(water, 2f);
 
-        if (y < MIN_TILE_ENTITY_Y)
+        if (y < MinTileEntityY)
         {
             if (prob < root)
                 return TileFactory.CreateTile(gameObject, x, y, TileType.Root);
@@ -338,10 +338,10 @@ public class World : MonoBehaviour
 
     private Entity RandomEntity(int x, int y)
     {
-        if (y >= MIN_ENTITY_Y)
+        if (y >= MinEntityY)
             return null;
 
-        if (x == 0 || x == MAP_WIDTH - 1)
+        if (x == 0 || x == MapWidth - 1)
             return null;
 
         float amberBee = 0.25f;
@@ -408,7 +408,7 @@ public class World : MonoBehaviour
 
     private void CellularAutomaton(int yStart, TileType type, int treshold = 2, int neighborhood = 1)
     {
-        int[,] niehgbours = new int[MAP_WIDTH, CHUNK_SIZE];
+        int[,] niehgbours = new int[MapWidth, ChunkSize];
 
         Func<int, int, int> countNeighbors = (int x, int y) =>
         {
@@ -428,13 +428,13 @@ public class World : MonoBehaviour
         var toChange = new Dictionary<(int, int), Action<GridSquare>>();
 
         // Transform roots
-        for (int i = 0; i < CHUNK_SIZE; i++)
-            for (int j = 1; j < MAP_WIDTH - 1; j++)
+        for (int i = 0; i < ChunkSize; i++)
+            for (int j = 1; j < MapWidth - 1; j++)
             {
                 int x = j;
                 int y = -yStart - i;
 
-                if (y >= MIN_TILE_ENTITY_Y)
+                if (y >= MinTileEntityY)
                     continue;
 
                 if (countNeighbors(x, y) > treshold)
@@ -460,10 +460,10 @@ public class World : MonoBehaviour
         int yStart = _tiles.Count;
 
         // Create Tiles
-        for (int i = 0; i < CHUNK_SIZE; i++)
+        for (int i = 0; i < ChunkSize; i++)
         {
-            _tiles.Add(new GridSquare[MAP_WIDTH]);
-            for (int j = 0; j < MAP_WIDTH; j++)
+            _tiles.Add(new GridSquare[MapWidth]);
+            for (int j = 0; j < MapWidth; j++)
             {
                 int x = j;
                 int y = -yStart - i;
@@ -479,9 +479,9 @@ public class World : MonoBehaviour
         CellularAutomaton(yStart, TileType.Air);
 
         // Create Entities
-        for (int i = 0; i < CHUNK_SIZE; i++)
+        for (int i = 0; i < ChunkSize; i++)
         {
-            for (int j = 0; j < MAP_WIDTH; j++)
+            for (int j = 0; j < MapWidth; j++)
             {
                 int x = j;
                 int y = -yStart - i;
@@ -496,8 +496,8 @@ public class World : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < CHUNK_SIZE; i++)
-            for (int j = 0; j < MAP_WIDTH; j++)
+        for (int i = 0; i < ChunkSize; i++)
+            for (int j = 0; j < MapWidth; j++)
             {
                 var square = GetSquare(j, -yStart - i);
                 var tile = GetTile(j, -yStart - i);
@@ -515,8 +515,8 @@ public class World : MonoBehaviour
             }
     }
 
-    public int SimulatedRowsStart => Mathf.Max(0, (int)(-_camera.transform.position.y - _camera.orthographicSize - ExtraSimulatedRows));
-    public int SimulatedRowsEnd => (int)(-_camera.transform.position.y + _camera.orthographicSize + ExtraSimulatedRows);
+    public int SimulatedRowsStart => Mathf.Max(0, (int)(-Camera.transform.position.y - Camera.orthographicSize - ExtraSimulatedRows));
+    public int SimulatedRowsEnd => (int)(-Camera.transform.position.y + Camera.orthographicSize + ExtraSimulatedRows);
 
     private bool _initSimDone = false;
     // Update is called once per frame
@@ -584,7 +584,7 @@ public class World : MonoBehaviour
             if (square.Water.Amount > 0.0f && square.PushesOutFluid(square.Water, Direction.Down))
                 square.Water.FixDisplacement(square);
         });
-        for (int i = 0; i < FLUID_SUBSTEPS; i++)
+        for (int i = 0; i < FluidSubsteps; i++)
         {
             ApplyToSimulatedTiles(square => square.SimulationSubStepFluid());
             ApplyToSimulatedTiles(square => square.SimulationSubStepFluidFinish());
@@ -608,8 +608,8 @@ public class World : MonoBehaviour
 
     public bool IsTileOnCamera(Tile tile)
     {
-        return Mathf.Abs(tile.transform.position.x - _camera.transform.position.x) < _camera.orthographicSize * _camera.aspect + 0.5f
-               && Mathf.Abs(tile.transform.position.y - _camera.transform.position.y) < _camera.orthographicSize + 0.5f;
+        return Mathf.Abs(tile.transform.position.x - Camera.transform.position.x) < Camera.orthographicSize * Camera.aspect + 0.5f
+               && Mathf.Abs(tile.transform.position.y - Camera.transform.position.y) < Camera.orthographicSize + 0.5f;
     }
 
     private Dictionary<string, Sprite> LoadSprites()

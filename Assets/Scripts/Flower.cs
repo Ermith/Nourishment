@@ -17,14 +17,14 @@ public class Flower : MonoBehaviour
     public float AmberBreakCost = 250;
     public bool HasHatchedBee = false;
     public GameObject HatchedBeeQueen = null;
-    public const int GAME_OVER_NOURISHMENT = 5;
+    public const int GameOverNourishment = 5;
     public TMP_Text NourishmentText;
     public TMP_Text HintsText;
     public TMP_Text HintForHintsText;
     public float BeeBonus = 0.5f;
-    private bool NourishmentChanged = false;
-    private float NourishmentOld = 0;
-    private bool VictoryAchieved = false;
+    private bool _nourishmentChanged = false;
+    private float _nourishmentOld = 0;
+    private bool _victoryAchieved = false;
     private SpriteRenderer _spriteRenderer;
 
     public float[] NourishmentForLevel = new float[] { };
@@ -41,7 +41,7 @@ public class Flower : MonoBehaviour
     }
 
     [SerializeField]
-    private float StartingNourishment = 400;
+    private float _startingNourishment = 400;
 
     private float _nourishment;
 
@@ -55,7 +55,7 @@ public class Flower : MonoBehaviour
         {
             _nourishment = value;
             Level = ApplyLevelRestriction(NourishmentToLevel(_nourishment));
-            if (_nourishment < GAME_OVER_NOURISHMENT)
+            if (_nourishment < GameOverNourishment)
                 SceneManager.LoadScene("GameOverScene");
 
             CheckVictory();
@@ -100,7 +100,7 @@ public class Flower : MonoBehaviour
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _spriteRenderer.sprite = GrowthSprites[Level];
-        Nourishment = StartingNourishment;
+        Nourishment = _startingNourishment;
         UpdateProgress();
     }
 
@@ -161,7 +161,7 @@ public class Flower : MonoBehaviour
     private bool HasCompletedBeeCondition => QueenLevel >= NourishmentForLevel.Length - 1;
     private void UpdateProgress()
     {
-        if (QueenLevel > 0 && !VictoryAchieved)
+        if (QueenLevel > 0 && !_victoryAchieved)
         {
             VictoryProgress.text = $"Bees saved: {QueenLevel} / {NourishmentForLevel.Length - 1}  ";
         }
@@ -177,9 +177,9 @@ public class Flower : MonoBehaviour
 
     public void CheckVictory()
     {
-        if (!VictoryAchieved && HasCompletedBeeCondition && HasCompletedNourishmentCondition)
+        if (!_victoryAchieved && HasCompletedBeeCondition && HasCompletedNourishmentCondition)
         {
-            VictoryAchieved = true;
+            _victoryAchieved = true;
             VictoryScreenPrompt.SetActive(true);
             UpdateProgress();
         }
@@ -196,12 +196,12 @@ public class Flower : MonoBehaviour
 
     public void OnWorldSimulationStep(bool passed)
     {
-        NourishmentChanged = MathF.Abs(NourishmentOld - _nourishment) > 0;
-        NourishmentOld = _nourishment;
+        _nourishmentChanged = MathF.Abs(_nourishmentOld - _nourishment) > 0;
+        _nourishmentOld = _nourishment;
         if (passed)
             return;
 
-        if (HasCompletedBeeCondition && NourishmentChanged)
+        if (HasCompletedBeeCondition && _nourishmentChanged)
         {
             Nourishment += BeeBonus * (QueenLevel - NourishmentForLevel.Length - 1);
         }

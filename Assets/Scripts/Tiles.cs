@@ -32,7 +32,7 @@ public class TileFactory
         tile.name = typeof(T).Name;
 
         // Position in game
-        float xOffset = -World.MAP_WIDTH / 2f + 0.5f;
+        float xOffset = -World.MapWidth / 2f + 0.5f;
         tile.transform.position = new Vector3(
             x + xOffset,
             y);
@@ -102,7 +102,7 @@ public abstract class Tile : MonoBehaviour
         World world = Util.GetWorld();
         if (world is null)
             return;
-        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        foreach (var dir in Util.CardinalDirections)
         {
             Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
             if(neighTile)
@@ -274,7 +274,7 @@ public class GrassTile : Tile
         }
         if (X == 0)
             spriteName = subTypes[0];//4
-        if (X == World.MAP_WIDTH - 1)
+        if (X == World.MapWidth - 1)
             spriteName = subTypes[0];//5
 
         SpriteRenderer.sprite = world.Sprites[spriteName];
@@ -334,15 +334,15 @@ public class RootTile : Tile
         Initial,
     }
 
-    private readonly Color HEALTHY_COLOR = Color.white;
-    private readonly Color DAMAGED_COLOR = new Color(0.7f, 0.4f, 0.2f);
-    private readonly Color SPAWNED_COLOR = new Color(0.7f, 0.7f, 0.7f);
+    private readonly Color _healthyColor = Color.white;
+    private readonly Color _damagedColor = new Color(0.7f, 0.4f, 0.2f);
+    private readonly Color _spawnedColor = new Color(0.7f, 0.7f, 0.7f);
 
     public float Health = 1.0f;
 
     private Tween _colorTween;
 
-    private void changeColor(Color color, float time=0.5f)
+    private void ChangeColor(Color color, float time=0.5f)
     {
         if (time <= 0f)
         {
@@ -364,9 +364,9 @@ public class RootTile : Tile
         }
         // interpolate color
         if (Status == RootStatus.Spawned)
-            changeColor(Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health));
+            ChangeColor(Color.Lerp(_damagedColor, _spawnedColor, Health));
         else
-            changeColor(Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health));
+            ChangeColor(Color.Lerp(_damagedColor, _healthyColor, Health));
         if (Health <= 0)
         {
             World world = Util.GetWorld();
@@ -384,16 +384,16 @@ public class RootTile : Tile
                 throw new Exception("RootStatus.Initial cannot be changed.");
             _status = value;
             if (_status == RootStatus.Spawned)
-                changeColor(Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health), 0f);
+                ChangeColor(Color.Lerp(_damagedColor, _spawnedColor, Health), 0f);
             else
-                changeColor(Color.Lerp(DAMAGED_COLOR, HEALTHY_COLOR, Health));
+                ChangeColor(Color.Lerp(_damagedColor, _healthyColor, Health));
         }
     }
 
     public override TileType Type => TileType.Root;
     public override float Hardness => 0;
     
-    private bool[] ConnectedDirections;
+    private bool[] _connectedDirections;
 
     private SpriteRenderer _spriteRenderer;
     private SpriteRenderer SpriteRenderer
@@ -409,10 +409,10 @@ public class RootTile : Tile
 
     public RootTile()
     {
-        ConnectedDirections = new bool[4];
+        _connectedDirections = new bool[4];
     }
 
-    public HashSet<RootTile> BFSApply(Action<RootTile> action, Predicate<RootTile> connPredicate = null)
+    public HashSet<RootTile> BfsApply(Action<RootTile> action, Predicate<RootTile> connPredicate = null)
     {
         World world = Util.GetWorld();
         Queue<RootTile> queue = new Queue<RootTile>();
@@ -425,9 +425,9 @@ public class RootTile : Tile
                 continue;
             visited.Add(tile);
             action(tile);
-            foreach (Direction direction in Util.CARDINAL_DIRECTIONS)
+            foreach (Direction direction in Util.CardinalDirections)
             {
-                if (!tile.ConnectedDirections[(int)direction])
+                if (!tile._connectedDirections[(int)direction])
                     continue;
                 Tile neighTile = world.GetTile(tile.X + direction.X(), tile.Y + direction.Y());
                 if (neighTile is not RootTile neighRoot)
@@ -447,7 +447,7 @@ public class RootTile : Tile
 
     public void ForceConnect(Direction direction)
     {
-        ConnectedDirections[(int)direction] = true;
+        _connectedDirections[(int)direction] = true;
         UpdateSprite();
     }
 
@@ -460,8 +460,8 @@ public class RootTile : Tile
             return false;
         }
 
-        ConnectedDirections[(int)direction] = true;
-        neighRoot.ConnectedDirections[(int)direction.Opposite()] = true;
+        _connectedDirections[(int)direction] = true;
+        neighRoot._connectedDirections[(int)direction.Opposite()] = true;
 
         UpdateSprite();
         neighRoot.UpdateSprite();
@@ -471,9 +471,9 @@ public class RootTile : Tile
     public void GrowAnim(Direction dir)
     {
         var opdir = dir.Opposite();
-        transform.position = new Vector3(X + -World.MAP_WIDTH / 2f + 0.5f + opdir.X(), Y + opdir.Y());
+        transform.position = new Vector3(X + -World.MapWidth / 2f + 0.5f + opdir.X(), Y + opdir.Y());
         transform.localScale = new Vector3(dir.X() != 0 ? 0f : 1f, dir.Y() != 0 ? 0f : 1f, 1f);
-        transform.DOMove(new Vector3(X + -World.MAP_WIDTH / 2f + 0.5f, Y), 0.2f);
+        transform.DOMove(new Vector3(X + -World.MapWidth / 2f + 0.5f, Y), 0.2f);
         transform.DOScale(new Vector3(1f, 1f, 1f), 0.2f);
     }
 
@@ -484,9 +484,9 @@ public class RootTile : Tile
             return;
         _colorTween?.Kill();
         HashSet<RootTile> visited = new HashSet<RootTile>();
-        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        foreach (var dir in Util.CardinalDirections)
         {
-            if (ConnectedDirections[(int)dir])
+            if (_connectedDirections[(int)dir])
             {
                 Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
                 if (neighTile is not RootTile neighRoot)
@@ -497,11 +497,11 @@ public class RootTile : Tile
                         throw new System.Exception("How did we end up connected to a non-root tile?");
                 }
 
-                neighRoot.ConnectedDirections[(int)dir.Opposite()] = false;
+                neighRoot._connectedDirections[(int)dir.Opposite()] = false;
 
                 if (!visited.Contains(neighRoot) && (neighRoot.Status == RootStatus.Connected || neighRoot.Status == RootStatus.Initial))
                 {
-                    var curVisited = neighRoot.BFSApply(tile => { },
+                    var curVisited = neighRoot.BfsApply(tile => { },
                         tile => tile.Status == RootStatus.Connected || tile.Status == RootStatus.Initial);
                     var foundInitial = curVisited.Any(tile => tile.Status == RootStatus.Initial);
                     if (!foundInitial)
@@ -526,16 +526,16 @@ public class RootTile : Tile
         World world = Util.GetWorld();
         name = "root";
         var spriteName = "root";
-        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        foreach (var dir in Util.CardinalDirections)
         {
-            spriteName += ConnectedDirections[(int)dir] ? "1" : "0";
+            spriteName += _connectedDirections[(int)dir] ? "1" : "0";
         }
         SpriteRenderer.sprite = world.Sprites[spriteName];
     }
 
     public void ConnectWithAllNeigh()
     {
-        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        foreach (var dir in Util.CardinalDirections)
             ConnectWithNeigh(dir);
     }
 

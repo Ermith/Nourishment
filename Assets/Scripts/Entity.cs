@@ -11,12 +11,12 @@ public abstract class Entity : MonoBehaviour
     protected List<(int, int)> Locations;
     public int X;
     public int Y;
-    protected Tween moveTween;
-    protected Tween fallTween;
+    protected Tween MoveTween;
+    protected Tween FallTween;
     public int Activity = 0;
     public virtual float Heaviness => -1;
 
-    protected Vector3 _localShift = new Vector3(0, 0, 0);
+    protected Vector3 LocalShift = new Vector3(0, 0, 0);
 
     public virtual bool AffectedByGravity => false;
 
@@ -47,7 +47,7 @@ public abstract class Entity : MonoBehaviour
         foreach (var location in Locations)
         {
             var square = Util.GetWorld().GetSquare(location.Item1, location.Item2);
-            if (square == null || square.Y >= World.MIN_ENTITY_Y || square.Entities.Count > 1 || square.Entities.Count == 1 && square.Entities[0] != this || square.Tile is SuperGroundTile)
+            if (square == null || square.Y >= World.MinEntityY || square.Entities.Count > 1 || square.Entities.Count == 1 && square.Entities[0] != this || square.Tile is SuperGroundTile)
                 return false;
         }
 
@@ -90,16 +90,16 @@ public abstract class Entity : MonoBehaviour
 
         if (fallenHeight > 0)
         {
-            fallTween?.Kill();
+            FallTween?.Kill();
 
             void FallAnim()
             {
-                moveTween = gameObject.transform.DOMove(_localShift + new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f * fallenHeight);
-                moveTween.SetEase(Ease.OutBounce);
+                MoveTween = gameObject.transform.DOMove(LocalShift + new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f * fallenHeight);
+                MoveTween.SetEase(Ease.OutBounce);
             }
 
-            if ((moveTween?.IsActive() ?? false) && moveTween.IsPlaying())
-                moveTween.OnComplete(FallAnim);
+            if ((MoveTween?.IsActive() ?? false) && MoveTween.IsPlaying())
+                MoveTween.OnComplete(FallAnim);
             else
                 FallAnim();
         }
@@ -177,10 +177,10 @@ public abstract class Entity : MonoBehaviour
 
         if (tween)
         {
-            moveTween?.Kill();
-            fallTween?.Kill();
-            moveTween = gameObject.transform.DOMove(_localShift + new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
-            moveTween.SetEase(Ease.InOutCubic);
+            MoveTween?.Kill();
+            FallTween?.Kill();
+            MoveTween = gameObject.transform.DOMove(LocalShift + new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f);
+            MoveTween.SetEase(Ease.InOutCubic);
         }
 
         return true;
@@ -355,12 +355,12 @@ public class RandomRock : Rock
     public int Height = 3;
     public float Chance = 0.35f;
 
-    protected bool[,] _shape = null;
+    protected bool[,] Shape = null;
 
     protected override bool[,] GetShape()
     {
-        if (_shape != null)
-            return _shape;
+        if (Shape != null)
+            return Shape;
         
         var shape = new bool[Width, Height];
         for (int i = 0; i < Width; i++)
@@ -463,7 +463,7 @@ public class RandomRock : Rock
         while (queue.Count > 0)
         {
             var (i, j) = queue.Dequeue();
-            foreach (var dir in Util.CARDINAL_DIRECTIONS)
+            foreach (var dir in Util.CardinalDirections)
             {
                 int i1 = i + dir.X();
                 int j1 = j + dir.Y();
@@ -488,7 +488,7 @@ public class RandomRock : Rock
             }
         }
 
-        _shape = shape;
+        Shape = shape;
         return shape;
     }
 }

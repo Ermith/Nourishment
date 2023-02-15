@@ -9,17 +9,17 @@ public class Snail : Slug
 
     public override void SetDeathSprite()
     {
-        _eatTween.Complete();
-        _rotateTween.Complete();
-        moveTween.Complete();
-        fallTween.Complete();
-        if (_animator == null)
-            _animator = GetComponent<Animator>();
-        _animator.SetTrigger("Die");
+        EatTween.Complete();
+        RotateTween.Complete();
+        MoveTween.Complete();
+        FallTween.Complete();
+        if (Animator == null)
+            Animator = GetComponent<Animator>();
+        Animator.SetTrigger("Die");
         var sprite = GetComponent<SpriteRenderer>();
-        _colorTween?.Complete();
-        _colorTween = sprite.DOColor(new Color(1f, 1f, 1f), 0.2f);
+        ColorTween?.Complete();
+        ColorTween = sprite.DOColor(new Color(1f, 1f, 1f), 0.2f);
         transform.DORotate(new Vector3(0, 0, 0), 0.2f);
-        transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+        transform.DOMove(new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f);
     }
 }

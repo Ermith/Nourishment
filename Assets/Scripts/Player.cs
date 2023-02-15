@@ -11,13 +11,13 @@ using static RootTile;
 public class Player : MonoBehaviour
 {
     [NonSerialized]
-    public int X = World.MAP_WIDTH / 2;
+    public int X = World.MapWidth / 2;
     [NonSerialized]
     public int Y = -1;
     public Camera Camera;
 
-    private Tween playerTween;
-    private Tween cameraTween;
+    private Tween _playerTween;
+    private Tween _cameraTween;
 
     public static float Lowest = 0;
 
@@ -79,11 +79,11 @@ public class Player : MonoBehaviour
                 Util.GetWorld().SimulationStep(false);
         }
 
-        playerTween?.Kill();
-        cameraTween?.Kill();
+        _playerTween?.Kill();
+        _cameraTween?.Kill();
 
-        playerTween = gameObject.transform.DOMove(new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
-        cameraTween = Camera.transform.DOMoveY(Y, 0.4f);
+        _playerTween = gameObject.transform.DOMove(new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f);
+        _cameraTween = Camera.transform.DOMoveY(Y, 0.4f);
     }
 
     bool TryMove(Direction direction, bool retreat)
@@ -142,13 +142,13 @@ public class Player : MonoBehaviour
             {
                 var newStatus = (oldConn || newConn) ? RootStatus.Connected : RootStatus.Disconnected;
                 if (newExistingRootTile.Status != newStatus && newExistingRootTile.Status != RootStatus.Initial)
-                    newExistingRootTile.BFSApply(tile =>
+                    newExistingRootTile.BfsApply(tile =>
                         {
                             tile.Status = newStatus;
                         },
                         tile => tile.Status == RootStatus.Disconnected || tile.Status == RootStatus.Spawned);
                 else if (oldTile.Status != newStatus && oldTile.Status != RootStatus.Initial)
-                    oldTile.BFSApply(tile =>
+                    oldTile.BfsApply(tile =>
                         {
                             tile.Status = newStatus;
                         },

@@ -14,8 +14,8 @@ public class Bee : Enemy
     public Direction ForwardDir = Direction.Right;
     public Direction BackwardDir = Direction.Left;
     private Direction _currentDir = Direction.Right;
-    private Vector3 toLeft = new Vector3(-1, 1, 1);
-    private Vector3 toRight = new Vector3(1, 1, 1);
+    private Vector3 _toLeft = new Vector3(-1, 1, 1);
+    private Vector3 _toRight = new Vector3(1, 1, 1);
 
     public override bool CanPass(Entity entity, Direction moveDirection)
     {
@@ -28,12 +28,12 @@ public class Bee : Enemy
     {
         if (_currentDir == Direction.Left)
         {
-            transform.localScale = toRight;
+            transform.localScale = _toRight;
             _currentDir = Direction.Right;
         }
         else if (_currentDir == Direction.Right)
         {
-            transform.localScale = toLeft;
+            transform.localScale = _toLeft;
             _currentDir = Direction.Left;
         }
     }
@@ -91,7 +91,7 @@ public class Bee : Enemy
         return base.Move(direction, tween);
     }
 
-    public override void AIStep()
+    public override void AiStep()
     {
         if (IsOverworldBee)
         {

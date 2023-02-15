@@ -27,7 +27,7 @@ public abstract class Fluid
     public void FixDisplacement(GridSquare square)
     {
         List<GridSquare> availTargets = new List<GridSquare>();
-        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        foreach (var dir in Util.CardinalDirections)
         {
             var neighSquare = Util.GetWorld().GetSquare(square.X + dir.X(), square.Y + dir.Y());
             if (neighSquare?.CanFluidPass(this, dir) ?? false)
@@ -143,8 +143,8 @@ public class FluidIndicator : MonoBehaviour
 {
     public GridSquare Square;
     public SpriteRenderer SpriteRenderer;
-    const float BASE_ALPHA = 0.5f;
-    readonly Color BASE_COLOR = new Color(0.2f, 0.2f, 1.0f, 1.0f);
+    const float BaseAlpha = 0.5f;
+    readonly Color _baseColor = new Color(0.2f, 0.2f, 1.0f, 1.0f);
 
     private void Start()
     {
@@ -169,14 +169,14 @@ public class FluidIndicator : MonoBehaviour
         if (squareAbove != null && squareAbove.Water.Amount > 0.0f)
         {
             SpriteRenderer.DOColor(
-                new Color(BASE_COLOR.r, BASE_COLOR.g, BASE_COLOR.b, BASE_ALPHA * Square.Water.Amount), tweenTime);
+                new Color(_baseColor.r, _baseColor.g, _baseColor.b, BaseAlpha * Square.Water.Amount), tweenTime);
             transform.DOScale(new Vector3(1.0f, 1.0f, 1.0f), tweenTime);
             transform.DOLocalMove(new Vector3(0.0f, 0.0f, 0.0f), tweenTime);
         }
         else
         {
             SpriteRenderer.DOColor(
-                new Color(BASE_COLOR.r, BASE_COLOR.g, BASE_COLOR.b, BASE_ALPHA), tweenTime);
+                new Color(_baseColor.r, _baseColor.g, _baseColor.b, BaseAlpha), tweenTime);
             transform.DOScale(new Vector3(1.0f, Square.Water.Amount, 1.0f), tweenTime);
             transform.DOLocalMove(new Vector3(0.0f, -0.5f + Square.Water.Amount / 2, 0.0f), tweenTime);
         }

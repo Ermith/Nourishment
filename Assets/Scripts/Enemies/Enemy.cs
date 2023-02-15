@@ -10,7 +10,7 @@ public abstract class Enemy : Entity
     public float Breath = 40.0f;
     public float MaxBreath = 40.0f;
 
-    protected Tween _colorTween;
+    protected Tween ColorTween;
 
 
     public override bool CanSpread(Player player, Direction spreadDirection)
@@ -66,13 +66,13 @@ public abstract class Enemy : Entity
                 Y--;
                 squareBelow = Util.GetWorld().GetSquare(X, squareBelow.Y - 1, true);
             }
-            fallTween = transform.DOMove(_localShift + new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+            FallTween = transform.DOMove(LocalShift + new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f);
             return;
         }
         Move(moveDirection);
     }
 
-    public abstract void AIStep();
+    public abstract void AiStep();
 
     public override void SimulationStep()
     {
@@ -100,25 +100,25 @@ public abstract class Enemy : Entity
         // we might have died in the above so need to re-check!
         if (Alive)
         {
-            _colorTween?.Kill();
+            ColorTween?.Kill();
             var sprite = GetComponent<SpriteRenderer>();
-            _colorTween =
+            ColorTween =
                 sprite.DOColor(new Color(0.5f * Breath / MaxBreath + 0.5f, 0.5f * Breath / MaxBreath + 0.5f, 1), 0.2f);
-            AIStep();
+            AiStep();
         }
     }
 
     public virtual void SetDeathSprite()
     {
-        moveTween?.Kill();
-        fallTween?.Kill();
+        MoveTween?.Kill();
+        FallTween?.Kill();
         var sprite = GetComponent<SpriteRenderer>();
-        _colorTween?.Complete();
-        _colorTween = sprite.DOColor(new Color(1f, 1f, 1f), 0.2f);
+        ColorTween?.Complete();
+        ColorTween = sprite.DOColor(new Color(1f, 1f, 1f), 0.2f);
         // rotate 180 degrees as default
         transform.DORotate(new Vector3(0, 0, 180), 0.2f);
-        _localShift = new Vector3(0, -0.8f, 0);
-        transform.DOMove(_localShift  + new Vector3(X - World.MAP_WIDTH / 2, Y, 0), 0.2f);
+        LocalShift = new Vector3(0, -0.8f, 0);
+        transform.DOMove(LocalShift  + new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f);
     }
 
     public void Kill()

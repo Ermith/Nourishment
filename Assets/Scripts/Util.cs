@@ -74,7 +74,7 @@ public static class DirectionExtensions
 
     public static Vector3 ToVector(this Direction direction)
     {
-        return Util.CARDINAL_VECTORS[(int)direction];
+        return Util.CardinalVectors[(int)direction];
     }
     
     public static int X(this Direction direction)
@@ -90,7 +90,7 @@ public static class DirectionExtensions
 
 public class Util
 {
-    public static readonly Vector3[] CARDINAL_VECTORS = new Vector3[]
+    public static readonly Vector3[] CardinalVectors = new Vector3[]
     {
         Vector3.right,
         Vector3.up,
@@ -98,7 +98,7 @@ public class Util
         Vector3.down
     };
 
-    public static readonly Direction[] CARDINAL_DIRECTIONS = new Direction[]
+    public static readonly Direction[] CardinalDirections = new Direction[]
     {
         Direction.Right,
         Direction.Up,
@@ -177,7 +177,7 @@ public class Util
     public static List<GameObject> GroundLikeSprite(GameObject parent, string type, Predicate<Direction> connectsTo)
     {
         bool[,] cornerGroundCounts = new bool[4, 2];
-        foreach (var dir in Util.CARDINAL_DIRECTIONS)
+        foreach (var dir in Util.CardinalDirections)
         {
             if (connectsTo(dir))
             {
