@@ -402,25 +402,6 @@ public class RandomRock : Rock
         }
 
         // make it convex-ish
-        for (int i = 0; i < Width; i++)
-        {
-            int minJ = -1;
-            int maxJ = -1;
-            for (int j = 0; j < Height; j++)
-            {
-                if (shape[i, j])
-                {
-                    if (minJ == -1)
-                        minJ = j;
-                    maxJ = j;
-                }
-            }
-            if (minJ != -1)
-            {
-                for (int j = minJ; j <= maxJ; j++)
-                    shape[i, j] = true;
-            }
-        }
         for (int j = 0; j < Height; j++)
         {
             int minI = -1;
@@ -440,9 +421,28 @@ public class RandomRock : Rock
                     shape[i, j] = true;
             }
         }
+        for (int i = 0; i < Width; i++)
+        {
+            int minJ = -1;
+            int maxJ = -1;
+            for (int j = 0; j < Height; j++)
+            {
+                if (shape[i, j])
+                {
+                    if (minJ == -1)
+                        minJ = j;
+                    maxJ = j;
+                }
+            }
+            if (minJ != -1)
+            {
+                for (int j = minJ; j <= maxJ; j++)
+                    shape[i, j] = true;
+            }
+        }
 
         // make it connected
-        
+
         bool[,] visited = new bool[Width, Height];
         Queue<(int, int)> queue = new Queue<(int, int)>();
         for (int i = 0; i < Width; i++)
