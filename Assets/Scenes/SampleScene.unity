@@ -1851,7 +1851,7 @@ MonoBehaviour:
   Camera: {fileID: 519420031}
   Player: {fileID: 1525839684}
   ExtraSimulatedRows: 25
-  CheatsEnabled: 0
+  CheatsEnabled: 1
   Background1: {fileID: 1235685978}
   Background2: {fileID: 1112595879}
   Background3: {fileID: 1358852388}
@@ -2352,6 +2352,7 @@ MonoBehaviour:
   HintsText: {fileID: 1950914749}
   HintForHintsText: {fileID: 1432990826}
   BeeBonus: 0.5
+  NourishmentGainIndicator: {fileID: 5658116683124942082, guid: 17d076c82fc17ca4ca5a3e2248aba91f, type: 3}
   NourishmentForLevel:
   - 5
   - 100
@@ -2513,7 +2514,7 @@ GameObject:
   - component: {fileID: 2019286966}
   m_Layer: 5
   m_Name: Canvas
-  m_TagString: Untagged
+  m_TagString: Canvas
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

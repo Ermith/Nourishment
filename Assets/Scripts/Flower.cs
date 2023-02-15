@@ -3,9 +3,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class Flower : MonoBehaviour
 {
@@ -26,6 +28,8 @@ public class Flower : MonoBehaviour
     private float _nourishmentOld = 0;
     private bool _victoryAchieved = false;
     private SpriteRenderer _spriteRenderer;
+    public GameObject NourishmentGainIndicator;
+    private GameObject _canvas;
 
     public float[] NourishmentForLevel = new float[] { };
 
@@ -43,16 +47,21 @@ public class Flower : MonoBehaviour
     [SerializeField]
     private float _startingNourishment = 400;
 
+    private bool _indicatedChange = true; // should skip the initial set to 400
     private float _nourishment;
 
     public float Nourishment
     {
-        get
-        {
-            return _nourishment;
-        }
+        get => _nourishment;
         set
         {
+            var delta = value - _nourishment;
+            if (delta == 0)
+            {
+                _indicatedChange = false;
+                return;
+            }
+
             _nourishment = value;
             Level = ApplyLevelRestriction(NourishmentToLevel(_nourishment));
             if (_nourishment < GameOverNourishment)
@@ -60,8 +69,45 @@ public class Flower : MonoBehaviour
 
             CheckVictory();
 
-            NourishmentText.text = $"Nourishment: {String.Format("{0:.##}", _nourishment)}";
+            if (!_indicatedChange)
+                IndicateNourishmentChange(delta);
+
+            NourishmentText.text = $"Nourishment: {_nourishment:.##}";
+
+            _indicatedChange = false;
         }
+    }
+
+    public void ModifyNourishmentWithSource(float delta, GameObject source)
+    {
+        IndicateNourishmentChange(delta, source);
+        _indicatedChange = true; // makes the setter skips its thing
+        Nourishment += delta;
+    }
+
+    private void IndicateNourishmentChange(float delta, GameObject centerHere=null)
+    {
+        if (delta == 0f)
+            return;
+        centerHere ??= Util.GetWorld().Player.gameObject;
+        Vector2 viewportPos = Util.GetWorld().Camera.WorldToViewportPoint(centerHere.transform.position);
+        viewportPos.x = Mathf.Clamp(viewportPos.x, 0.02f, 0.98f);
+        viewportPos.y = Mathf.Clamp(viewportPos.y, 0.05f, 0.95f);
+        RectTransform canvasRect = _canvas.GetComponent<RectTransform>();
+        Vector2 canvasPos = new Vector2(
+            viewportPos.x * canvasRect.sizeDelta.x,
+            viewportPos.y * canvasRect.sizeDelta.y);
+        canvasPos.x += 2 * (Random.value - 0.5f) * 0.08f * canvasRect.sizeDelta.x;
+        canvasPos.y += 2 * (Random.value - 0.5f) * 0.1f * canvasRect.sizeDelta.y;
+        var indicator = Instantiate(NourishmentGainIndicator, canvasPos, Quaternion.identity);
+        indicator.transform.SetParent(_canvas.transform, true);
+        var text = indicator.GetComponentInChildren<TMP_Text>();
+        text.text = $"{delta:.##}";
+        text.color = delta > 0 ? Color.green : Color.red;
+        text.DOColor(Color.clear, 3f).OnComplete(() => Destroy(indicator));
+        float floatShift = viewportPos.y > 0.8f ? -0.3f : 0.3f;
+        indicator.transform.DOLocalMoveY(indicator.transform.localPosition.y + floatShift * canvasRect.sizeDelta.y, 3f);
+        indicator.transform.localScale = Mathf.Clamp(0.4f + Mathf.Log10(Mathf.Abs(delta)), 0.5f, 2f) * Vector3.one;
     }
 
     private int ApplyLevelRestriction(int desiredLevel)
@@ -98,6 +144,7 @@ public class Flower : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _canvas = GameObject.FindGameObjectWithTag("Canvas");
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _spriteRenderer.sprite = GrowthSprites[Level];
         Nourishment = _startingNourishment;
@@ -203,7 +250,7 @@ public class Flower : MonoBehaviour
 
         if (HasCompletedBeeCondition && _nourishmentChanged)
         {
-            Nourishment += BeeBonus * (QueenLevel - NourishmentForLevel.Length - 1);
+            ModifyNourishmentWithSource(BeeBonus * (QueenLevel - NourishmentForLevel.Length - 1), gameObject);
         }
     }
 }

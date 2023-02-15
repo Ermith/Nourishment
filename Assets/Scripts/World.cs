@@ -118,7 +118,8 @@ public class GridSquare
 
         absorbAmount = Mathf.Min(Water.Amount, absorbAmount);
         Water.Amount -= absorbAmount;
-        Util.GetFlower().Nourishment += absorbAmount * World.WaterConversionRatio;
+        Util.GetFlower().ModifyNourishmentWithSource(absorbAmount * World.WaterConversionRatio, Tile.gameObject);
+
         // TODO visual / sound effect?
     }
 
