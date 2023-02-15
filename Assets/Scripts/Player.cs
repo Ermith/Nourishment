@@ -34,7 +34,10 @@ public class Player : MonoBehaviour
             SceneManager.LoadScene("MainMenuScene");
 
         if (Input.GetKeyDown(KeyCode.Space))
-            Util.GetWorld().SimulationStep();
+            Util.GetWorld().SimulationStep(true);
+
+        if (Input.GetKeyDown(KeyCode.X))
+            Util.GetFlower().HideVictory();
 
         if (Util.GetWorld().CheatsEnabled)
         {
@@ -73,7 +76,7 @@ public class Player : MonoBehaviour
         {
             bool success = TryMove(movementDir.Value, retreat);
             if(success)
-                Util.GetWorld().SimulationStep();
+                Util.GetWorld().SimulationStep(false);
         }
 
         playerTween?.Kill();
