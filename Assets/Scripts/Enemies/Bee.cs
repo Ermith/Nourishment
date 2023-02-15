@@ -17,6 +17,8 @@ public class Bee : Enemy
     private Vector3 _toLeft = new Vector3(-1, 1, 1);
     private Vector3 _toRight = new Vector3(1, 1, 1);
 
+    public override bool AffectedByGravity => !Alive;
+
     public override bool CanPass(Entity entity, Direction moveDirection)
     {
         if (entity is Enemy)
@@ -105,11 +107,14 @@ public class Bee : Enemy
 
     public override bool CanSpread(Player player, Direction spreadDirection)
     {
-        return CanMove(spreadDirection);
+        return CanMove(spreadDirection) || base.CanSpread(player, spreadDirection);
     }
 
     public override void OnSpread(Player player, Direction spreadDirection)
     {
-        Move(spreadDirection);
+        if (!Alive)
+            base.OnSpread(player, spreadDirection);
+        else if (CanMove(spreadDirection))
+            Move(spreadDirection);
     }
 }
