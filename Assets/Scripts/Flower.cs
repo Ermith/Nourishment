@@ -104,7 +104,7 @@ public class Flower : MonoBehaviour
         var text = indicator.GetComponentInChildren<TMP_Text>();
         text.text = $"{delta:.##}";
         text.color = delta > 0 ? Color.green : Color.red;
-        text.DOColor(Color.clear, 3f).OnComplete(() => Destroy(indicator));
+        text.DOColor(Color.clear, 3f).OnKill(() => Destroy(indicator));
         float floatShift = viewportPos.y > 0.8f ? -0.3f : 0.3f;
         indicator.transform.DOLocalMoveY(indicator.transform.localPosition.y + floatShift * canvasRect.sizeDelta.y, 3f);
         indicator.transform.localScale = Mathf.Clamp(0.4f + Mathf.Log10(Mathf.Abs(delta)), 0.5f, 2f) * Vector3.one;
