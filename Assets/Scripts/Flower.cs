@@ -18,7 +18,7 @@ public class Flower : MonoBehaviour
     public int QueenLevel = 0;
     public float AmberBreakCost = 250;
     public bool HasHatchedBee = false;
-    public GameObject HatchedBeeQueen = null;
+    public GameObject BeeQueenPrefab = null;
     public const int GameOverNourishment = 5;
     public TMP_Text NourishmentText;
     public TMP_Text HintsText;
@@ -180,8 +180,6 @@ public class Flower : MonoBehaviour
     {
         HasHatchedBee = true;
         PowerUpQueen();
-        if (HatchedBeeQueen != null)
-            HatchedBeeQueen.SetActive(true);
     }
     public bool IsAbleToBreakAmber()
     {
@@ -203,6 +201,7 @@ public class Flower : MonoBehaviour
     {
         QueenLevel += 1;
         UpdateProgress();
+        Instantiate(BeeQueenPrefab, transform.position, Quaternion.identity);
     }
     private bool HasCompletedNourishmentCondition => _nourishment >= NourishmentForLevel.Last();
     private bool HasCompletedBeeCondition => QueenLevel >= NourishmentForLevel.Length - 1;

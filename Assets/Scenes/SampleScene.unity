@@ -1467,7 +1467,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1432990824
 GameObject:
@@ -1723,11 +1723,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
---- !u!1 &1573234018 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5491073945550156827, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-  m_PrefabInstance: {fileID: 1794101214}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1584036435
 GameObject:
   m_ObjectHideFlags: 0
@@ -1851,7 +1846,7 @@ MonoBehaviour:
   Camera: {fileID: 519420031}
   Player: {fileID: 1525839684}
   ExtraSimulatedRows: 25
-  CheatsEnabled: 1
+  CheatsEnabled: 0
   Background1: {fileID: 1235685978}
   Background2: {fileID: 1112595879}
   Background3: {fileID: 1358852388}
@@ -1951,95 +1946,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1771546489}
   m_CullTransparentMesh: 1
---- !u!1001 &1794101214
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -7996975303591466502, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: MaxMove
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: -7996975303591466502, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: MinMove
-      value: -2
-      objectReference: {fileID: 0}
-    - target: {fileID: -7996975303591466502, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: StepLength
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: -7996975303591466502, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: IsOverworldBee
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5491073945550156827, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_Name
-      value: OverworldBee
-      objectReference: {fileID: 0}
-    - target: {fileID: 5491073945550156827, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_RootOrder
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.81
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8379725759027563400, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 34146e468f4ae6e4faf8d06a0dd32647, type: 3}
 --- !u!1 &1835742017
 GameObject:
   m_ObjectHideFlags: 0
@@ -2347,7 +2253,7 @@ MonoBehaviour:
   QueenLevel: 0
   AmberBreakCost: 250
   HasHatchedBee: 0
-  HatchedBeeQueen: {fileID: 1573234018}
+  BeeQueenPrefab: {fileID: 5491073945550156827, guid: a841e08cb6c581e4db708e39c58ba696, type: 3}
   NourishmentText: {fileID: 1006220948}
   HintsText: {fileID: 1950914749}
   HintForHintsText: {fileID: 1432990826}
@@ -2600,7 +2506,7 @@ RectTransform:
   - {fileID: 1309715246}
   - {fileID: 405139933}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

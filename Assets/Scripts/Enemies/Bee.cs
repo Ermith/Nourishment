@@ -9,7 +9,7 @@ public class Bee : Enemy
 {
     public bool IsOverworldBee = false;
     public float StepLength = 0.01f;
-    public float MinMove = -2;
+    public float MinMove = -6;
     public float MaxMove = 6;
     public Direction ForwardDir = Direction.Right;
     public Direction BackwardDir = Direction.Left;
@@ -37,6 +37,21 @@ public class Bee : Enemy
         {
             transform.localScale = _toLeft;
             _currentDir = Direction.Left;
+        }
+    }
+
+    public void Start()
+    {
+        if (IsOverworldBee)
+        {
+            MinMove += 2 * 2 * (Random.value - 0.5f);
+            MaxMove += 2 * 2 * (Random.value - 0.5f);
+            StepLength += 0.005f * 2 * (Random.value - 0.5f);
+            transform.position = new Vector2(
+                2 * (Random.value - 0.5f) * (MaxMove - MinMove) + MinMove,
+                transform.position.y + 2 * (Random.value - 0.5f));
+            float scale = 0.5f + 0.3f * 2 * (Random.value - 0.5f);
+            transform.localScale = new Vector3(scale, scale, 1);
         }
     }
 
