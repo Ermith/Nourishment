@@ -166,7 +166,7 @@ public class World : MonoBehaviour
     public const int ChunkSize = 20;
     public const int FluidSubsteps = 10;
     public const float WaterConversionRatio = 25f; //! how much nourishment you get per 1 tile of water
-    public const float WaterConversionSpeed = 0.01f; //! how much water do you absorb per 1 tick per water/root boundary
+    public const float WaterConversionSpeed = 0.015f; //! how much water do you absorb per 1 tick per water/root boundary
     public const float WaterHealingRatio = 0.03f; //! how much health do you get by being next to water
     public Camera Camera;
     public Dictionary<string, Sprite> Sprites;
