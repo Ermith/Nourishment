@@ -881,9 +881,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a538534805a54c947988bb3ba64cc829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text1: {fileID: 1771546491}
-  image1: {fileID: 1584036437}
-  _canvas: {fileID: 2019286968}
+  Text1: {fileID: 1771546491}
+  Image1: {fileID: 1584036437}
+  Canvas: {fileID: 2019286968}
 --- !u!1 &778969487
 GameObject:
   m_ObjectHideFlags: 0
@@ -1851,7 +1851,7 @@ MonoBehaviour:
   Camera: {fileID: 519420031}
   Player: {fileID: 1525839684}
   ExtraSimulatedRows: 10
-  CheatsEnabled: 0
+  CheatsEnabled: 1
   Background1: {fileID: 1235685978}
   Background2: {fileID: 1112595879}
   Background3: {fileID: 1358852388}
@@ -2420,16 +2420,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'W,A,S,D - Movement
-
-    SPACE - Pass Time
-
-    Movement requires nourishment!
-
-    Nourishment
-    >=3000 and 7 saved bees means you won!
-
-    Nourishment < 5 means you lost!'
+  m_text: "W,A,S,D - Movement\nShift - Hold while moving to remove a tile\nSPACE
+    - Pass Time\nMovement requires nourishment!\nWin when nourishment \u2265 3000
+    and 7 saved bees\nLose when nourishment < 5"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2456,8 +2449,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 75
-  m_fontSizeBase: 75
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2492,7 +2485,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: -7.2297974, z: 0, w: -10.226318}
+  m_margin: {x: 0, y: -9.339172, z: 0, w: -10.226318}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
