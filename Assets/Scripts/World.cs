@@ -111,7 +111,10 @@ public class GridSquare
 
         // hack to clean up ugly worldgen water in root tiles
         if (Util.GetWorld().GetTile(X, Y) is RootTile { Status: RootTile.RootStatus.Spawned })
-            absorbAmount += 1f;
+        {
+            Water.Amount = 0f;
+            return;
+        }
 
         absorbAmount = Mathf.Min(Water.Amount, absorbAmount);
         Water.Amount -= absorbAmount;
