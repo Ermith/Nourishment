@@ -137,13 +137,13 @@ public class Player : MonoBehaviour
             if (oldConn != newConn || newExistingRootTile.Status == RootStatus.Spawned)
             {
                 var newStatus = (oldConn || newConn) ? RootStatus.Connected : RootStatus.Disconnected;
-                if (newExistingRootTile.Status != newStatus)
+                if (newExistingRootTile.Status != newStatus && newExistingRootTile.Status != RootStatus.Initial)
                     newExistingRootTile.BFSApply(tile =>
                         {
                             tile.Status = newStatus;
                         },
                         tile => tile.Status == RootStatus.Disconnected || tile.Status == RootStatus.Spawned);
-                else if (oldTile.Status != newStatus)
+                else if (oldTile.Status != newStatus && oldTile.Status != RootStatus.Initial)
                     oldTile.BFSApply(tile =>
                         {
                             tile.Status = newStatus;
