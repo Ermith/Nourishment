@@ -380,6 +380,8 @@ public class RootTile : Tile
         get => _status;
         set
         { 
+            if (_status == RootStatus.Initial)
+                throw new Exception("RootStatus.Initial cannot be changed.");
             _status = value;
             if (_status == RootStatus.Spawned)
                 changeColor(Color.Lerp(DAMAGED_COLOR, SPAWNED_COLOR, Health), 0f);
