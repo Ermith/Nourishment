@@ -152,8 +152,7 @@ public class FluidIndicator : MonoBehaviour
     {
         SpriteRenderer = GetComponent<SpriteRenderer>();
         SpriteRenderer.color = new Color(0.0f, 0.0f, 1.0f, 0.0f);
-        SpriteRenderer.sortingOrder = 1;
-        // SpriteRenderer.sortingLayerName = "Fluid";
+        SpriteRenderer.sortingLayerName = "Fluid";
         SpriteRenderer.sprite = Resources.Load<Sprite>("Sprites/white");
     }
 

@@ -48,6 +48,9 @@ TagManager:
   - name: Enemy
     uniqueID: 877330257
     locked: 0
+  - name: Fluid
+    uniqueID: 1401904379
+    locked: 0
   - name: Player
     uniqueID: 1726295477
     locked: 0
