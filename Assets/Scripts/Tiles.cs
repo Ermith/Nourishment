@@ -137,7 +137,7 @@ public abstract class Tile : MonoBehaviour
 
 public class GroundTile : Tile
 {
-    public override float Hardness => 4;
+    public override float Hardness => 5;
     private List<GameObject> _subSpriteObjects = new List<GameObject>();
     public override string Audio => "Dirt";
 
