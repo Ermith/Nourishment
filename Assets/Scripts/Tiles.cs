@@ -326,6 +326,8 @@ public class RootNotFoundException : Exception
 public class RootTile : Tile
 {
     public override string Audio => "Root";
+
+    [Serializable]
     public enum RootStatus
     {
         Connected,
@@ -374,9 +376,9 @@ public class RootTile : Tile
         }
     }
 
-
-    private RootStatus? _status;
-    public RootStatus? Status {
+    [SerializeField]
+    private RootStatus _status;
+    public RootStatus Status {
         get => _status;
         set
         {
@@ -498,6 +500,7 @@ public class RootTile : Tile
                 }
 
                 neighRoot._connectedDirections[(int)dir.Opposite()] = false;
+
 
                 if (!visited.Contains(neighRoot) && (neighRoot.Status == RootStatus.Connected || neighRoot.Status == RootStatus.Initial))
                 {

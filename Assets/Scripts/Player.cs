@@ -158,7 +158,7 @@ public class Player : MonoBehaviour
         else
         {
             var newRootTile = (RootTile)world.ReplaceTile(X, Y, TileType.Root);
-            newRootTile.Status = oldTile.Status.Value switch
+            newRootTile.Status = oldTile.Status switch
             {
                 RootStatus.Connected => RootStatus.Connected,
                 RootStatus.Initial => RootStatus.Connected,
