@@ -569,20 +569,33 @@ public class World : MonoBehaviour
     public void SimulationStep(bool passed = false)
     {
         // TODO maybe optimize (hashtable)
-        List<Entity> simulatedEntities = new List<Entity>();
+        List<Enemy> simulatedEnemies = new List<Enemy>();
+        List<Entity> simulatedOtherEntities = new List<Entity>();
         ApplyToSimulatedTiles(square =>
         {
             foreach (var entity in square.Entities)
             {
-                if (!simulatedEntities.Contains(entity))
-                    simulatedEntities.Add(entity);
+                if (entity is Enemy enemy)
+                {
+                    if (!simulatedEnemies.Contains(enemy))
+                        simulatedEnemies.Add(enemy);
+                }
+                else
+                {
+                    if (!simulatedOtherEntities.Contains(entity))
+                        simulatedOtherEntities.Add(entity);
+                }
             }
 
             square.SimulationStep();
         });
 
-        simulatedEntities.Reverse(); // it'll look better if falling is simulated bottom to top
-        foreach (var entity in simulatedEntities)
+        simulatedEnemies.Reverse(); // it'll look better if falling is simulated bottom to top
+        simulatedOtherEntities.Reverse();
+        
+        foreach (var entity in simulatedOtherEntities)
+            entity.SimulationStep();
+        foreach (var entity in simulatedEnemies)
             entity.SimulationStep();
 
         ApplyToSimulatedTiles(square => square.SimulationStepFluid());
