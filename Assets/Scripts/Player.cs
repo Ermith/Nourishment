@@ -136,7 +136,7 @@ public class Player : MonoBehaviour
         
         if (newTile is RootTile newExistingRootTile)
         {
-            var oldConn = oldTile.Status == RootStatus.Connected || oldTile.Status == RootStatus.Initial;
+            var oldConn = !retreat && (oldTile.Status == RootStatus.Connected || oldTile.Status == RootStatus.Initial);
             var newConn = newExistingRootTile.Status == RootStatus.Connected || newExistingRootTile.Status == RootStatus.Initial;
             if (oldConn != newConn || newExistingRootTile.Status == RootStatus.Spawned)
             {

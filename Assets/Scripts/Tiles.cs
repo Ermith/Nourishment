@@ -443,10 +443,6 @@ public class RootTile : Tile
         return visited;
     }
 
-    public void Start()
-    {
-    }
-
     public void ForceConnect(Direction direction)
     {
         _connectedDirections[(int)direction] = true;
@@ -486,36 +482,36 @@ public class RootTile : Tile
             return;
         _colorTween?.Kill();
         HashSet<RootTile> visited = new HashSet<RootTile>();
+        visited.Add(this);
         foreach (var dir in Util.CardinalDirections)
         {
-            if (_connectedDirections[(int)dir])
+            if (!_connectedDirections[(int)dir]) continue;
+            
+            Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
+            if (neighTile is not RootTile neighRoot)
             {
-                Tile neighTile = world.GetTile(X + dir.X(), Y + dir.Y());
-                if (neighTile is not RootTile neighRoot)
+                if (Status == RootStatus.Initial)
+                    continue;
+                else
+                    throw new System.Exception("How did we end up connected to a non-root tile?");
+            }
+
+            neighRoot._connectedDirections[(int)dir.Opposite()] = false;
+            _connectedDirections[(int)dir] = false;
+
+            if (!visited.Contains(neighRoot) && (neighRoot.Status == RootStatus.Connected || neighRoot.Status == RootStatus.Initial))
+            {
+                var curVisited = neighRoot.BfsApply(tile => { },
+                    tile => tile.Status == RootStatus.Connected || tile.Status == RootStatus.Initial);
+                var foundInitial = curVisited.Any(tile => tile.Status == RootStatus.Initial);
+                if (!foundInitial)
                 {
-                    if (Status == RootStatus.Initial)
-                        continue;
-                    else
-                        throw new System.Exception("How did we end up connected to a non-root tile?");
-                }
-
-                neighRoot._connectedDirections[(int)dir.Opposite()] = false;
-
-
-                if (!visited.Contains(neighRoot) && (neighRoot.Status == RootStatus.Connected || neighRoot.Status == RootStatus.Initial))
-                {
-                    var curVisited = neighRoot.BfsApply(tile => { },
-                        tile => tile.Status == RootStatus.Connected || tile.Status == RootStatus.Initial);
-                    var foundInitial = curVisited.Any(tile => tile.Status == RootStatus.Initial);
-                    if (!foundInitial)
+                    foreach (var tile in curVisited)
                     {
-                        foreach (var tile in curVisited)
-                        {
-                            tile.Status = RootStatus.Disconnected;
-                        }
+                        tile.Status = RootStatus.Disconnected;
                     }
-                    visited.UnionWith(curVisited);
                 }
+                visited.UnionWith(curVisited);
             }
         }
         base.OnRemove();
