@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -248,6 +249,8 @@ public class World : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
         DOTween.SetTweensCapacity(1500, 50);
 
         Sprites = LoadSprites();
