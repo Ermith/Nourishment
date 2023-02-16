@@ -60,7 +60,7 @@ public class Slug : Enemy
             return;
         }
         var tileBelow = Util.GetWorld().GetTile(X + DownDir.X(), Y + DownDir.Y());
-        if (tileBelow is RootTile rootBelow)
+        if (tileBelow is RootTile rootBelow && rootBelow.Status != RootTile.RootStatus.Initial)
         {
             rootBelow.Health -= 0.05f;
             EatTween?.Complete();
