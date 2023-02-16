@@ -402,44 +402,61 @@ public class RandomRock : Rock
         }
 
         // make it convex-ish
-        for (int j = 0; j < Height; j++)
+        bool changed;
+        do
         {
-            int minI = -1;
-            int maxI = -1;
-            for (int i = 0; i < Width; i++)
-            {
-                if (shape[i, j])
-                {
-                    if (minI == -1)
-                        minI = i;
-                    maxI = i;
-                }
-            }
-            if (minI != -1)
-            {
-                for (int i = minI; i <= maxI; i++)
-                    shape[i, j] = true;
-            }
-        }
-        for (int i = 0; i < Width; i++)
-        {
-            int minJ = -1;
-            int maxJ = -1;
+            changed = false;
+
             for (int j = 0; j < Height; j++)
             {
-                if (shape[i, j])
+                int minI = -1;
+                int maxI = -1;
+                for (int i = 0; i < Width; i++)
                 {
-                    if (minJ == -1)
-                        minJ = j;
-                    maxJ = j;
+                    if (shape[i, j])
+                    {
+                        if (minI == -1)
+                            minI = i;
+                        maxI = i;
+                    }
+                }
+
+                if (minI != -1)
+                {
+                    for (int i = minI; i <= maxI; i++)
+                    {
+                        if (!shape[i, j])
+                            changed = true;
+                        shape[i, j] = true;
+                    }
                 }
             }
-            if (minJ != -1)
+
+            for (int i = 0; i < Width; i++)
             {
-                for (int j = minJ; j <= maxJ; j++)
-                    shape[i, j] = true;
+                int minJ = -1;
+                int maxJ = -1;
+                for (int j = 0; j < Height; j++)
+                {
+                    if (shape[i, j])
+                    {
+                        if (minJ == -1)
+                            minJ = j;
+                        maxJ = j;
+                    }
+                }
+
+                if (minJ != -1)
+                {
+                    for (int j = minJ; j <= maxJ; j++)
+                    {
+                        if (!shape[i, j])
+                            changed = true;
+                        shape[i, j] = true;
+                    }
+                }
             }
-        }
+        } while (changed);
 
         // make it connected
 
