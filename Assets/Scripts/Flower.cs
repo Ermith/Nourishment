@@ -102,7 +102,7 @@ public class Flower : MonoBehaviour
         var indicator = Instantiate(NourishmentGainIndicator, canvasPos, Quaternion.identity);
         indicator.transform.SetParent(_canvas.transform, true);
         var text = indicator.GetComponentInChildren<TMP_Text>();
-        text.text = $"{delta:.##}";
+        text.text = $"{delta:+0.##;-0.##}";
         text.color = delta > 0 ? Color.green : Color.red;
         text.DOColor(Color.clear, 3f).OnKill(() => Destroy(indicator));
         float floatShift = viewportPos.y > 0.8f ? -0.3f : 0.3f;
