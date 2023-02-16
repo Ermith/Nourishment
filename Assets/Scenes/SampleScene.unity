@@ -2343,7 +2343,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "W,A,S,D - Movement\nShift - Hold while moving to remove a tile\nSPACE
-    - Pass Time\nMovement requires nourishment!\nWin when nourishment \u2265 3000
+    - Pass Time\nMovement requires nourishment!\nWin when nourishment \u2265 2000
     and 7 saved bees\nLose when nourishment < 5"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
