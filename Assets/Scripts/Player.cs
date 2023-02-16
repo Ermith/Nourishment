@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
         _cameraTween = Camera.transform.DOMoveY(Y, 0.4f);
     }
 
-    bool TryMove(Direction direction, bool retreat)
+    public bool TryMove(Direction direction, bool retreat)
     {
         var square = Util.GetWorld().GetSquare(X + direction.X(), Y + direction.Y());
         if (square == null)

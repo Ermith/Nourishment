@@ -517,7 +517,21 @@ public class RootTile : Tile
         base.OnRemove();
         var player = Util.GetPlayer();
         if (player && player.X == X && player.Y == Y)
-            Util.GetFlower().Nourishment = 0.0f; // kills the Player
+        {
+            // try to shift the player to a living tile if possible
+            bool foundNeigh = false;
+            foreach (var dir in Util.CardinalDirections)
+            {
+                var tile = Util.GetWorld().GetTile(X + dir.X(), Y + dir.Y());
+                if (tile is RootTile && player.TryMove(dir, false))
+                {
+                    foundNeigh = true;
+                    break;
+                }
+            }
+            if(!foundNeigh)
+                Util.GetFlower().Nourishment = 0.0f; // kills the Player
+        }
     }
 
     public override void UpdateSprite()
