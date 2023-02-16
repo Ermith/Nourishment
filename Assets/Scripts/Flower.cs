@@ -94,9 +94,10 @@ public class Flower : MonoBehaviour
         viewportPos.x = Mathf.Clamp(viewportPos.x, 0.02f, 0.98f);
         viewportPos.y = Mathf.Clamp(viewportPos.y, 0.05f, 0.95f);
         RectTransform canvasRect = _canvas.GetComponent<RectTransform>();
+        var cam = Util.GetWorld().Camera;
         Vector2 canvasPos = new Vector2(
-            (viewportPos.x - 0.5f) * canvasRect.rect.width + canvasRect.position.x,
-            (viewportPos.y - 0.5f) * canvasRect.rect.height + canvasRect.position.y);
+            (viewportPos.x - 0.5f) * cam.pixelWidth + canvasRect.position.x,
+            (viewportPos.y - 0.5f) * cam.pixelHeight + canvasRect.position.y);
         canvasPos.x += 2 * (Random.value - 0.5f) * 0.08f * canvasRect.sizeDelta.x;
         canvasPos.y += 2 * (Random.value - 0.5f) * 0.1f * canvasRect.sizeDelta.y;
         var indicator = Instantiate(NourishmentGainIndicator, canvasPos, Quaternion.identity);
