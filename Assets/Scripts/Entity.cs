@@ -353,7 +353,7 @@ public class RandomRock : Rock
 {
     public int Width = 3;
     public int Height = 3;
-    public float Chance = 0.35f;
+    public float Chance = 0.25f;
 
     protected bool[,] Shape = null;
 
