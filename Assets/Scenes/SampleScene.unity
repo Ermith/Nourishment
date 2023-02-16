@@ -2251,7 +2251,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: fb0210283e5fddc44bb0c1377a9cf2d6, type: 3}
   RequiredLevelAmberBreak: 6
   QueenLevel: 0
-  AmberBreakCost: 250
+  AmberBreakCost: 200
   HasHatchedBee: 0
   BeeQueenPrefab: {fileID: 5491073945550156827, guid: a841e08cb6c581e4db708e39c58ba696, type: 3}
   NourishmentText: {fileID: 1006220948}
@@ -2267,7 +2267,7 @@ MonoBehaviour:
   - 450
   - 600
   - 1000
-  - 3000
+  - 2000
   _startingNourishment: 400
 --- !u!1 &1950914747
 GameObject:
