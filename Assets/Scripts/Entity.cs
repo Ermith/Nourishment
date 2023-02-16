@@ -259,7 +259,7 @@ public class AmberBee : Entity
 public abstract class Rock : Entity
 {
     public override bool AffectedByGravity => true;
-    public override float Heaviness => 10;
+    public override float Heaviness => 8;
 
     protected abstract bool[,] GetShape();
 
