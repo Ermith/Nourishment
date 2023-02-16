@@ -83,7 +83,13 @@ public class Player : MonoBehaviour
         _cameraTween?.Kill();
 
         _playerTween = gameObject.transform.DOMove(new Vector3(X - World.MapWidth / 2, Y, 0), 0.2f);
-        _cameraTween = Camera.transform.DOMoveY(Y, 0.4f);
+
+        var topmostCameraPos = 5 - Camera.orthographicSize;
+        var cameraY = Mathf.Min(Y, topmostCameraPos);
+        if (Camera.transform.position.y > topmostCameraPos)
+            Camera.transform.position = new Vector2(0f, topmostCameraPos);
+        else
+            _cameraTween = Camera.transform.DOMoveY(cameraY, 0.4f);
     }
 
     public bool TryMove(Direction direction, bool retreat)
