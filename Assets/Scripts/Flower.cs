@@ -24,7 +24,7 @@ public class Flower : MonoBehaviour
     public TMP_Text HintsText;
     public TMP_Text HintForHintsText;
     public float BeeBonus = 0.5f;
-    private bool _nourishmentChanged = false;
+    private bool _nourishmentDecreased = false;
     private float _nourishmentOld = 0;
     private bool _victoryAchieved = false;
     private SpriteRenderer _spriteRenderer;
@@ -243,14 +243,18 @@ public class Flower : MonoBehaviour
 
     public void OnWorldSimulationStep(bool passed)
     {
-        _nourishmentChanged = MathF.Abs(_nourishmentOld - _nourishment) > 0;
+        _nourishmentDecreased = (_nourishment < _nourishmentOld);
+        var decreasedByHowMuch = _nourishmentOld - _nourishment;
         _nourishmentOld = _nourishment;
         if (passed)
             return;
 
-        if (HasCompletedBeeCondition && _nourishmentChanged)
+        if (HasCompletedBeeCondition && _nourishmentDecreased)
         {
-            ModifyNourishmentWithSource(BeeBonus * (QueenLevel - NourishmentForLevel.Length + 1), gameObject);
+            var bonusGain = BeeBonus * (QueenLevel - NourishmentForLevel.Length + 1);
+            bonusGain = Math.Min(decreasedByHowMuch, bonusGain); // don't gain more than was spent
+            bonusGain = Math.Min(4f, bonusGain); // digging regular tile shouldn't cost less than 1
+            ModifyNourishmentWithSource(bonusGain, gameObject);
         }
     }
 }
