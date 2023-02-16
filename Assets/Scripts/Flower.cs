@@ -30,6 +30,7 @@ public class Flower : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     public GameObject NourishmentGainIndicator;
     private GameObject _canvas;
+    private int _maxLevelReached = 0;
 
     public float[] NourishmentForLevel = new float[] { };
 
@@ -41,6 +42,7 @@ public class Flower : MonoBehaviour
         {
             // this checks only sprites
             _level = Mathf.Clamp(value, 0, GrowthSprites.Count - 1);
+            _maxLevelReached = Mathf.Max(_maxLevelReached, _level);
         }
     }
 
@@ -208,7 +210,7 @@ public class Flower : MonoBehaviour
     private bool HasCompletedBeeCondition => QueenLevel >= NourishmentForLevel.Length - 1;
     private void UpdateProgress()
     {
-        if (QueenLevel > 0 && !_victoryAchieved)
+        if (_maxLevelReached >= RequiredLevelAmberBreak && !_victoryAchieved)
         {
             VictoryProgress.text = $"Bees saved: {QueenLevel} / {NourishmentForLevel.Length - 1}  ";
         }
