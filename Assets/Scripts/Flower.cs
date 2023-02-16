@@ -98,8 +98,8 @@ public class Flower : MonoBehaviour
         Vector2 canvasPos = new Vector2(
             (viewportPos.x - 0.5f) * cam.pixelWidth + canvasRect.position.x,
             (viewportPos.y - 0.5f) * cam.pixelHeight + canvasRect.position.y);
-        canvasPos.x += 2 * (Random.value - 0.5f) * 0.08f * canvasRect.sizeDelta.x;
-        canvasPos.y += 2 * (Random.value - 0.5f) * 0.1f * canvasRect.sizeDelta.y;
+        canvasPos.x += 2 * (Random.value - 0.5f) * 0.08f * cam.pixelWidth;
+        canvasPos.y += 2 * (Random.value - 0.5f) * 0.1f * cam.pixelHeight;
         var indicator = Instantiate(NourishmentGainIndicator, canvasPos, Quaternion.identity);
         indicator.transform.SetParent(_canvas.transform, true);
         var text = indicator.GetComponentInChildren<TMP_Text>();
@@ -107,7 +107,7 @@ public class Flower : MonoBehaviour
         text.color = delta > 0 ? Color.green : Color.red;
         text.DOColor(Color.clear, 3f).OnKill(() => Destroy(indicator));
         float floatShift = viewportPos.y > 0.8f ? -0.3f : 0.3f;
-        indicator.transform.DOLocalMoveY(indicator.transform.localPosition.y + floatShift * canvasRect.sizeDelta.y, 3f);
+        indicator.transform.DOLocalMoveY(indicator.transform.localPosition.y + floatShift * cam.pixelHeight, 3f);
         indicator.transform.localScale = Mathf.Clamp(0.4f + Mathf.Log10(Mathf.Abs(delta)), 0.5f, 2f) * Vector3.one;
     }
 
