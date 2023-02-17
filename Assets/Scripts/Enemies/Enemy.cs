@@ -99,6 +99,9 @@ public abstract class Enemy : Entity
                 sprite.DOColor(new Color(0.5f * Breath / MaxBreath + 0.5f, 0.5f * Breath / MaxBreath + 0.5f, 1), 0.2f);
             AiStep();
         }
+
+        if (AffectedByGravity)
+            Fall();
     }
 
     public virtual void SetDeathSprite()
