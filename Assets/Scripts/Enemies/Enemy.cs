@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class Enemy : Entity
 {
     public bool Alive = true;
-    public virtual float NourishmentFromCorpse => 40;
+    public virtual float NourishmentFromCorpse => 50;
     public float Breath = 40.0f;
     public float MaxBreath = 40.0f;
 
