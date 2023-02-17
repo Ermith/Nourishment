@@ -159,7 +159,7 @@ public class Flower : MonoBehaviour
     {
         _spriteRenderer.sprite = GrowthSprites[Level];
 
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.H))
         {
             HintForHintsText.enabled = !HintForHintsText.enabled;
             HintsText.enabled = !HintsText.enabled;
