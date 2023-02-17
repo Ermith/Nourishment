@@ -837,9 +837,9 @@ Camera:
     height: 1
   near clip plane: 0
   far clip plane: 1000
-  field of view: 32.0261
+  field of view: 36.761326
   orthographic: 1
-  orthographic size: 5.219388
+  orthographic size: 6.043038
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1440,32 +1440,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Sounds:
   - Name: Dirt
-    Clip: {fileID: 0}
+    Clip: {fileID: 8300000, guid: d6df431738aacb147abb703a696c8ca6, type: 3}
     Volume: 1
     Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Root
-    Clip: {fileID: 0}
+    Clip: {fileID: 8300000, guid: e004287a3d756ef49942429d9eb5abca, type: 3}
     Volume: 1
     Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Corpse
-    Clip: {fileID: 0}
+    Clip: {fileID: 8300000, guid: 04fe35d51627813429d7f92e12f79890, type: 3}
     Volume: 1
     Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Music
-    Clip: {fileID: 0}
+    Clip: {fileID: 8300000, guid: 6e96ec2ad783cb04db4254a2f1590705, type: 3}
     Volume: 1
     Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Death
-    Clip: {fileID: 0}
+    Clip: {fileID: 8300000, guid: c1e9aabb785f44e448294104543bdac8, type: 3}
     Volume: 1
     Pitch: 1
     AudioSource: {fileID: 0}
   - Name: Hit
-    Clip: {fileID: 0}
+    Clip: {fileID: 8300000, guid: 1704152c0599dc34bb1b5dcd7482bac9, type: 3}
     Volume: 1
     Pitch: 1
     AudioSource: {fileID: 0}
