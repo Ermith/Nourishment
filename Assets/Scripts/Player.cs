@@ -133,10 +133,7 @@ public class Player : MonoBehaviour
         Y = newY;
         
         if(retreat)
-        {
             world.ReplaceTile(oldX, oldY, TileType.Air);
-            Util.GetFlower().Nourishment++;
-        }
         
         square.OnSpread(this, direction);
         
